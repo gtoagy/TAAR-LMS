@@ -10033,3 +10033,6 @@ msgstr "{} Aprobado"
 #: lms/lms/workspace/learning/learning.json
 msgid "{} Published"
 msgstr "{} publicados"
+
+msgid "Membership"
+msgstr "Membresía"
