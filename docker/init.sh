@@ -1,9 +1,10 @@
-#!bin/bash
+#!/bin/bash
 
 if [ -d "/home/frappe/frappe-bench/apps/frappe" ]; then
     echo "Bench already exists, skipping init"
     cd frappe-bench
     bench start
+    exit $?
 else
     echo "Creating new bench..."
 fi
