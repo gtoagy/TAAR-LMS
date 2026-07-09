@@ -1911,6 +1911,7 @@ def get_profile_details(username: str):
 			"linkedin",
 			"github",
 			"twitter",
+			"instagram",
 		],
 		as_dict=True,
 	)

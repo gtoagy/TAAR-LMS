@@ -10036,3 +10036,140 @@ msgstr "{} publicados"
 
 msgid "Membership"
 msgstr "Membresía"
+
+msgid "Unlimited access to all courses on the platform."
+msgstr "Acceso ilimitado a todos los cursos de la plataforma."
+
+msgid "Your membership is active."
+msgstr "Tu membresía está activa."
+
+msgid ""
+"We could not process your last payment. Please update your card to keep your"
+" access."
+msgstr ""
+"No pudimos procesar tu último pago. Actualiza tu tarjeta para conservar tu "
+"acceso."
+
+msgid "Your membership ends on {0}. You keep full access until then."
+msgstr ""
+"Tu membresía finaliza el {0}. Hasta entonces conservas el acceso completo."
+
+msgid "Next renewal: {0}"
+msgstr "Próxima renovación: {0}"
+
+msgid "Go to my courses"
+msgstr "Ir a mis cursos"
+
+msgid "Manage my membership"
+msgstr "Gestionar mi membresía"
+
+msgid ""
+"From \"Manage my membership\" you can change your card, download your "
+"invoices or cancel your subscription."
+msgstr ""
+"Desde \"Gestionar mi membresía\" puedes cambiar tu tarjeta, descargar tus "
+"facturas o cancelar tu suscripción."
+
+msgid "/ month"
+msgstr "/ mes"
+
+msgid "All courses included"
+msgstr "Todos los cursos incluidos"
+
+msgid "New courses at no extra cost"
+msgstr "Nuevos cursos sin costo extra"
+
+msgid "Cancel anytime"
+msgstr "Cancela cuando quieras"
+
+msgid "Become a member"
+msgstr "Hacerme miembro"
+
+msgid ""
+"Your previous membership is canceled. Reactivate it to regain access "
+"immediately."
+msgstr ""
+"Tu membresía anterior está cancelada. Reactívala para recuperar el acceso de"
+" inmediato."
+
+msgid "Add a {0} before saving."
+msgstr "Agrega un {0} antes de guardar."
+
+msgid "Add at least one {0} before saving."
+msgstr "Agrega al menos un {0} antes de guardar."
+
+msgid "Add students to the batch to make an announcement"
+msgstr "Agrega estudiantes al grupo para hacer un anuncio"
+
+msgid "Align center"
+msgstr "Centrar"
+
+msgid "Align left"
+msgstr "Alinear a la izquierda"
+
+msgid "Align right"
+msgstr "Alinear a la derecha"
+
+msgid "Amount must be a positive number for {0}."
+msgstr "El monto debe ser un número positivo para {0}."
+
+msgid "Chapter renamed successfully"
+msgstr "Capítulo renombrado con éxito"
+
+msgid "Close student view"
+msgstr "Cerrar vista de estudiante"
+
+msgid "Copy"
+msgstr "Copiar"
+
+msgid "Could not delete the quiz"
+msgstr "No se pudo eliminar el cuestionario"
+
+msgid "Cut"
+msgstr "Cortar"
+
+msgid "Delete quiz"
+msgstr "Eliminar cuestionario"
+
+msgid "Delete this quiz?"
+msgstr "¿Eliminar este cuestionario?"
+
+msgid ""
+"Deleting this quiz permanently removes it and its submissions. This action "
+"cannot be undone. Are you sure you want to continue?"
+msgstr ""
+"Eliminar este cuestionario lo borra permanentemente junto con sus envíos. "
+"Esta acción no se puede deshacer. ¿Estás seguro de que deseas continuar?"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Export failed"
+msgstr "Error al exportar"
+
+msgid "Instagram"
+msgstr "Instagram"
+
+msgid "Paste"
+msgstr "Pegar"
+
+msgid "Quiz deleted successfully"
+msgstr "Cuestionario eliminado con éxito"
+
+msgid "Strikethrough"
+msgstr "Tachado"
+
+msgid "Student View"
+msgstr "Vista de estudiante"
+
+msgid "Text color"
+msgstr "Color de texto"
+
+msgid "Underline"
+msgstr "Subrayado"
+
+msgid "Untitled Quiz"
+msgstr "Cuestionario sin título"
+
+msgid "paid batches"
+msgstr "grupos pagados"

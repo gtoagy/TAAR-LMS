@@ -61,6 +61,11 @@ const routes = [
 		props: true,
 	},
 	{
+		path: '/membresia',
+		name: 'Membresia',
+		component: () => import('@/pages/Membresia.vue'),
+	},
+	{
 		path: '/statistics',
 		name: 'Statistics',
 		component: () => import('@/pages/Statistics.vue'),

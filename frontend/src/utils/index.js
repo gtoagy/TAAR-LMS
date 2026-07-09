@@ -529,7 +529,8 @@ const getSidebarItems = (forMobile = false) => {
 				{
 					label: 'Membership',
 					icon: 'Crown',
-					to: 'membresia',
+					to: 'Membresia',
+					activeFor: ['Membresia'],
 				},
 				{
 					label: 'Certifications',

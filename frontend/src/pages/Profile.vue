@@ -96,20 +96,15 @@
 						{{ profile.data.headline }}
 					</div>
 					<div class="flex items-center gap-x-4 mt-2">
-						<Twitter
-							v-if="profile.data.twitter"
+						<Instagram
+							v-if="profile.data.instagram"
 							class="size-4 text-ink-gray-5 cursor-pointer"
-							@click="navigateTo(profile.data.twitter)"
+							@click="navigateTo(profile.data.instagram)"
 						/>
 						<Linkedin
 							v-if="profile.data.linkedin"
 							class="size-4 text-ink-gray-5 cursor-pointer"
 							@click="navigateTo(profile.data.linkedin)"
-						/>
-						<Github
-							v-if="profile.data.github"
-							class="size-4 text-ink-gray-5 cursor-pointer"
-							@click="navigateTo(profile.data.github)"
 						/>
 					</div>
 				</div>
@@ -154,7 +149,7 @@ import {
 } from 'frappe-ui'
 import { computed, inject, watch, ref, onMounted, watchEffect } from 'vue'
 import { sessionStore } from '@/stores/session'
-import { Github, Linkedin, Twitter } from 'lucide-vue-next'
+import { Instagram, Linkedin } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 import { convertToTitleCase } from '@/utils'
 import UserAvatar from '@/components/UserAvatar.vue'

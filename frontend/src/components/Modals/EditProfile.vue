@@ -42,24 +42,16 @@
 							<FormControl v-model="profile.headline" :label="__('Headline')" />
 
 							<FormControl
+								v-model="profile.instagram"
+								:label="__('Instagram')"
+							/>
+							<FormControl
 								v-model="profile.linkedin"
 								:label="__('LinkedIn ID')"
-							/>
-							<FormControl v-model="profile.github" :label="__('GitHub ID')" />
-							<FormControl
-								v-model="profile.twitter"
-								:label="__('Twitter ID')"
 							/>
 						</div>
 					</div>
 					<div class="space-y-4">
-						<FormControl
-							v-model="profile.open_to"
-							type="select"
-							:options="[' ', 'Work', 'Hiring']"
-							:label="__('Open to')"
-							:placeholder="__('Looking for new work or hiring talent?')"
-						/>
 						<Link
 							:label="__('Language')"
 							v-model="profile.language"
@@ -115,10 +107,8 @@ const profile = reactive({
 	headline: '',
 	bio: '',
 	image: '',
-	open_to: '',
+	instagram: '',
 	linkedin: '',
-	github: '',
-	twitter: '',
 })
 
 const updateProfile = createResource({
@@ -206,10 +196,8 @@ watch(
 			profile.headline = newVal.headline
 			profile.language = newVal.language
 			profile.bio = newVal.bio
-			profile.open_to = newVal.open_to
+			profile.instagram = newVal.instagram
 			profile.linkedin = newVal.linkedin
-			profile.github = newVal.github
-			profile.twitter = newVal.twitter
 			profile.image = newVal.user_image
 			isDirty.value = false
 		}
