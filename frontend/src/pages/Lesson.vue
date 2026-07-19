@@ -258,7 +258,7 @@
 					</div>
 					<div
 						v-if="lesson.data && (allowDiscussions || tabs.length > 1)"
-						class="mt-10 pb-20 pt-5 border-t px-5"
+						class="mt-10 pb-5 pt-5 sm:pb-20 border-t px-5"
 						ref="discussionsContainer"
 					>
 						<TabButtons

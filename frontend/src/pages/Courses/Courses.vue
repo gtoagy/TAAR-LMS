@@ -29,7 +29,8 @@
 			</Dropdown>
 		</template>
 	</LayoutHeader>
-	<div class="flex min-h-0 flex-1 flex-col p-5 pb-10">
+	<!-- En móvil la página crece con su contenido; solo en sm+ llena la altura -->
+	<div class="flex flex-col p-5 pb-10 sm:min-h-0 sm:flex-1">
 		<div
 			class="mb-5 flex flex-col justify-between space-y-4 lg:flex-row lg:items-center lg:space-y-0"
 		>

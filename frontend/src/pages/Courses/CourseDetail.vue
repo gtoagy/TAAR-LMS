@@ -1,5 +1,6 @@
 <template>
-	<div class="flex h-full flex-col">
+	<!-- En móvil la página crece con su contenido; solo en sm+ llena la altura -->
+	<div class="flex flex-col sm:h-full">
 		<LayoutHeader :isLoading="!course.data">
 			<template #left-header>
 				<Breadcrumbs class="h-7" :items="breadcrumbs" />
