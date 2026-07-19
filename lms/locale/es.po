@@ -10173,3 +10173,27 @@ msgstr "Cuestionario sin título"
 
 msgid "paid batches"
 msgstr "grupos pagados"
+
+msgid "Monthly"
+msgstr "Mensual"
+
+msgid "Annual"
+msgstr "Anual"
+
+msgid "2 months free"
+msgstr "2 meses gratis"
+
+msgid "/ year"
+msgstr "/ año"
+
+msgid "Included in the membership"
+msgstr "Incluido en la membresía"
+
+msgid "One-time payment, lifetime access."
+msgstr "Pago único, acceso de por vida."
+
+msgid "Prices are shown in your local currency at checkout."
+msgstr "El precio se muestra en tu moneda local al pagar."
+
+msgid "Purchase successful! Your access will be ready in a few seconds."
+msgstr "¡Compra exitosa! Tu acceso estará listo en unos segundos."

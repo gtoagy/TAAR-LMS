@@ -35,25 +35,6 @@
 					</router-link>
 					<CertificationLinks :courseName="course.data.name" class="w-full" />
 				</div>
-				<router-link
-					v-else-if="course.data?.paid_course && !isAdmin"
-					:to="{
-						name: 'Billing',
-						params: {
-							type: 'course',
-							name: course.data.name,
-						},
-					}"
-				>
-					<Button variant="solid" size="md" class="w-full mb-8">
-						<template #prefix>
-							<span class="lucide-credit-card size-4" />
-						</template>
-						<span>
-							{{ __('Buy this course') }}
-						</span>
-					</Button>
-				</router-link>
 				<Badge
 					v-else-if="course.data?.disable_self_learning && !isAdmin"
 					theme="blue"
@@ -62,6 +43,45 @@
 				>
 					{{ __('Contact the Administrator to enroll for this course') }}
 				</Badge>
+				<div
+					v-else-if="protectedCourse && !isAdmin"
+					class="space-y-2 mb-8"
+				>
+					<Button
+						v-if="ventaIndividual"
+						variant="solid"
+						size="md"
+						class="w-full"
+						@click="comprarCurso()"
+					>
+						<template #prefix>
+							<span class="lucide-credit-card size-4" />
+						</template>
+						{{ __('Buy this course') }}
+					</Button>
+					<router-link
+						v-if="incluidoEnMembresia && !isMember"
+						:to="{ name: 'Membresia' }"
+						class="block"
+					>
+						<Button
+							:variant="ventaIndividual ? 'subtle' : 'solid'"
+							size="md"
+							class="w-full"
+						>
+							<template #prefix>
+								<span class="lucide-crown size-4" />
+							</template>
+							{{ __('Become a member') }}
+						</Button>
+					</router-link>
+					<p
+						v-if="ventaIndividual"
+						class="text-sm text-ink-gray-5 text-center"
+					>
+						{{ __('One-time payment, lifetime access.') }}
+					</p>
+				</div>
 				<Button
 					v-else-if="!isAdmin"
 					@click="enrollStudent()"
@@ -143,7 +163,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, watch } from 'vue'
 import { Badge, Button, call, createResource, toast } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import CertificationLinks from '@/components/CertificationLinks.vue'
@@ -217,7 +237,62 @@ const is_instructor = (): boolean => {
 	return user_is_instructor
 }
 
+interface CourseAccessInfo {
+	venta_individual: boolean
+	incluido_en_membresia: boolean
+	price_display: string | null
+	is_member: boolean
+	enrolled: boolean
+}
+
+const accessInfo = createResource({
+	url: 'taar_lms.api.get_course_access_info',
+	makeParams() {
+		return { curso: props.course.data?.name }
+	},
+}) as Resource<CourseAccessInfo | null>
+
+watch(
+	() => props.course.data?.name,
+	(name) => {
+		if (name) accessInfo.reload()
+	},
+	{ immediate: true }
+)
+
+const ventaIndividual = computed<boolean>(() =>
+	Boolean(accessInfo.data?.venta_individual)
+)
+const incluidoEnMembresia = computed<boolean>(() =>
+	Boolean(accessInfo.data?.incluido_en_membresia)
+)
+const isMember = computed<boolean>(() => Boolean(accessInfo.data?.is_member))
+const protectedCourse = computed<boolean>(
+	() => ventaIndividual.value || incluidoEnMembresia.value
+)
+
+function comprarCurso() {
+	if (!user.data) {
+		toast.warning(__('You need to login first to enroll for this course'))
+		setTimeout(() => {
+			window.location.href = `/login?redirect-to=${window.location.pathname}`
+		}, 500)
+		return
+	}
+	const courseName = props.course.data?.name
+	if (!courseName) return
+	capture('buy_course_clicked', { course: courseName })
+	window.location.href = `/api/method/taar_lms.api.ir_a_checkout_curso?curso=${encodeURIComponent(
+		courseName
+	)}`
+}
+
 const priceLabel = computed<string>(() => {
+	if (ventaIndividual.value && accessInfo.data?.price_display) {
+		return accessInfo.data.price_display
+	}
+	if (incluidoEnMembresia.value) return __('Included in the membership')
+	if (protectedCourse.value) return ''
 	if (props.course.data?.paid_course) return props.course.data?.price || ''
 	return __('Free')
 })

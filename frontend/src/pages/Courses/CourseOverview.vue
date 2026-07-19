@@ -150,8 +150,9 @@
 
 <script setup lang="ts">
 import { sanitizeRichHTML } from '@/utils/sanitizeRichHTML'
-import { computed, inject, watch } from 'vue'
-import { createResource, Badge } from 'frappe-ui'
+import { computed, inject, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { createResource, Badge, toast } from 'frappe-ui'
 import { formatAmount, formatRating } from '@/utils/'
 import type { SessionUser } from '@/types/api'
 import CourseCardOverlay from '@/components/CourseCardOverlay.vue'
@@ -169,6 +170,18 @@ const props = defineProps<{
 }>()
 
 const user = inject<SessionUser>('$user')
+const route = useRoute()
+
+// Al volver de Stripe tras comprar el curso, el acceso lo activa el webhook
+// (tarda unos segundos): avisar y recargar para reflejar la inscripción.
+onMounted(() => {
+	if (route.query.compra === 'exitosa') {
+		toast.success(
+			__('Purchase successful! Your access will be ready in a few seconds.')
+		)
+		setTimeout(() => props.course.reload(), 4000)
+	}
+})
 
 const isCourseInstructor = computed<boolean>(() =>
 	(props.course.data?.instructors || []).some(

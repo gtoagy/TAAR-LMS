@@ -89,10 +89,45 @@
 					v-else
 					class="rounded-lg border border-outline-gray-2 bg-surface-base p-8"
 				>
+					<div
+						class="mb-6 grid grid-cols-2 gap-1 rounded-lg bg-surface-gray-2 p-1"
+					>
+						<button
+							class="rounded-md px-3 py-2 text-base font-medium transition"
+							:class="
+								plan === 'mensual'
+									? 'bg-surface-base text-ink-gray-9 shadow-sm'
+									: 'text-ink-gray-5 hover:text-ink-gray-7'
+							"
+							@click="plan = 'mensual'"
+						>
+							{{ __('Monthly') }}
+						</button>
+						<button
+							class="rounded-md px-3 py-2 text-base font-medium transition"
+							:class="
+								plan === 'anual'
+									? 'bg-surface-base text-ink-gray-9 shadow-sm'
+									: 'text-ink-gray-5 hover:text-ink-gray-7'
+							"
+							@click="plan = 'anual'"
+						>
+							{{ __('Annual') }}
+							<span
+								class="ms-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
+							>
+								{{ __('2 months free') }}
+							</span>
+						</button>
+					</div>
 					<div class="text-4xl font-bold text-ink-gray-9">
-						{{ membership.data.price_display }}
+						{{
+							plan === 'anual'
+								? membership.data.price_display_anual
+								: membership.data.price_display
+						}}
 						<span class="text-base font-normal text-ink-gray-5">
-							{{ __('/ month') }}
+							{{ plan === 'anual' ? __('/ year') : __('/ month') }}
 						</span>
 					</div>
 					<div class="my-6 space-y-2 text-start text-base text-ink-gray-8">
@@ -112,9 +147,12 @@
 					<Button variant="solid" size="md" class="w-full" @click="irACheckout()">
 						{{ __('Become a member') }}
 					</Button>
+					<p class="text-sm text-ink-gray-5 mt-4">
+						{{ __('Prices are shown in your local currency at checkout.') }}
+					</p>
 					<p
 						v-if="membership.data.status === 'Cancelada'"
-						class="text-sm text-ink-gray-5 mt-4"
+						class="text-sm text-ink-gray-5 mt-2"
 					>
 						{{
 							__(
@@ -135,11 +173,13 @@ import {
 	createResource,
 	LoadingIndicator,
 } from 'frappe-ui'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Check, Crown } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
 
 const { user } = sessionStore()
+
+const plan = ref('mensual')
 
 const membership = createResource({
 	url: 'taar_lms.api.get_my_membership',
@@ -148,7 +188,7 @@ const membership = createResource({
 })
 
 const irACheckout = () => {
-	window.location.href = '/api/method/taar_lms.api.ir_a_checkout'
+	window.location.href = `/api/method/taar_lms.api.ir_a_checkout?plan=${plan.value}`
 }
 
 const irAPortal = () => {
