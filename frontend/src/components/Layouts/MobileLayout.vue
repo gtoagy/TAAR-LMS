@@ -1,7 +1,10 @@
 <template>
-	<div class="relative flex h-screen flex-col">
+	<div
+		class="relative flex h-screen-dvh flex-col pt-[env(safe-area-inset-top)]"
+	>
+		<!-- pb debe superar la altura del menú inferior fijo (~48px + safe area) -->
 		<div
-			class="flex flex-1 flex-col overflow-y-auto pb-10"
+			class="flex flex-1 flex-col overflow-y-auto pb-20 standalone:pb-24"
 			id="scrollContainer"
 		>
 			<slot />
@@ -31,7 +34,7 @@
 			<!-- Fixed menu -->
 			<div
 				v-if="sidebarSettings.data"
-				class="standalone:pb-4 fixed bottom-0 start-0 z-10 flex w-full items-center justify-around border-t border-outline-gray-2 bg-surface-base"
+				class="standalone:pb-[max(1rem,env(safe-area-inset-bottom))] fixed bottom-0 start-0 z-10 flex w-full items-center justify-around border-t border-outline-gray-2 bg-surface-base"
 			>
 				<button
 					v-for="tab in sidebarLinks"
