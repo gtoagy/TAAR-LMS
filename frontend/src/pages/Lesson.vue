@@ -20,7 +20,7 @@
 			:class="
 				embedded
 					? 'grid grid-cols-1 h-full'
-					: 'grid md:grid-cols-[70%,30%] h-[94vh]'
+					: 'grid grid-cols-1 md:grid-cols-[70%,30%] md:h-[94vh]'
 			"
 		>
 			<div v-if="lesson.data.no_preview" class="border-e">
@@ -286,7 +286,8 @@
 					</div>
 				</div>
 			</div>
-			<div v-if="!embedded" class="sticky top-10 h-[94vh]">
+			<!-- En móvil el temario fluye con su contenido; en md+ es columna fija -->
+			<div v-if="!embedded" class="md:sticky md:top-10 md:h-[94vh]">
 				<StudentLessonSidebar
 					:courseName="courseName"
 					:courseTitle="lesson.data.course_title"
