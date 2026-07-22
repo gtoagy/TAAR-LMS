@@ -10197,3 +10197,15 @@ msgstr "El precio se muestra en tu moneda local al pagar."
 
 msgid "Purchase successful! Your access will be ready in a few seconds."
 msgstr "¡Compra exitosa! Tu acceso estará listo en unos segundos."
+
+msgid "Welcome to TanArtistic!"
+msgstr "¡Bienvenid@ a TanArtistic!"
+
+msgid "Your payment was successful. Your access to all courses will be ready in a few seconds."
+msgstr "¡Tu pago fue exitoso! Tu acceso a todos los cursos estará listo en unos segundos."
+
+msgid "We created your account with your payment email. Check your inbox to set your password."
+msgstr "Creamos tu cuenta con el email de tu pago. Revisa tu correo para establecer tu contraseña."
+
+msgid "Explore the courses"
+msgstr "Explorar los cursos"

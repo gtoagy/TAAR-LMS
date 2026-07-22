@@ -272,13 +272,8 @@ const protectedCourse = computed<boolean>(
 )
 
 function comprarCurso() {
-	if (!user.data) {
-		toast.warning(__('You need to login first to enroll for this course'))
-		setTimeout(() => {
-			window.location.href = `/login?redirect-to=${window.location.pathname}`
-		}, 500)
-		return
-	}
+	// Los invitados también pueden comprar: pagan en Stripe y la cuenta
+	// se crea sola con el email del pago.
 	const courseName = props.course.data?.name
 	if (!courseName) return
 	capture('buy_course_clicked', { course: courseName })
