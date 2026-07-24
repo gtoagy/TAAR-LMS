@@ -1,6 +1,11 @@
 <template>
 	<SkeletonLoader v-if="!course.data" variant="course-page" />
-	<div v-else class="p-5">
+	<BienvenidaPago
+		v-model="showBienvenida"
+		:sessionId="bienvenidaSessionId"
+		tipo="curso"
+	/>
+	<div v-if="course.data" class="p-5">
 		<div
 			class="flex flex-col md:flex-row items-start justify-between w-full gap-x-8 gap-y-8"
 		>
@@ -150,9 +155,10 @@
 
 <script setup lang="ts">
 import { sanitizeRichHTML } from '@/utils/sanitizeRichHTML'
-import { computed, inject, onMounted, watch } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { createResource, Badge, toast } from 'frappe-ui'
+import BienvenidaPago from '@/components/BienvenidaPago.vue'
 import { formatAmount, formatRating } from '@/utils/'
 import type { SessionUser } from '@/types/api'
 import CourseCardOverlay from '@/components/CourseCardOverlay.vue'
@@ -172,14 +178,23 @@ const props = defineProps<{
 const user = inject<SessionUser>('$user')
 const route = useRoute()
 
-// Al volver de Stripe tras comprar el curso, el acceso lo activa el webhook
-// (tarda unos segundos): avisar y recargar para reflejar la inscripción.
+const showBienvenida = ref(false)
+const bienvenidaSessionId = ref<string | null>(null)
+
+// Al volver de Stripe tras comprar el curso: si la cuenta nació con el pago,
+// la ventana de bienvenida deja crear la contraseña ahí mismo; si ya hay
+// sesión, basta el aviso (el webhook activa el acceso en segundos).
 onMounted(() => {
 	if (route.query.compra === 'exitosa') {
-		toast.success(
-			__('Purchase successful! Your access will be ready in a few seconds.')
-		)
-		setTimeout(() => props.course.reload(), 4000)
+		if (!user?.data && route.query.session_id) {
+			bienvenidaSessionId.value = String(route.query.session_id)
+			showBienvenida.value = true
+		} else {
+			toast.success(
+				__('Purchase successful! Your access will be ready in a few seconds.')
+			)
+			setTimeout(() => props.course.reload(), 4000)
+		}
 	}
 })
 

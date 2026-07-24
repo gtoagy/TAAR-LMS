@@ -10209,3 +10209,33 @@ msgstr "Creamos tu cuenta con el email de tu pago. Revisa tu correo para estable
 
 msgid "Explore the courses"
 msgstr "Explorar los cursos"
+
+msgid "Confirm password"
+msgstr "Confirma tu contraseña"
+
+msgid "Log in"
+msgstr "Iniciar sesión"
+
+msgid "Your purchase is linked to {0}."
+msgstr "Tu compra quedó vinculada a {0}."
+
+msgid "Create your password to access your courses."
+msgstr "Crea tu contraseña para entrar a tus cursos."
+
+msgid "Create my password and start"
+msgstr "Crear mi contraseña y entrar"
+
+msgid "Passwords do not match."
+msgstr "Las contraseñas no coinciden."
+
+msgid "The password must have at least 8 characters."
+msgstr "La contraseña debe tener al menos 8 caracteres."
+
+msgid "Your account is ready!"
+msgstr "¡Tu cuenta está lista!"
+
+msgid "At least 8 characters"
+msgstr "Mínimo 8 caracteres"
+
+msgid "This account already has access. Log in to continue."
+msgstr "Esta cuenta ya tiene acceso. Inicia sesión para continuar."

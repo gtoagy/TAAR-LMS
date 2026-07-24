@@ -30,38 +30,13 @@
 		</template>
 	</LayoutHeader>
 
-	<!-- Bienvenida tras pagar la membresía en Stripe -->
-	<Dialog
+	<!-- Bienvenida tras pagar la membresía en Stripe (con creación de
+	     contraseña si la cuenta nació con el pago) -->
+	<BienvenidaPago
 		v-model="showBienvenida"
-		:options="{ title: __('Welcome to TanArtistic!'), size: 'md' }"
-	>
-		<template #body-content>
-			<div class="space-y-3 text-base text-ink-gray-8">
-				<p>
-					{{
-						__(
-							'Your payment was successful. Your access to all courses will be ready in a few seconds.'
-						)
-					}}
-				</p>
-				<p v-if="!user?.data">
-					{{
-						__(
-							'We created your account with your payment email. Check your inbox to set your password.'
-						)
-					}}
-				</p>
-			</div>
-			<Button
-				variant="solid"
-				size="md"
-				class="w-full mt-6"
-				@click="showBienvenida = false"
-			>
-				{{ __('Explore the courses') }}
-			</Button>
-		</template>
-	</Dialog>
+		:sessionId="bienvenidaSessionId"
+		tipo="membresia"
+	/>
 	<!-- En móvil la página crece con su contenido; solo en sm+ llena la altura -->
 	<div class="flex flex-col p-5 pb-10 sm:min-h-0 sm:flex-1">
 		<div
@@ -151,13 +126,13 @@ import {
 	Button,
 	call,
 	createListResource,
-	Dialog,
 	Dropdown,
 	FormControl,
 	TabButtons,
 	Tooltip,
 	usePageMeta,
 } from 'frappe-ui'
+import BienvenidaPago from '@/components/BienvenidaPago.vue'
 import ClearableCombobox from '@/components/Controls/ClearableCombobox.vue'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { sessionStore } from '@/stores/session'
@@ -185,16 +160,18 @@ const router = useRouter()
 const showCourseModal = ref(false)
 const showCourseImportModal = ref(false)
 const showBienvenida = ref(false)
+const bienvenidaSessionId = ref(null)
 
 onMounted(() => {
 	setFiltersFromQuery()
 	updateCourses()
 	getCourseCount()
 
-	// Al volver de Stripe con la membresía recién pagada: darle la bienvenida.
-	// El acceso lo activa el webhook (tarda unos segundos).
+	// Al volver de Stripe con la membresía recién pagada: darle la bienvenida
+	// y, si la cuenta nació con el pago, dejarle crear su contraseña ahí mismo.
 	const queries = new URLSearchParams(location.search)
 	if (queries.get('membresia') === 'activada') {
+		bienvenidaSessionId.value = queries.get('session_id') || null
 		showBienvenida.value = true
 		router.replace({ query: {} })
 	}
