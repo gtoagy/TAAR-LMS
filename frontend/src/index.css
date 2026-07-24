@@ -3,14 +3,41 @@
 @import './styles/blockEditor.css';
 
 /*
- * This frappe-ui build resolves --surface-sidebar to transparent white
- * (#ffffff00) in dark mode, so the sidebar (and other bg-surface-sidebar users)
- * lose their surface and blend into the base. Newer apps (CRM) use a dedicated
- * --surface-sidebar token, which doesn't exist here — so point the sidebar
- * token at gray-1 instead: a real distinct panel that mirrors its light value.
+ * ── Identidad TanArtistic ────────────────────────────────────────────
+ * Paleta tomada de tanartistic.com (variables del sitio Webflow):
+ * tinta #07181f · blanco cálido #f2f2ef · morado primario #807fec
+ * (el mismo primario que usaba la escuela en Disco).
+ */
+:root {
+	--taar-primary: #807fec;
+	--taar-primary-hover: #6f6ee5;
+	--taar-primary-active: #605fd8;
+	/* Panel lateral en el blanco cálido de la marca */
+	--surface-sidebar: #f2f2ef;
+}
+
+/*
+ * Botones sólidos en el morado de marca. Este build de frappe-ui pinta el
+ * variant solid con bg-surface-gray-10 (+ gray-9/gray-8 en hover/active),
+ * así que basta redefinir esos tokens SOLO dentro del propio <button> —
+ * tooltips y demás superficies gray-10 (que son <div>) quedan intactas.
+ */
+button.bg-surface-gray-10 {
+	--surface-gray-10: var(--taar-primary);
+	--surface-gray-9: var(--taar-primary-hover);
+	--surface-gray-8: var(--taar-primary-active);
+	color: #ffffff;
+}
+
+/*
+ * Modo oscuro en la tinta azulada de la marca (#07181f) con el panel
+ * lateral en su elevación (#15252b — --color--dark-elevation del sitio).
+ * Esto también reemplaza el fix previo del sidebar transparente: este
+ * frappe-ui resolvía --surface-sidebar a #ffffff00 en dark.
  */
 [data-theme='dark'] {
-	--surface-sidebar: var(--surface-gray-1);
+	--surface-base: #07181f;
+	--surface-sidebar: #15252b;
 }
 
 /*
