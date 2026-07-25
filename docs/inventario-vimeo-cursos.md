@@ -23,7 +23,7 @@ Curso completo en la plataforma: 8 secciones / 28 lecciones. ✔
 | El Angel Caído-07 Pelo | 1212757822 | 28 min |
 | Angel caido-outro | 1212755588 | 1 min |
 
-⚠ Posible faltante: "06 brazo parte 2" (existe "parte 1" pero no la 2 — confirmar con Disco).
+Confirmado por el usuario (25-jul): el brazo es un solo video; no falta ninguno.
 
 ### La Noche Estrellada — carpeta 30016841 (10 videos)
 | Video | ID | Duración |
