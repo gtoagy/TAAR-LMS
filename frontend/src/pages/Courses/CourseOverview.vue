@@ -42,13 +42,10 @@
 							</div>
 							<span class="lucide-dot size-5 text-ink-gray-7" />
 						</template>
-						<template v-if="course.data.enrollments">
+						<template v-if="enrolledLabel">
 							<div class="flex items-center gap-1.5">
 								<span class="lucide-users-round size-4" />
-								<span
-									>{{ formatAmount(course.data.enrollments) }}
-									{{ __('Students') }}</span
-								>
+								<span>{{ enrolledLabel }} {{ __('Students') }}</span>
 							</div>
 							<span class="lucide-dot size-5 text-ink-gray-7" />
 						</template>
@@ -159,7 +156,7 @@ import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { createResource, Badge, toast } from 'frappe-ui'
 import BienvenidaPago from '@/components/BienvenidaPago.vue'
-import { formatAmount, formatRating } from '@/utils/'
+import { formatAmount, formatEnrollments, formatRating } from '@/utils/'
 import type { SessionUser } from '@/types/api'
 import CourseCardOverlay from '@/components/CourseCardOverlay.vue'
 import CourseOutline from '@/components/CourseOutline.vue'
@@ -197,6 +194,10 @@ onMounted(() => {
 		}
 	}
 })
+
+const enrolledLabel = computed<string>(() =>
+	formatEnrollments(props.course.data?.enrollments)
+)
 
 const isCourseInstructor = computed<boolean>(() =>
 	(props.course.data?.instructors || []).some(

@@ -166,6 +166,7 @@
 import { computed, inject, watch } from 'vue'
 import { Badge, Button, call, createResource, toast } from 'frappe-ui'
 import { useRouter } from 'vue-router'
+import { formatEnrollments } from '@/utils'
 import CertificationLinks from '@/components/CertificationLinks.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
 import { useTelemetry } from 'frappe-ui/frappe'
@@ -292,13 +293,9 @@ const priceLabel = computed<string>(() => {
 	return __('Free')
 })
 
-const enrolledLabel = computed<string>(() => {
-	const n = props.course.data?.enrollments ?? 0
-	if (!n) return ''
-	if (n < 50) return String(n)
-	const tier = n < 1000 ? 50 : 100
-	return `${Math.floor(n / tier) * tier}+`
-})
+const enrolledLabel = computed<string>(() =>
+	formatEnrollments(props.course.data?.enrollments)
+)
 
 const hasCourseStats = computed<boolean>(() =>
 	Boolean(

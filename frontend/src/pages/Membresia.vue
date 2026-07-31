@@ -22,7 +22,7 @@
 					{{ __('Membership') }}
 				</h1>
 				<p class="text-base text-ink-gray-7 mb-8">
-					{{ __('Unlimited access to all courses on the platform.') }}
+					{{ __('Unlimited access to the membership courses.') }}
 				</p>
 
 				<!-- Miembro activo o en mora -->
@@ -133,7 +133,7 @@
 					<div class="my-6 space-y-2 text-start text-base text-ink-gray-8">
 						<div class="flex items-center gap-2">
 							<Check class="size-4 text-green-600" />
-							{{ __('All courses included') }}
+							{{ __('All membership courses included') }}
 						</div>
 						<div class="flex items-center gap-2">
 							<Check class="size-4 text-green-600" />
@@ -148,6 +148,9 @@
 						{{ __('Become a member') }}
 					</Button>
 					<p class="text-sm text-ink-gray-5 mt-4">
+						{{ __('Some master courses are sold separately.') }}
+					</p>
+					<p class="text-sm text-ink-gray-5 mt-2">
 						{{ __('Prices are shown in your local currency at checkout.') }}
 					</p>
 					<p

@@ -71,7 +71,10 @@
 					class="w-full lg:w-40"
 				/>
 
-				<Tooltip :text="__('Only show courses that offer a certificate')">
+				<Tooltip
+					v-if="settings.data?.certifications"
+					:text="__('Only show courses that offer a certificate')"
+				>
 					<FormControl
 						type="checkbox"
 						v-model="certification"
@@ -136,6 +139,7 @@ import BienvenidaPago from '@/components/BienvenidaPago.vue'
 import ClearableCombobox from '@/components/Controls/ClearableCombobox.vue'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { sessionStore } from '@/stores/session'
+import { useSettings } from '@/stores/settings'
 import { canCreateCourse } from '@/utils'
 import CourseCard from '@/components/CourseCard.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
@@ -155,6 +159,7 @@ const certification = ref(false)
 const filters = ref({})
 const currentTab = ref('live')
 const { brand } = sessionStore()
+const { settings } = useSettings()
 const courseCount = ref(0)
 const router = useRouter()
 const showCourseModal = ref(false)

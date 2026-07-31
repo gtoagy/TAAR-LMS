@@ -83,6 +83,15 @@ export function formatRating(value) {
 	return (Math.round(n * 10) / 10).toString()
 }
 
+export function formatEnrollments(count) {
+	// Un puñado de inscritos resta más de lo que suma: solo mostramos la cifra
+	// cuando ya es prueba social, y redondeada hacia abajo.
+	const n = Number(count) || 0
+	if (n < 50) return ''
+	const tier = n < 1000 ? 50 : 100
+	return `${Math.floor(n / tier) * tier}+`
+}
+
 export function convertToTitleCase(str) {
 	if (!str) {
 		return ''

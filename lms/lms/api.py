@@ -1457,6 +1457,7 @@ def get_lms_settings():
 		"enforce_video_completion",
 		"enforce_quiz_completion",
 		"enforce_assignment_completion",
+		"certifications",
 	]
 
 	settings = frappe._dict()

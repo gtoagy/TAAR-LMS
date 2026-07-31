@@ -6,16 +6,17 @@
 					{{ __('Hey') }}, {{ user.data?.full_name }} 👋
 				</div>
 				<div>
-					<div
-						v-if="!isAdmin"
-						@click="showStreakModal = true"
-						class="bg-surface-amber-2 px-2 py-1 rounded-md cursor-pointer"
-					>
-						<span> 🔥 </span>
-						<span class="text-ink-gray-9">
-							{{ streakInfo.data?.current_streak }}
-						</span>
-					</div>
+					<Tooltip v-if="!isAdmin" :text="__('Days in a row learning')">
+						<div
+							@click="showStreakModal = true"
+							class="bg-surface-amber-2 px-2 py-1 rounded-md cursor-pointer"
+						>
+							<span> 🔥 </span>
+							<span class="text-ink-gray-9">
+								{{ streakInfo.data?.current_streak }}
+							</span>
+						</div>
+					</Tooltip>
 				</div>
 			</div>
 
@@ -35,16 +36,19 @@
 			:liveClasses="adminLiveClasses"
 			:evals="adminEvals"
 		/>
-		<StudentHome
-			v-else-if="currentTab === 'student'"
-			:myLiveClasses="myLiveClasses"
-		/>
+		<StudentHome v-else-if="currentTab === 'student'" />
 	</div>
 	<Streak v-model="showStreakModal" :streakInfo="streakInfo" />
 </template>
 <script setup lang="ts">
 import { computed, inject, onMounted, ref } from 'vue'
-import { call, createResource, LoadingIndicator, usePageMeta } from 'frappe-ui'
+import {
+	call,
+	createResource,
+	LoadingIndicator,
+	Tooltip,
+	usePageMeta,
+} from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { useRouter } from 'vue-router'
 import StudentHome from '@/pages/Home/StudentHome.vue'
@@ -54,22 +58,8 @@ import Streak from '@/pages/Home/Streak.vue'
 const user = inject<any>('$user')
 const { brand } = sessionStore()
 const router = useRouter()
-const evalCount = ref(0)
 const currentTab = ref<'student' | 'instructor'>('student')
 const showStreakModal = ref(false)
-
-const fetchEvalCount = () => {
-	call('frappe.client.get_count', {
-		doctype: 'LMS Certificate Request',
-		filters: {
-			member: user?.data?.name,
-			status: 'Upcoming',
-			date: ['>=', inject<any>('$dayjs')().format('YYYY-MM-DD')],
-		},
-	}).then((data: any) => {
-		evalCount.value = data
-	})
-}
 
 const isAdmin = computed(() => {
 	return (
@@ -80,13 +70,12 @@ const isAdmin = computed(() => {
 })
 
 const isHomeLoading = computed(() => {
-	if (isAdmin.value) {
-		return (
-			(adminLiveClasses.loading && !adminLiveClasses.data) ||
-			(adminEvals.loading && !adminEvals.data)
-		)
-	}
-	return myLiveClasses.loading && !myLiveClasses.data
+	// El alumno no espera nada aquí: sus cursos los carga StudentHome.
+	if (!isAdmin.value) return false
+	return (
+		(adminLiveClasses.loading && !adminLiveClasses.data) ||
+		(adminEvals.loading && !adminEvals.data)
+	)
 })
 
 const isPersonaCaptured = async () => {
@@ -119,13 +108,7 @@ onMounted(() => {
 		currentTab.value = 'instructor'
 	} else {
 		currentTab.value = 'student'
-		fetchEvalCount()
 	}
-})
-
-const myLiveClasses = createResource({
-	url: 'lms.lms.api.get_my_live_classes',
-	auto: !isAdmin.value ? true : false,
 })
 
 const adminLiveClasses = createResource({
@@ -168,30 +151,8 @@ const subtitle = computed(() => {
 			)
 		}
 		return __('Manage your courses and batches at a glance')
-	} else {
-		let liveClassSuffix =
-			myLiveClasses.data?.length > 1 ? __('live classes') : __('live class')
-		let evalSuffix = evalCount.value > 1 ? __('evaluations') : __('evaluation')
-		if (myLiveClasses.data?.length > 0 && evalCount.value > 0) {
-			return __('You have {0} upcoming {1} and {2} {3} scheduled.').format(
-				myLiveClasses.data.length,
-				liveClassSuffix,
-				evalCount.value,
-				evalSuffix
-			)
-		} else if (myLiveClasses.data?.length > 0) {
-			return __('You have {0} upcoming {1}.').format(
-				myLiveClasses.data.length,
-				liveClassSuffix
-			)
-		} else if (evalCount.value > 0) {
-			return __('You have {0} {1} scheduled.').format(
-				evalCount.value,
-				evalSuffix
-			)
-		}
-		return __('Resume where you left off')
 	}
+	return __('Resume where you left off')
 })
 
 usePageMeta(() => {

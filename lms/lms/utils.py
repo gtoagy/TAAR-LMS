@@ -960,6 +960,11 @@ def get_course_fields():
 		"lessons",
 		"enrollments",
 		"rating",
+		# TanArtistic: control de acceso propio, para que la tarjeta del catálogo
+		# distinga los cursos que se pagan aparte de los que cubre la membresía.
+		"taar_incluido_en_membresia",
+		"taar_venta_individual",
+		"taar_precio_display",
 	]
 
 

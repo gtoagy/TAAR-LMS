@@ -58,16 +58,16 @@
 					</Tooltip>
 				</div>
 
-				<div v-if="course.enrollments">
+				<div v-if="enrolledLabel">
 					<Tooltip :text="__('Enrolled Students')">
 						<span class="flex items-center">
 							<span class="lucide-users size-4 me-1" />
-							{{ formatAmount(course.enrollments) }}
+							{{ enrolledLabel }}
 						</span>
 					</Tooltip>
 				</div>
 
-				<div v-if="course.rating">
+				<div v-if="Number(course.rating) > 0">
 					<Tooltip :text="__('Average Rating')">
 						<span class="flex items-center">
 							<LucideStar
@@ -119,8 +119,12 @@
 				</div>
 
 				<div class="flex items-center gap-x-2">
-					<div v-if="course.paid_course" class="font-semibold">
-						{{ course.price }}
+					<div
+						v-if="priceLabel"
+						class="whitespace-nowrap font-semibold"
+						:class="ventaIndividual ? 'text-base' : 'text-xs text-ink-gray-6'"
+					>
+						{{ priceLabel }}
 					</div>
 
 					<Tooltip
@@ -137,7 +141,7 @@
 <script setup>
 import { sessionStore } from '@/stores/session'
 import { Tooltip } from 'frappe-ui'
-import { formatAmount, formatRating } from '@/utils'
+import { formatEnrollments, formatRating } from '@/utils'
 import { theme } from '@/utils/theme'
 import { computed, watch } from 'vue'
 import CourseInstructors from '@/components/CourseInstructors.vue'
@@ -152,6 +156,24 @@ const props = defineProps({
 		type: Object,
 		default: null,
 	},
+})
+
+const enrolledLabel = computed(() => formatEnrollments(props.course.enrollments))
+
+const ventaIndividual = computed(
+	() =>
+		Boolean(props.course.taar_venta_individual) &&
+		Boolean(props.course.taar_precio_display)
+)
+
+// Solo los cursos que se pagan aparte llevan precio; el resto se distingue con
+// una nota discreta de que la membresía ya los cubre.
+const priceLabel = computed(() => {
+	if (ventaIndividual.value) return props.course.taar_precio_display
+	if (props.course.taar_incluido_en_membresia)
+		return __('Included in the membership')
+	if (props.course.paid_course) return props.course.price
+	return ''
 })
 
 const gradientColor = computed(() => {

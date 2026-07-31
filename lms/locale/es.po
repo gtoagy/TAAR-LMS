@@ -10037,8 +10037,14 @@ msgstr "{} publicados"
 msgid "Membership"
 msgstr "Membresía"
 
-msgid "Unlimited access to all courses on the platform."
-msgstr "Acceso ilimitado a todos los cursos de la plataforma."
+msgid "Unlimited access to the membership courses."
+msgstr "Acceso ilimitado a los cursos de la membresía."
+
+msgid "Some master courses are sold separately."
+msgstr "Algunos cursos maestros se venden por separado."
+
+msgid "Days in a row learning"
+msgstr "Días seguidos aprendiendo"
 
 msgid "Your membership is active."
 msgstr "Tu membresía está activa."
@@ -10073,8 +10079,8 @@ msgstr ""
 msgid "/ month"
 msgstr "/ mes"
 
-msgid "All courses included"
-msgstr "Todos los cursos incluidos"
+msgid "All membership courses included"
+msgstr "Todos los cursos de la membresía incluidos"
 
 msgid "New courses at no extra cost"
 msgstr "Nuevos cursos sin costo extra"
