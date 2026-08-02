@@ -1,4 +1,3 @@
-version: "3.7"
 name: lms
 services:
   mariadb:
@@ -24,9 +23,15 @@ services:
     working_dir: /home/frappe
     volumes:
       - .:/workspace
+      # Sin esto el bench vive solo en la capa del contenedor: al recrearlo
+      # (up -d tras un down, cambios aquí, update de Docker Desktop) se pierde,
+      # init.sh lo reconstruye desde cero y crea un sitio NUEVO con otra base,
+      # dejando la anterior huérfana en mariadb-data. Pasó el 2026-07-31.
+      - frappe-home:/home/frappe
     ports:
       - 8000:8000
       - 9000:9000
 
 volumes:
   mariadb-data:
+  frappe-home:
