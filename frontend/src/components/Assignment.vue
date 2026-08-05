@@ -75,7 +75,9 @@
 					</div>
 					<div class="text-ink-gray-5 text-sm mt-1 mb-4">
 						{{
-							__('You can only upload {0} files').format(assignment.data.type)
+							__('Accepted formats: {0}').format(
+								__(assignment.data.type)
+							)
 						}}
 					</div>
 					<FileUploader
@@ -395,6 +397,9 @@ const getType = () => {
 	const type = assignment.data?.type
 	if (type == 'Image') {
 		return ['image/*']
+	} else if (type == 'Image or PDF') {
+		// Para trabajos en papel: unos lo fotografían y otros lo escanean.
+		return ['image/*', '.pdf']
 	} else if (type == 'Document') {
 		return [
 			'.doc',
@@ -456,6 +461,8 @@ const statusTheme = computed(() => {
 })
 
 const showUploader = () => {
-	return ['PDF', 'Image', 'Document'].includes(assignment.data?.type)
+	return ['PDF', 'Image', 'Image or PDF', 'Document'].includes(
+		assignment.data?.type
+	)
 }
 </script>

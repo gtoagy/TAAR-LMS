@@ -711,6 +711,12 @@ export const validateFile = async (
 
 	if (fileType == 'pdf' && extension != 'pdf') {
 		return error(__('Only PDF files are allowed.'))
+	} else if (
+		fileType == 'image or pdf' &&
+		extension != 'pdf' &&
+		!file.type.startsWith('image/')
+	) {
+		return error(__('Only image or PDF files are allowed.'))
 	} else if (fileType == 'document' && !['doc', 'docx'].includes(extension)) {
 		return error(
 			__('Only document file of type .doc or .docx are allowed.')
