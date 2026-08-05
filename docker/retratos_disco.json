@@ -1,0 +1,882 @@
+{
+ "0": {
+  "tipo": "CLASE",
+  "titulo": "Bienvenido al mundo de los retratos",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "1": {
+  "tipo": "CLASE",
+  "titulo": "Lista de materiales",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>✨ ¡Prepara tus materiales! </b>",
+     "level": 2
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Dependiendo de la sección en la que te encuentres serán los materiales que utilizaremos. ¡No te preocupes, todo es muy fácil de conseguir!"
+    }
+   },
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>✏ Ejercicios de bocetaje:</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "list",
+    "data": {
+     "style": "unordered",
+     "items": [
+      "Lápices de tu preferencia, yo estaré usando un 3b y un F",
+      "Goma",
+      "Sacapuntas",
+      "Papel o un block de dibujo",
+      "Ipad/Tableta (Opcional)"
+     ]
+    }
+   },
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>🎨 Ejercicios de pintura:</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "list",
+    "data": {
+     "style": "unordered",
+     "items": [
+      "Pincel de punta redonda, recomiendo del #4, #10 y #16.",
+      "Pincel plano mediano",
+      "Pinturas acrílicas: Rojo, amarillo, azul cobalto, azul ultramar, naranja, sombra café, blanco, negro.",
+      "Gesso",
+      "Barniz mate para pintura acrílica",
+      "Godete",
+      "Trapito o servilleta",
+      "Agua"
+     ]
+    }
+   }
+  ]
+ },
+ "2": {
+  "tipo": "TAREA",
+  "titulo": "¡Completa tu perfil!",
+  "archivos": [],
+  "bloques": []
+ },
+ "3": {
+  "tipo": "CLASE",
+  "titulo": "Rostro de frente",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "4": {
+  "tipo": "CLASE",
+  "titulo": "Rostro en 3/4 usando el método de Loomis",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "5": {
+  "tipo": "CLASE",
+  "titulo": "Rostro de perfil",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "6": {
+  "tipo": "CLASE",
+  "titulo": "Descarga las imágenes de referencia",
+  "archivos": [
+   "Ojos_de_referencia_8d0bd202-b18a-494a-a02e-a653591dda6a.pdf"
+  ],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "<b>¡Haz click en el archivo para descargarlo! 👆🏼</b>"
+    }
+   }
+  ]
+ },
+ "7": {
+  "tipo": "CLASE",
+  "titulo": "El ojo a profundidad",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>Sabemos que los ojos son SÚPER interesantes y llenos de detalle 🤩</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Así que en este video me quiero enfocar y tomar el tiempo en repasar cada uno de ellos. Es importante conocer sobre la luz que tienen, la forma de las pestañas, la proporción, la profundidad y detalle del iris y mil cositas mas. Así que hagamos juntos este ejercicio para conocerlo mejor y no se preocupen que iremos paso a paso. :)"
+    }
+   },
+   {
+    "type": "imagen_pendiente",
+    "data": {
+     "archivo": "Archivo_005_8228c666-bf15-401c-9e9f-2015212e9ebb.jpeg"
+    }
+   }
+  ]
+ },
+ "8": {
+  "tipo": "CLASE",
+  "titulo": "Diferentes tipos de ojos",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>¡Crea cualquier tipo de ojo!</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Ya sabemos como todos los elemento del ojo y como hacerlo desde 0... ¡Ahora es momento de modificar esa forma base que hicimos para poder recrear cualquier tipo de ojo! Aquí la clave será observar a detalle el ojo que queramos retratar para capturar toda la expresión y vida que tienen."
+    }
+   },
+   {
+    "type": "imagen_pendiente",
+    "data": {
+     "archivo": "Archivo_004_84095da1-a161-4bbe-a05f-c0b5cc47898a.jpeg"
+    }
+   }
+  ]
+ },
+ "9": {
+  "tipo": "CLASE",
+  "titulo": "Ojos en 3/4 y perfil",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "10": {
+  "tipo": "CLASE",
+  "titulo": "Pestañas y cejas",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "11": {
+  "tipo": "CLASE",
+  "titulo": "La boca a detalle",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>¡Arrancamos con las bocas!&nbsp;</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Y en esta primera que haremos, si me quiero detener un poco en el detalle y técnica. Creando una boca realista con volumen en los labios para que se vean carnosos y con la textura tan característica que tienen para que se vean súper naturales y realistas.&nbsp;"
+    }
+   },
+   {
+    "type": "imagen_pendiente",
+    "data": {
+     "archivo": "Archivo_003_96fc38a4-018e-4bc8-831d-b1139a4260f5.jpeg"
+    }
+   }
+  ]
+ },
+ "12": {
+  "tipo": "CLASE",
+  "titulo": "Sonrisa y dientes",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "13": {
+  "tipo": "CLASE",
+  "titulo": "Boca en 3/4",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "14": {
+  "tipo": "CLASE",
+  "titulo": "Mueca",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "15": {
+  "tipo": "CLASE",
+  "titulo": "Boca de perfil",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "16": {
+  "tipo": "CLASE",
+  "titulo": "La nariz simplificada",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "imagen_pendiente",
+    "data": {
+     "archivo": "Archivo_000__3__be0d630e-cbe5-4994-b338-827aa1ea153d.jpeg"
+    }
+   }
+  ]
+ },
+ "17": {
+  "tipo": "CLASE",
+  "titulo": "Las orejas a detalle",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "imagen_pendiente",
+    "data": {
+     "archivo": "Archivo_002_9b01f5d8-37f2-4a5a-8d63-29ea0d6cf6dc.jpeg"
+    }
+   }
+  ]
+ },
+ "18": {
+  "tipo": "CLASE",
+  "titulo": "Cabello lacio, ondulado y rizado",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "imagen_pendiente",
+    "data": {
+     "archivo": "Archivo_000__1__7b6c8e92-9af2-40d9-a095-94da1e454e80.jpeg"
+    }
+   }
+  ]
+ },
+ "19": {
+  "tipo": "CLASE",
+  "titulo": "¡Juntemos los mechones!",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "20": {
+  "tipo": "EXAMEN",
+  "titulo": "Elementos del rostro",
+  "archivos": [
+   "Examen_de_elementos_d4b3f741-664f-474b-9026-13af78d9c0d4.pdf"
+  ],
+  "bloques": [
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>¡Hora de demostrar lo aprendido! 🧠✏️</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Pon a prueba tus habilidades de bocetaje dibujando los elementos clave del rostro: ojos, nariz, boca y cejas. 👁️👃👄<br><br>"
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Imprime el documento, realiza los ejercicios con calma y, al finalizar, <b>súbelo para que podamos revisarlo y marcar esta lección como completada</b>."
+    }
+   }
+  ]
+ },
+ "21": {
+  "tipo": "EXAMEN",
+  "titulo": "Proporciones del rostro",
+  "archivos": [
+   "Examen_de_proporciones_f082318b-e222-4405-be93-cc51493490cd.pdf"
+  ],
+  "bloques": [
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>¡Momento de aplicar el método Loomis! 🎯🧑‍🎨</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "En este examen pondrás en práctica lo aprendido sobre proporciones y orientación del rostro utilizando el método Loomis.<br>Traza estructuras, posiciona los elementos correctamente y analiza el volumen de la cabeza desde diferentes ángulos 🌀📐"
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Imprime el documento, realiza los ejercicios con atención y, al terminar, <b>súbelo para que podamos revisarlo y completar esta lección</b>."
+    }
+   }
+  ]
+ },
+ "22": {
+  "tipo": "CLASE",
+  "titulo": "¡Descarga la imagen de referencia!",
+  "archivos": [
+   "Jenna_Ortega_Referencia_2d0ebb8f-ad91-4c83-aa74-c3cb3ac7a4a4.pdf"
+  ],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "<b>¡Haz click en el archivo para descargarlo!👆🏼</b>"
+    }
+   }
+  ]
+ },
+ "23": {
+  "tipo": "CLASE",
+  "titulo": "Empecemos bocetando la estructura básica",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "24": {
+  "tipo": "CLASE",
+  "titulo": "Damos forma a los elementos",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "25": {
+  "tipo": "CLASE",
+  "titulo": "Sombras y mirada",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "26": {
+  "tipo": "CLASE",
+  "titulo": "Dale volumen a la nariz",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "27": {
+  "tipo": "CLASE",
+  "titulo": "Textura y forma a la boca",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "28": {
+  "tipo": "CLASE",
+  "titulo": "Movimiento en el cabello",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "29": {
+  "tipo": "CLASE",
+  "titulo": "Toques finales",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "30": {
+  "tipo": "EJERCICIO",
+  "titulo": "¡Sube tu retrato!",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>¡Último paso para completar el módulo!</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Comparte tu retrato final de <b>Jenna Ortega</b> y cierra este proyecto con broche de oro ✨"
+    }
+   }
+  ]
+ },
+ "31": {
+  "tipo": "CLASE",
+  "titulo": "Tonos piel y sus variaciones",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "32": {
+  "tipo": "CLASE",
+  "titulo": "Ejercicio de tonos piel",
+  "archivos": [
+   "Ejercicio_tonos_piel_982a3c37-deba-4753-a79a-af49ed9ae1b3.pdf"
+  ],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "<b>Descarga las imágenes de referencia para los ejercicios. 👆🏼</b>"
+    }
+   }
+  ]
+ },
+ "33": {
+  "tipo": "CLASE",
+  "titulo": "Degradados y volumen",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "34": {
+  "tipo": "CLASE",
+  "titulo": "Técnica para trazos finos",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "35": {
+  "tipo": "CLASE",
+  "titulo": "Introducción al proyecto final",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "36": {
+  "tipo": "CLASE",
+  "titulo": "¡Descarga la imagen de referencia!",
+  "archivos": [
+   "Proyecto_final-foto_de_referencia_35dc8159-1ffd-406f-94ef-e1c982c4e2e6.pdf"
+  ],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "<b>¡Haz click en el archivo para descargarlo! 👆🏼</b>"
+    }
+   }
+  ]
+ },
+ "37": {
+  "tipo": "CLASE",
+  "titulo": "¡Prepara tu lienzo!",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "38": {
+  "tipo": "CLASE",
+  "titulo": "Boceto usando el método de Loomis",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "39": {
+  "tipo": "CLASE",
+  "titulo": "Ubiquemos los elementos del retrato",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "40": {
+  "tipo": "CLASE",
+  "titulo": "Color de fondo",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "41": {
+  "tipo": "CLASE",
+  "titulo": "Creación del tono base",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "42": {
+  "tipo": "CLASE",
+  "titulo": "Primera capa de la cara parte 1",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "43": {
+  "tipo": "CLASE",
+  "titulo": "Primera capa de la cara parte 2",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "44": {
+  "tipo": "CLASE",
+  "titulo": "Primera capa del cuerpo",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "45": {
+  "tipo": "CLASE",
+  "titulo": "Primera capa del cabello",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "46": {
+  "tipo": "CLASE",
+  "titulo": "Tonos sombra de la cara",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "47": {
+  "tipo": "CLASE",
+  "titulo": "Tonos sombra del cuerpo",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "48": {
+  "tipo": "CLASE",
+  "titulo": "Tonos luz generales",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "49": {
+  "tipo": "CLASE",
+  "titulo": "Ojos",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "50": {
+  "tipo": "CLASE",
+  "titulo": "Pestañas y cejas",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "51": {
+  "tipo": "CLASE",
+  "titulo": "Labios",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "52": {
+  "tipo": "CLASE",
+  "titulo": "Cabello",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "53": {
+  "tipo": "CLASE",
+  "titulo": "Toques finales",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "54": {
+  "tipo": "CLASE",
+  "titulo": "¡Felicidades artista!",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Write something or type '/' for commands..."
+    }
+   }
+  ]
+ },
+ "55": {
+  "tipo": "EJERCICIO",
+  "titulo": "¡Lo lograste! Comparte tu resultado final",
+  "archivos": [],
+  "bloques": [
+   {
+    "type": "header",
+    "data": {
+     "text": "<b>¡Felicidades, artista! Has llegado al final del curso 🎉</b>",
+     "level": 3
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Completar este retrato de <b>Zendaya</b> no solo es un logro técnico, ¡es una celebración de tu evolución artística!<br>Cada trazo que hiciste, cada mezcla de color y cada detalle suman a tu crecimiento como artista. Recuerda: <b>la práctica constante es la clave para seguir mejorando</b>. Y hoy diste un paso enorme. 🖌️"
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Ahora es momento de <b>compartir tu resultado final</b>.<br>📸 <b>Sube aquí tu obra</b> para marcar esta lección como completada y cerrar oficialmente el curso."
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "Y no olvides que al finalizar este paso…<br>🎓 <b>¡Tu certificado de completado estará listo!</b>"
+    }
+   },
+   {
+    "type": "paragraph",
+    "data": {
+     "text": "¡Estamos muy orgullosas de ti y no podemos esperar a ver tu versión de Zendaya! 💫"
+    }
+   }
+  ]
+ }
+}

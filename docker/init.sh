@@ -26,7 +26,10 @@ sed -i '/redis/d' ./Procfile
 sed -i '/watch/d' ./Procfile
 
 bench get-app payments
-bench get-app lms
+# Nuestro fork, no frappe/lms: la marca, el onboarding de pago, el selector de
+# plan y los arreglos de móvil viven aquí. Con "bench get-app lms" el entorno
+# local corría upstream y esos cambios solo se veían al desplegar.
+bench get-app --branch develop https://github.com/gtoagy/TAAR-LMS.git
 
 bench new-site lms.localhost \
 --force \

@@ -1,0 +1,154 @@
+{
+ "estructura": [
+  {
+   "modulo": "🪷 Prepárate para el Workshop",
+   "n": 3
+  },
+  {
+   "modulo": "🎨 Pintemos los \"Nenúfares\" de Monet",
+   "n": 2
+  },
+  {
+   "modulo": "🌸 ¡Obra terminada! Muestra tu resultado",
+   "n": 1
+  }
+ ],
+ "lecciones": [
+  {
+   "i": 0,
+   "tipo": "GUIA",
+   "titulo": "¡Descarga la guía!",
+   "bloques": [
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "<b>¡Haz click en el archivo ara descargar la guía paso a paso! 👆🏼</b>"
+     }
+    }
+   ],
+   "archivos": [
+    "https://cdn.disco.co/media/Guia_nenufares_38ad32bc-d692-4d62-9a9c-b32538185bb7.pdf"
+   ],
+   "video": null
+  },
+  {
+   "i": 1,
+   "tipo": "GUIA",
+   "titulo": "Lista de materiales",
+   "bloques": [
+    {
+     "type": "header",
+     "data": {
+      "text": "🌿 <b>Prepárate para pintar los Nenúfares de Monet</b>",
+      "level": 3
+     }
+    },
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "¡Hola, artista! 💖<br>Antes de sumergirnos en esta sesión inspirada en los mágicos nenúfares de Claude Monet, asegúrate de tener tu espacio listo y todos los materiales preparados para fluir sin interrupciones 🧑‍🎨🌊"
+     }
+    },
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "Este proyecto fue parte de una <b>sesión en vivo por Zoom</b>, así que si estás viendo la grabación, puedes tomarte tu tiempo, pausar, repetir y disfrutar el proceso a tu ritmo ✨"
+     }
+    },
+    {
+     "type": "header",
+     "data": {
+      "text": "🎨 <b>Materiales que vas a necesitar:</b>",
+      "level": 3
+     }
+    },
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "✔️ <b>Papel Fabriano de 300g</b> (ideal para resistir capas y agua)<br>✔️ <b>Pinturas acrílicas:</b><br>— Azul ultramar<br>— Azul cobalto<br>— Magenta<br>— Amarillo<br>— Rojo<br>— Blanco<br>— Negro<br>✔️ <b>Pinceles de punta redonda</b> (número 4, 5, 6 o similar)<br>✔️ <b>Godete</b> para mezclar tus colores<br>✔️ <b>Papel o trapito</b> para secar tus pinceles<br>✔️ <b>Vasito con agua</b> para limpiar tus herramientas"
+     }
+    },
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "Crea un ambiente tranquilo, pon tu playlist favorita, y prepárate para dejarte llevar por el color y el movimiento del agua 💦🌸<br>¡Nos vemos en la lección para empezar a pintar estos hermosos nenúfares al estilo Monet!"
+     }
+    }
+   ],
+   "archivos": [],
+   "video": null
+  },
+  {
+   "i": 2,
+   "tipo": "TAREA",
+   "titulo": "¡Completa tu perfil!",
+   "bloques": [],
+   "archivos": [],
+   "video": null
+  },
+  {
+   "i": 3,
+   "tipo": "CLASE",
+   "titulo": "Parte 1",
+   "bloques": [
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "Write something or type '/' for commands..."
+     }
+    }
+   ],
+   "archivos": [],
+   "video": "V00TnxtO7cUXrGNumQeTD4JBT5hDguvS76lyQvBVTJgc"
+  },
+  {
+   "i": 4,
+   "tipo": "CLASE",
+   "titulo": "Parte 2",
+   "bloques": [
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "Write something or type '/' for commands..."
+     }
+    }
+   ],
+   "archivos": [],
+   "video": "r6lJ00wltZ01XtzZZL4axpaYgX3fLc01MJP00hRSY8QPQvc"
+  },
+  {
+   "i": 5,
+   "tipo": "EJERCICIO",
+   "titulo": "¡Compártenos tu arte!",
+   "bloques": [
+    {
+     "type": "header",
+     "data": {
+      "text": "<b>¡Felicidades por llegar hasta aquí, artista! 💖</b>",
+      "level": 3
+     }
+    },
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "Has creado tu propia interpretación de los <b>Nenúfares de Monet</b>, explorando el color, la fluidez y la magia del agua."
+     }
+    },
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "Este proyecto fue una experiencia llena de movimiento y emoción, y ahora queremos ver tu resultado final 🌊🌸<br>📸 <b>Sube una foto de tu obra terminada</b> para completar esta lección y marcar oficialmente el cierre del workshop."
+     }
+    },
+    {
+     "type": "paragraph",
+     "data": {
+      "text": "🎓 Al subir tu trabajo, también estarás más cerca de recibir tu <b>certificado de participación</b>.<br>¡Nos encantará ver tu jardín flotante cobrar vida!"
+     }
+    }
+   ],
+   "archivos": [],
+   "video": null
+  }
+ ]
+}

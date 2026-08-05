@@ -1,0 +1,36 @@
+{
+ "modulos": [
+  {
+   "modulo": "✨ Encuentra el valor de tu arte",
+   "n": 3
+  }
+ ],
+ "lecciones": [
+  {
+   "i": 0,
+   "tipo": "GUIA",
+   "titulo": "¡Descarga la guía!",
+   "html": "<div class=\"contentWrapper-0-4-648\"><div class=\"contentEditable-0-4-649 contentEditable-d1-0-4-652 root-0-4-653 vmIc3WzjxMkUf+6rJDBJLA==\" contenteditable=\"true\" id=\"editor-content-editable\" role=\"textbox\" spellcheck=\"true\" style=\"user-select: text; white-space: pre-wrap; word-break: break-word;\" data-lexical-editor=\"true\"><p class=\"editor-paragraph\" dir=\"ltr\"><strong class=\"editor-bold\" data-lexical-text=\"true\">¡Haz click en el archivo para descargar la guía! 👆🏼</strong></p></div><div class=\"tableCellActionButtonContainer-0-4-710\"></div><div class=\"blockTargetLine-0-4-738\"></div><div id=\"block-actions\" class=\"blockActionsMenu-0-4-732\" style=\"opacity: 0; transform: translate(-10000px, -10000px);\"><div class=\"\"><div class=\"root-0-4-59 root-d5-0-4-736 blockAddAction-0-4-733\" data-testid=\"block-add-action-button\" role=\"button\" tabindex=\"0\" aria-disabled=\"false\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" data-testid=\"DiscoIcon.add\" class=\"jqfzDtVhV-Wy18kyF1pugA== ntq8dOow+CpGfwq8FqQTwQ==\" style=\"--icon-width: 16px; --icon-height: 24px; --icon-color: var(--groovy-icon); --mt: 0; --mr: 0; --mb: 0; --ml: 0; --pt: 0; --pr: 0; --pb: 0; --pl: 0;\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M6 12h12M12 18V6\"></path></svg></div></div><div class=\"\"><div tabindex=\"-1\" role=\"button\" draggable=\"true\" class=\"blockDragAction-0-4-737\" data-testid=\"BlockOptionsActionPlugin.DraggableBlock\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" data-testid=\"DiscoIcon.reorder\" class=\"jqfzDtVhV-Wy18kyF1pugA== ntq8dOow+CpGfwq8FqQTwQ==\" style=\"--icon-width: 16px; --icon-height: 24px; --icon-color: var(--groovy-icon); --mt: 0; --mr: 0; --mb: 0; --ml: 0; --pt: 0; --pr: 0; --pb: 0; --pl: 0;\"><path fill=\"currentColor\" d=\"M8 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2M8 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2M8 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2\"></path><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M8 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2M8 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2M8 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2\"></path></svg></div></div></div></div>",
+   "archivos": [
+    "https://cdn.disco.co/media/WS_Valor_Gu_a_56a007ab-69c4-42ff-9ef1-c960c5dc80d1.pdf"
+   ],
+   "video": null
+  },
+  {
+   "i": 1,
+   "tipo": "CLASE",
+   "titulo": "Parte 1",
+   "html": "<div class=\"contentWrapper-0-4-648\"><div class=\"contentEditable-0-4-649 contentEditable-d4-0-4-930 root-0-4-653 vmIc3WzjxMkUf+6rJDBJLA==\" contenteditable=\"true\" id=\"editor-content-editable\" role=\"textbox\" spellcheck=\"true\" style=\"user-select: text; white-space: pre-wrap; word-break: break-word;\" data-lexical-editor=\"true\"><p class=\"editor-paragraph\"><br></p></div><p class=\"MuiTypography-root-65 jn6rjUv+sVhNwPoKQRn60g== G+OxDFcQrTf2CmeX-J9WDg== ntq8dOow+CpGfwq8FqQTwQ== placeholder-0-4-650 MuiTypography-body1-67\" style=\"--text-color: var(--groovy-text-tertiary); --text-weight: 400; --text-style: normal; --text-transform: initial; --mt: 0; --mr: 0; --mb: 0; --ml: 0; --pt: 0; --pr: 0; --pb: 0; --pl: 0;\">Write something or type '/' for commands...</p><div class=\"tableCellActionButtonContainer-0-4-710\"></div><div class=\"blockTargetLine-0-4-738\"></div><div id=\"block-actions\" class=\"blockActionsMenu-0-4-732\" style=\"opacity: 0; transform: translate(-10000px, -10000px);\"><div class=\"\"><div class=\"root-0-4-59 root-d10-0-4-952 blockAddAction-0-4-733\" data-testid=\"block-add-action-button\" role=\"button\" tabindex=\"0\" aria-disabled=\"false\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" data-testid=\"DiscoIcon.add\" class=\"jqfzDtVhV-Wy18kyF1pugA== ntq8dOow+CpGfwq8FqQTwQ==\" style=\"--icon-width: 16px; --icon-height: 24px; --icon-color: var(--groovy-icon); --mt: 0; --mr: 0; --mb: 0; --ml: 0; --pt: 0; --pr: 0; --pb: 0; --pl: 0;\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M6 12h12M12 18V6\"></path></svg></div></div><div class=\"\"><div tabindex=\"-1\" role=\"button\" draggable=\"true\" class=\"blockDragAction-0-4-737\" data-testid=\"BlockOptionsActionPlugin.DraggableBlock\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" data-testid=\"DiscoIcon.reorder\" class=\"jqfzDtVhV-Wy18kyF1pugA== ntq8dOow+CpGfwq8FqQTwQ==\" style=\"--icon-width: 16px; --icon-height: 24px; --icon-color: var(--groovy-icon); --mt: 0; --mr: 0; --mb: 0; --ml: 0; --pt: 0; --pr: 0; --pb: 0; --pl: 0;\"><path fill=\"currentColor\" d=\"M8 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2M8 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2M8 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2\"></path><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M8 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2M8 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2M8 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2\"></path></svg></div></div></div></div>",
+   "archivos": [],
+   "video": "1AJg5Hd19lqZi1aZ7h02fP00h1BeFT39DYhixLomZdJkQ"
+  },
+  {
+   "i": 2,
+   "tipo": "CLASE",
+   "titulo": "Parte 2",
+   "html": "",
+   "archivos": [],
+   "video": "yZ8Tr01hQlpEekdahtACAVt2g8faowDwugVJOF7rEKpg"
+  }
+ ]
+}
