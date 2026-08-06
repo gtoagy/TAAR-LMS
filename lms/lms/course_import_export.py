@@ -21,8 +21,8 @@ def export_course_zip(course_name):
 	lessons = get_lessons_for_export(course_name)
 	instructors = get_course_instructors(course)
 	evaluator = get_course_evaluator(course)
-	assets = get_course_assets(course, lessons, instructors, evaluator)
 	assessments, questions, test_cases = get_course_assessments(lessons)
+	assets = get_course_assets(course, lessons, instructors, evaluator, assessments, questions)
 	safe_time = frappe.utils.now_datetime().strftime("%Y%m%d_%H%M%S")
 	zip_filename = f"{course.name}_{safe_time}_{secrets.token_hex(4)}.zip"
 	create_course_zip(
@@ -131,7 +131,25 @@ def get_course_evaluator(course):
 	return evaluators
 
 
-def get_course_assets(course, lessons, instructors, evaluator):
+# Un cuestionario ilustrado guarda sus fotos dentro del HTML del enunciado y de
+# las explicaciones, no en bloques `upload`. Mirando solo los bloques, el ZIP
+# viajaba sin ellas y el quiz llegaba al destino con las imágenes rotas.
+ASSET_EN_HTML = re.compile(r'src=[\'"](/(?:private/)?files/[^\'"]+)[\'"]')
+
+
+def recoger_assets(valor, assets):
+	"""Recorre cualquier estructura y anota las rutas de fichero que encuentre."""
+	if isinstance(valor, str):
+		assets.extend(ASSET_EN_HTML.findall(valor))
+	elif isinstance(valor, dict):
+		for v in valor.values():
+			recoger_assets(v, assets)
+	elif isinstance(valor, (list, tuple)):
+		for v in valor:
+			recoger_assets(v, assets)
+
+
+def get_course_assets(course, lessons, instructors, evaluator, assessments=None, questions=None):
 	assets = []
 	if course.image:
 		assets.append(course.image)
@@ -141,6 +159,12 @@ def get_course_assets(course, lessons, instructors, evaluator):
 			if block.get("type") == "upload":
 				url = block.get("data", {}).get("file_url")
 				assets.append(url)
+		# Y las imágenes que van sueltas en el HTML de un párrafo o una tabla.
+		recoger_assets(content.get("blocks", []), assets)
+	for evaluacion in assessments or []:
+		recoger_assets(evaluacion, assets)
+	for pregunta in questions or []:
+		recoger_assets(pregunta, assets)
 	for instructor in instructors:
 		if instructor.get("user_image"):
 			assets.append(instructor["user_image"])
@@ -359,10 +383,17 @@ def import_course_zip(zip_file_path):
 		create_user_for_instructors(zip_file)
 		create_evaluator(zip_file)
 		course_doc = create_course_doc(course_data)
-		chapter_docs = create_chapter_docs(zip_file, course_doc.name)
-		create_assessment_docs(zip_file)
-		create_lesson_docs(zip_file, course_doc.name, chapter_docs)
-		save_course_structure(zip_file, course_doc, chapter_docs)
+		# Al importar, todo se renombra: los nombres del ZIP son los del sitio de
+		# origen y en el destino ya pueden pertenecer a otra cosa. Se lleva un
+		# mapa origen -> destino de cada tipo y se resuelven las referencias con
+		# él; buscar por título, como se hacía antes, cruza los documentos en
+		# cuanto dos lecciones o dos tareas comparten nombre.
+		chapter_docs, mapa_capitulos = create_chapter_docs(zip_file, course_doc.name)
+		mapa_evaluaciones = create_assessment_docs(zip_file)
+		mapa_lecciones = create_lesson_docs(
+			zip_file, course_doc.name, mapa_capitulos, mapa_evaluaciones
+		)
+		save_course_structure(zip_file, course_doc, chapter_docs, mapa_lecciones)
 		return course_doc.name
 
 
@@ -568,9 +599,11 @@ def exclude_meta_fields(data):
 
 def create_chapter_docs(zip_file, course_name):
 	chapter_docs = []
+	mapa = {}
 	for file in zip_file.namelist():
 		if file.startswith("chapters/") and file.endswith(".json"):
 			chapter_data = read_json_from_zip(zip_file, file)
+			nombre_origen = (chapter_data or {}).get("name")
 			chapter_data = exclude_meta_fields(chapter_data)
 			if chapter_data:
 				chapter_doc = frappe.new_doc("Course Chapter")
@@ -579,51 +612,32 @@ def create_chapter_docs(zip_file, course_name):
 				chapter_doc.course = course_name
 				insert_with_safe_name(chapter_doc)
 				chapter_docs.append(chapter_doc)
-	return chapter_docs
-
-
-def get_chapter_name_for_lesson(zip_file, lesson_data, chapter_docs):
-	for file in zip_file.namelist():
-		if file.startswith("chapters/") and file.endswith(".json"):
-			chapter_data = read_json_from_zip(zip_file, file)
-			if chapter_data.get("name") == lesson_data.get("chapter"):
-				title = chapter_data.get("title")
-				chapter_doc = next((c for c in chapter_docs if c.title == title), None)
-				if chapter_doc:
-					return chapter_doc.name
-	return None
+				if nombre_origen:
+					mapa[nombre_origen] = chapter_doc.name
+	return chapter_docs, mapa
 
 
 def get_assessment_map():
 	return {"quiz": "LMS Quiz", "assignment": "LMS Assignment", "program": "LMS Programming Exercise"}
 
 
-def get_assessment_title(zip_file, assessment_name, assessment_type):
-	assessment_map = get_assessment_map()
-	doctype = "_".join(assessment_map.get(assessment_type).lower().split(" "))
-	assessment_name = "_".join(assessment_name.split(" "))
-	file_name = f"assessments/{doctype}_{assessment_name}.json"
-	try:
-		with zip_file.open(file_name) as f:
-			assessment_data = json.load(f)
-			return assessment_data.get("title")
-	except Exception as e:
-		frappe.log_error(f"Error reading {file_name} from ZIP: {e}")
-		return None
-
-
-def replace_assessment_names(zip_file, content):
+def replace_assessment_names(content, mapa_evaluaciones, sin_resolver):
 	assessment_types = ["quiz", "assignment", "program"]
 	content = json.loads(content)
 	for block in content.get("blocks", []):
-		if block.get("type") in assessment_types:
-			data_field = "exercise" if block.get("type") == "program" else block.get("type")
-			assessment_name = block.get("data", {}).get(data_field)
-			assessment_title = get_assessment_title(zip_file, assessment_name, block.get("type"))
-			doctype = get_assessment_map().get(block.get("type"))
-			current_assessment_name = frappe.db.get_value(doctype, {"title": assessment_title}, "name")
-			if current_assessment_name:
-				block["data"][data_field] = current_assessment_name
+		if block.get("type") not in assessment_types:
+			continue
+		data_field = "exercise" if block.get("type") == "program" else block.get("type")
+		nombre_origen = block.get("data", {}).get(data_field)
+		destino = mapa_evaluaciones.get(nombre_origen)
+		if destino:
+			block["data"][data_field] = destino
+		elif nombre_origen:
+			# Se deja el bloque vacío a propósito. Conservar el nombre de origen
+			# es peor que perderlo: en este sitio suele existir con ese nombre
+			# otra tarea distinta, y la lección la mostraría sin avisar.
+			block["data"].pop(data_field, None)
+			sin_resolver.append(nombre_origen)
 	return json.dumps(content)
 
 
@@ -639,36 +653,77 @@ def replace_assets(content):
 					block["data"]["url"] = current_asset_url
 
 
-def replace_values_in_content(zip_file, content):
-	return replace_assessment_names(zip_file, content)
-	# replace_assets(content)
+def reapuntar_evaluaciones(lesson_doc, course_name):
+	"""Devuelve a cada evaluación su lección y su curso en este sitio.
+
+	Al importar se les quita, porque apuntan al sitio de origen, pero no se
+	volvían a poner: los cuestionarios quedaban sin dueño y solo aparecían en la
+	lista general, sin forma de saber de qué curso eran.
+	"""
+	if not lesson_doc.content:
+		return
+	for block in json.loads(lesson_doc.content).get("blocks", []):
+		doctype = get_assessment_map().get(block.get("type"))
+		if not doctype:
+			continue
+		campo = "exercise" if block.get("type") == "program" else block.get("type")
+		nombre = block.get("data", {}).get(campo)
+		if not nombre or not frappe.db.exists(doctype, nombre):
+			continue
+		# No todas las evaluaciones tienen los dos campos: LMS Assignment, por
+		# ejemplo, no guarda a qué lección pertenece.
+		meta = frappe.get_meta(doctype)
+		valores = {}
+		if meta.has_field("lesson"):
+			valores["lesson"] = lesson_doc.name
+		if meta.has_field("course"):
+			valores["course"] = course_name
+		if valores:
+			frappe.db.set_value(doctype, nombre, valores, update_modified=False)
 
 
-def create_lesson_docs(zip_file, course_name, chapter_docs):
-	lesson_docs = []
+def create_lesson_docs(zip_file, course_name, mapa_capitulos, mapa_evaluaciones):
+	mapa = {}
+	sin_resolver = []
 	for file in zip_file.namelist():
 		if file.startswith("lessons/") and file.endswith(".json"):
 			lesson_data = read_json_from_zip(zip_file, file)
+			nombre_origen = (lesson_data or {}).get("name")
+			capitulo_origen = (lesson_data or {}).get("chapter")
 			lesson_data = exclude_meta_fields(lesson_data)
 			if lesson_data:
 				lesson_doc = frappe.new_doc("Course Lesson")
 				lesson_doc.update(lesson_data)
 				lesson_doc.course = course_name
-				lesson_doc.chapter = get_chapter_name_for_lesson(zip_file, lesson_data, chapter_docs)
+				lesson_doc.chapter = mapa_capitulos.get(capitulo_origen)
 				lesson_doc.content = (
-					replace_values_in_content(zip_file, lesson_doc.content) if lesson_doc.content else None
+					replace_assessment_names(lesson_doc.content, mapa_evaluaciones, sin_resolver)
+					if lesson_doc.content
+					else None
 				)
 				insert_with_safe_name(lesson_doc)
-				lesson_docs.append(lesson_doc)
-	return lesson_docs
+				reapuntar_evaluaciones(lesson_doc, course_name)
+				if nombre_origen:
+					mapa[nombre_origen] = lesson_doc.name
+	if sin_resolver:
+		frappe.msgprint(
+			_("Estas evaluaciones no venían en el ZIP y sus bloques quedaron vacíos: {0}").format(
+				", ".join(sorted(set(sin_resolver)))
+			),
+			indicator="orange",
+		)
+	return mapa
 
 
 def create_question_doc(zip_file, file):
 	question_data = read_json_from_zip(zip_file, file)
-	if question_data:
-		doc = frappe.new_doc("LMS Question")
-		doc.update(question_data)
-		doc.insert(ignore_permissions=True)
+	if not question_data:
+		return None, None
+	nombre_origen = question_data.pop("name", None)
+	doc = frappe.new_doc("LMS Question")
+	doc.update(question_data)
+	doc.insert(ignore_permissions=True)
+	return nombre_origen, doc.name
 
 
 def create_test_case_doc(zip_file, file):
@@ -679,20 +734,34 @@ def create_test_case_doc(zip_file, file):
 		doc.insert(ignore_permissions=True)
 
 
-def add_questions_to_quiz(quiz_doc, questions):
+def add_questions_to_quiz(quiz_doc, questions, mapa_preguntas):
 	for question in questions:
-		question_detail = question["question_detail"]
-		question_name = frappe.db.get_value("LMS Question", {"question": question_detail}, "name")
-		if question_name:
-			quiz_doc.append("questions", {"question": question_name})
+		# La pregunta se buscaba por su texto plano (`question_detail`) contra el
+		# campo `question`, que guarda el HTML. En cuanto el enunciado llevaba
+		# formato —negrita, una imagen— no casaba y el cuestionario se creaba
+		# vacío, sin una sola pregunta y sin avisar.
+		nombre = mapa_preguntas.get(question.get("question"))
+		if not nombre:
+			continue
+		fila = {"question": nombre}
+		# Los puntos y el tipo venían en la fila; al no copiarlos, un
+		# cuestionario de 18 puntos aterrizaba valiendo 0.
+		for campo in ("marks", "type"):
+			if question.get(campo):
+				fila[campo] = question[campo]
+		quiz_doc.append("questions", fila)
 
 
 def create_supporting_docs(zip_file):
+	mapa_preguntas = {}
 	for file in zip_file.namelist():
 		if file.startswith("assessments/questions/") and file.endswith(".json"):
-			create_question_doc(zip_file, file)
+			origen, destino = create_question_doc(zip_file, file)
+			if origen and destino:
+				mapa_preguntas[origen] = destino
 		elif file.startswith("assessments/test_cases/") and file.endswith(".json"):
 			create_test_case_doc(zip_file, file)
+	return mapa_preguntas
 
 
 def is_assessment_file(file):
@@ -704,42 +773,53 @@ def is_assessment_file(file):
 	)
 
 
-def build_assessment_doc(assessment_data):
+def build_assessment_doc(assessment_data, mapa_preguntas):
+	"""Crea la evaluación y devuelve (nombre en el ZIP, nombre en este sitio)."""
 	doctype = assessment_data.get("doctype")
 	if doctype not in ("LMS Quiz", "LMS Assignment", "LMS Programming Exercise"):
-		return
-	if frappe.db.exists(doctype, assessment_data.get("name")):
-		return
+		return None, None
 
+	# El nombre del ZIP es el del sitio de origen. Antes, si aquí ya existía uno
+	# igual, se daba por importada y se dejaba la referencia apuntando a ese
+	# documento: la lección acababa mostrando la tarea de otro curso. Se crea
+	# siempre uno nuevo y el autoname le asigna un nombre libre.
+	nombre_origen = assessment_data.pop("name", None)
 	questions = assessment_data.pop("questions", [])
 	test_cases = assessment_data.pop("test_cases", [])
 	doc = frappe.new_doc(doctype)
 	doc.update(assessment_data)
 
 	if doctype == "LMS Quiz":
-		add_questions_to_quiz(doc, questions)
+		add_questions_to_quiz(doc, questions, mapa_preguntas)
 	elif doctype == "LMS Programming Exercise":
 		for row in test_cases:
 			doc.append("test_cases", {"input": row["input"], "expected_output": row["expected_output"]})
 
 	doc.insert(ignore_permissions=True)
+	return nombre_origen, doc.name
 
 
-def create_main_assessment_docs(zip_file):
+def create_main_assessment_docs(zip_file, mapa_preguntas):
+	mapa = {}
 	for file in zip_file.namelist():
 		if not is_assessment_file(file):
 			continue
 		assessment_data = read_json_from_zip(zip_file, file)
 		if not assessment_data:
 			continue
+		# Apuntan al sitio de origen; se reponen al crear las lecciones, en
+		# reapuntar_evaluaciones().
 		assessment_data.pop("lesson", None)
 		assessment_data.pop("course", None)
-		build_assessment_doc(assessment_data)
+		origen, destino = build_assessment_doc(assessment_data, mapa_preguntas)
+		if origen and destino:
+			mapa[origen] = destino
+	return mapa
 
 
 def create_assessment_docs(zip_file):
-	create_supporting_docs(zip_file)
-	create_main_assessment_docs(zip_file)
+	mapa_preguntas = create_supporting_docs(zip_file)
+	return create_main_assessment_docs(zip_file, mapa_preguntas)
 
 
 def create_asset_doc(asset_name, content, is_private=0):
@@ -787,16 +867,8 @@ def create_assets(zip_file):
 		)
 
 
-def get_lesson_title(zip_file, lesson_name):
-	for file in zip_file.namelist():
-		if file.startswith("lessons/") and file.endswith(".json"):
-			lesson_data = read_json_from_zip(zip_file, file)
-			if lesson_data.get("name") == lesson_name:
-				return lesson_data.get("title")
-	return None
-
-
-def add_lessons_to_chapters(zip_file, course_name, chapter_docs):
+def add_lessons_to_chapters(zip_file, chapter_docs, mapa_lecciones):
+	perdidas = []
 	for file in zip_file.namelist():
 		if file.startswith("chapters/") and file.endswith(".json"):
 			chapter_data = read_json_from_zip(zip_file, file)
@@ -804,13 +876,23 @@ def add_lessons_to_chapters(zip_file, course_name, chapter_docs):
 			if not chapter_doc:
 				continue
 			for lesson in chapter_data.get("lessons", []):
-				lesson_title = get_lesson_title(zip_file, lesson["lesson"])
-				lesson_name = frappe.db.get_value(
-					"Course Lesson", {"title": lesson_title, "course": course_name}, "name"
-				)
+				# Se buscaba la lección por título dentro del curso. Cuando un
+				# curso repite títulos entre módulos —"Ojos", "Tonos luz", una
+				# por proyecto— todos los módulos acababan apuntando a la misma
+				# y el resto quedaba creado pero fuera del temario.
+				lesson_name = mapa_lecciones.get(lesson["lesson"])
 				if lesson_name:
 					chapter_doc.append("lessons", {"lesson": lesson_name})
+				else:
+					perdidas.append(lesson["lesson"])
 			chapter_doc.save(ignore_permissions=True)
+	if perdidas:
+		frappe.msgprint(
+			_("Estas lecciones no venían en el ZIP y faltan en el temario: {0}").format(
+				", ".join(sorted(set(perdidas)))
+			),
+			indicator="orange",
+		)
 
 
 def add_chapter_to_course(course_doc, chapter_docs):
@@ -820,9 +902,9 @@ def add_chapter_to_course(course_doc, chapter_docs):
 	course_doc.save(ignore_permissions=True)
 
 
-def save_course_structure(zip_file, course_doc, chapter_docs):
+def save_course_structure(zip_file, course_doc, chapter_docs, mapa_lecciones):
 	add_chapter_to_course(course_doc, chapter_docs)
-	add_lessons_to_chapters(zip_file, course_doc.name, chapter_docs)
+	add_lessons_to_chapters(zip_file, chapter_docs, mapa_lecciones)
 
 
 def validate_zip_file(zip_file_path):

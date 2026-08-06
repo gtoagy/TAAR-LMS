@@ -45,8 +45,8 @@ for nombre in cursos:
     lecciones = get_lessons_for_export(nombre)
     instructores = get_course_instructors(curso)
     evaluador = get_course_evaluator(curso)
-    activos = get_course_assets(curso, lecciones, instructores, evaluador)
     evaluaciones, preguntas, casos = get_course_assessments(lecciones)
+    activos = get_course_assets(curso, lecciones, instructores, evaluador, evaluaciones, preguntas)
 
     ruta = os.path.join(DESTINO, f"{nombre}.zip")
     build_course_zip(
