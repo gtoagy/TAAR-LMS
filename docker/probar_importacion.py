@@ -50,6 +50,9 @@ for l in lecciones:
             fallos += 1
         print(f"  [{estado}] {l.title[:30]:<30} {url}")
 
+con_almohadilla = [l.title for l in lecciones if "#" in (l.title or "")]
+print(f"\n  títulos con # conservados: {con_almohadilla or 'ninguno en este curso'}")
+
 portada = frappe.db.get_value("LMS Course", importado, "image")
 if portada:
     ok = frappe.db.exists("File", {"file_url": portada})

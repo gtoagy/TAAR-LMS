@@ -538,6 +538,29 @@ def create_course_doc(course_data):
 	return course_doc
 
 
+def insert_with_safe_name(doc):
+	"""Inserta capítulos y lecciones sin que el título rompa el nombre.
+
+	El autoname de ambos es "format:{####} {title}". Si el título trae una
+	almohadilla —"Ejercicio #2", "Proyecto #1 (Perrito en funda)"— Frappe la
+	interpreta como serie de nombres y la importación entera revienta con
+	InvalidNamingSeriesError. Se genera el nombre con el título sin
+	almohadillas, pero el título visible se conserva intacto.
+	"""
+	titulo = doc.get("title") or ""
+	if "#" not in titulo:
+		doc.insert(ignore_permissions=True)
+		return
+
+	# Se inserta con el título sin almohadillas para que el autoname funcione,
+	# y acto seguido se devuelve el título real. El nombre ya generado no se
+	# toca: solo cambia lo que se muestra.
+	doc.title = titulo.replace("#", "")
+	doc.insert(ignore_permissions=True)
+	frappe.db.set_value(doc.doctype, doc.name, "title", titulo, update_modified=False)
+	doc.title = titulo
+
+
 def exclude_meta_fields(data):
 	meta_fields = ["name", "owner", "creation", "created_by", "modified", "modified_by", "docstatus"]
 	return {k: v for k, v in data.items() if k not in meta_fields}
@@ -554,7 +577,7 @@ def create_chapter_docs(zip_file, course_name):
 				chapter_data.pop("lessons", None)
 				chapter_doc.update(chapter_data)
 				chapter_doc.course = course_name
-				chapter_doc.insert(ignore_permissions=True)
+				insert_with_safe_name(chapter_doc)
 				chapter_docs.append(chapter_doc)
 	return chapter_docs
 
@@ -635,7 +658,7 @@ def create_lesson_docs(zip_file, course_name, chapter_docs):
 				lesson_doc.content = (
 					replace_values_in_content(zip_file, lesson_doc.content) if lesson_doc.content else None
 				)
-				lesson_doc.insert(ignore_permissions=True)
+				insert_with_safe_name(lesson_doc)
 				lesson_docs.append(lesson_doc)
 	return lesson_docs
 
