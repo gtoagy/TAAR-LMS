@@ -249,6 +249,20 @@ def write_assessments_json(zip_file, assessments, questions, test_cases):
 		zip_file.writestr(f"assessments/{doctype}_{safe_name}.json", assessment_json)
 
 
+def safe_asset_filename(name):
+	"""Nombre de fichero seguro conservando el original.
+
+	sanitize_string() está pensado para títulos y borra los guiones bajos, así
+	que "03_Workbook.pdf" se guardaba como "03Workbook.pdf": al importar, el
+	fichero acababa en una URL distinta de la que apunta el contenido de la
+	lección y el material no se veía. Aquí solo se quita lo que permitiría
+	salirse del directorio o romper la ruta.
+	"""
+	name = os.path.basename((name or "").replace("\\", "/")).replace("..", "")
+	name = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "", name).strip()
+	return name or "asset"
+
+
 def write_assets(zip_file, assets):
 	assets = list(set(assets))
 	for asset in assets:
@@ -259,8 +273,11 @@ def write_assets(zip_file, assets):
 		file_doc = frappe.get_doc("File", {"file_url": asset})
 		file_path = os.path.abspath(file_doc.get_full_path())
 
-		safe_filename = sanitize_string(os.path.basename(asset))
-		zip_file.write(file_path, f"assets/{safe_filename}")
+		# El material de las lecciones es privado y las portadas públicas. La
+		# carpeta lo indica para poder recrearlo igual al importar: si cambia
+		# la privacidad, cambia la URL y el enlace de la lección se rompe.
+		folder = "private" if file_doc.is_private else "public"
+		zip_file.write(file_path, f"assets/{folder}/{safe_asset_filename(asset)}")
 
 
 def move_zip_to_private(tmp_path, zip_filename):
@@ -702,23 +719,34 @@ def create_assessment_docs(zip_file):
 	create_main_assessment_docs(zip_file)
 
 
-def create_asset_doc(asset_name, content):
+def create_asset_doc(asset_name, content, is_private=0):
 	if frappe.db.exists("File", {"file_name": asset_name}):
 		return
 	asset_doc = frappe.new_doc("File")
 	asset_doc.file_name = asset_name
+	asset_doc.is_private = 1 if is_private else 0
 	asset_doc.content = content
 	asset_doc.insert()
 
 
 def process_asset_file(zip_file, file):
-	if not is_safe_path(file):
+	# La ruta es interna del ZIP, no del disco: is_safe_path() la resolvía
+	# contra el directorio del sitio y siempre daba falso, así que NINGÚN
+	# fichero llegaba a importarse (y el fallo quedaba oculto en el log).
+	parts = file.split("/")
+	if file.startswith("/") or ".." in parts:
 		return
+
+	# assets/private/... y assets/public/...; los ZIP antiguos traen los
+	# ficheros sueltos en assets/ y se tratan como públicos.
+	is_private = len(parts) > 2 and parts[1] == "private"
+
 	with zip_file.open(file) as f:
-		create_asset_doc(file.split("/")[-1], f.read())
+		create_asset_doc(safe_asset_filename(parts[-1]), f.read(), is_private)
 
 
 def create_assets(zip_file):
+	fallos = []
 	for file in zip_file.namelist():
 		if not file.startswith("assets/") or file.endswith("/"):
 			continue
@@ -726,6 +754,14 @@ def create_assets(zip_file):
 			process_asset_file(zip_file, file)
 		except Exception as e:
 			frappe.log_error(f"Error processing asset {file}: {e}")
+			fallos.append(os.path.basename(file))
+	if fallos:
+		# Antes esto se tragaba en silencio y el curso quedaba sin materiales
+		# sin que nadie se enterara hasta abrir la lección.
+		frappe.msgprint(
+			_("No se pudieron importar estos archivos: {0}").format(", ".join(fallos)),
+			indicator="orange",
+		)
 
 
 def get_lesson_title(zip_file, lesson_name):
