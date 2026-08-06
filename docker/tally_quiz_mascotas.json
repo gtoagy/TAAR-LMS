@@ -1,0 +1,245 @@
+[
+  {
+    "pagina": 0,
+    "textos": [
+      "¡Es momento de poner a prueba ese ojo de artista! 👁🎨\n\nEn este pequeño Quizz te encontrarás preguntas relacionadas al color y diferentes tonalidades en las mascotas. Entender lo que estamos viendo es crucial para pintar mascotas realistas.\n\n¿Estás list@ para empezar? 👩🏻‍🎨",
+      "Escribe tu correo TanArtistic"
+    ],
+    "imagenes": [],
+    "opciones": []
+  },
+  {
+    "pagina": 1,
+    "textos": [
+      "Observa a este perrito, ¿Su color es cálido o frío?"
+    ],
+    "imagenes": [
+      "https://storage.tally.so/e1593c62-8987-41cc-a07e-a3da1698d030/Este-color-es-calido-o-frio-1-.png"
+    ],
+    "opciones": [
+      {
+        "texto": "Cálido",
+        "correcta": true
+      },
+      {
+        "texto": "Frío",
+        "correcta": false
+      }
+    ]
+  },
+  {
+    "pagina": 2,
+    "textos": [
+      "Este tono luz ¿Es un tono vibrante o apagado?"
+    ],
+    "imagenes": [
+      "https://storage.tally.so/82ed85fb-c70e-4e5b-befe-8775d9be25e5/Este-color-es-calido-o-frio-2-.png"
+    ],
+    "opciones": [
+      {
+        "texto": "Vibrante (alta saturación)",
+        "correcta": false
+      },
+      {
+        "texto": "Apagado (baja saturación)",
+        "correcta": true
+      }
+    ]
+  },
+  {
+    "pagina": 3,
+    "textos": [
+      "Observa la sombra en el cuerpo de este gatito ¿Qué sub-tono tiene?"
+    ],
+    "imagenes": [
+      "https://storage.tally.so/5c937060-8a41-42f1-84f9-fc9d49adf376/Este-color-es-calido-o-frio-10-.png"
+    ],
+    "opciones": [
+      {
+        "texto": "Rojo",
+        "correcta": false
+      },
+      {
+        "texto": "Azul",
+        "correcta": true
+      },
+      {
+        "texto": "Verde",
+        "correcta": false
+      }
+    ]
+  },
+  {
+    "pagina": 4,
+    "textos": [
+      "Yo se que esto de observar los sub-tonos en un inicio puede ser complicado, pero no te preocupes que con un poco de práctica tu ojo será capaz de detectarlos al instante.\n\nEn este caso si colocamos el cuentagotas en cualquier parte de la sombra del cuerpo de este gatito, podemos observar que en la rueda cromática se va por el matiz de los azules generándonos un sub-tono gris azulado.\n\nRecuerda preguntarte al ver tu imagen de referencia, ¿Qué tan cálido o frío se ve? Y esto te ayudará a guiarte de una manera más rápida para saber donde catalogar el color.",
+      "¡Sii! Esta sombra la lograremos usando azul en nuestra mezcla. \n\nSi colocamos el cuentagotas en cualquier parte de la sombra del cuerpo de este gatito, podemos observar que en la rueda cromática se va por el matiz de los azules generándonos un sub-tono gris azulado.\n\nRecuerda preguntarte al ver tu imagen de referencia, ¿Qué tan cálido o frío se ve? Y esto te ayudará a guiarte de una manera más rápida para saber donde catalogar el color."
+    ],
+    "imagenes": [
+      "https://storage.tally.so/1434262a-12b1-44fb-b77e-1e774d26a105/Este-color-es-calido-o-frio-13-.png"
+    ],
+    "opciones": []
+  },
+  {
+    "pagina": 5,
+    "textos": [
+      "Los tonos luz de este perrito ¿Son cálidos o fríos?"
+    ],
+    "imagenes": [
+      "https://storage.tally.so/30357ebf-b2fa-48d4-a5d7-1c01d022398f/Este-color-es-calido-o-frio-4-.png"
+    ],
+    "opciones": [
+      {
+        "texto": "Cálidos",
+        "correcta": true
+      },
+      {
+        "texto": "Fríos",
+        "correcta": false
+      }
+    ]
+  },
+  {
+    "pagina": 6,
+    "textos": [
+      "¡Siii es correcto!\n\nAunque estas luces parezcan un poco frías por el contraste con los demás colores del perrito...\n\nPodemos observar que si colocamos el cuentagotas en la zonas de luz, ¡Nos encontramos con un gris cálido! Ya que este sub-tono se encuentra en el matiz de los rojos-anaranjados de la rueda cromática.",
+      "Aunque estas luces parezcan un poco frías por el contraste con los demás colores del perrito...\n\nPodemos observar que si colocamos el cuentagotas en la zonas de luz, ¡Nos encontramos con un gris cálido! Ya que este sub-tono se encuentra en el matiz de los rojos-anaranjados de la rueda cromática."
+    ],
+    "imagenes": [
+      "https://storage.tally.so/60e00661-1e58-4aae-801e-b079eb06a0bc/Este-color-es-calido-o-frio-12-.png"
+    ],
+    "opciones": []
+  },
+  {
+    "pagina": 7,
+    "textos": [
+      "¿Cuál es el animal con tonos predominantes fríos y cuál es el de los cálidos?"
+    ],
+    "imagenes": [
+      "https://storage.tally.so/86a83b50-4019-4dfe-a65c-d7deb5ad22c7/Este-color-es-calido-o-frio-5-.png"
+    ],
+    "opciones": [
+      {
+        "texto": "En el avestruz predominan los cálidos y en la llama los fríos",
+        "correcta": false
+      },
+      {
+        "texto": "En el avestruz predominan los fríos y en la llama los cálidos",
+        "correcta": true
+      }
+    ]
+  },
+  {
+    "pagina": 8,
+    "textos": [],
+    "imagenes": [
+      "https://storage.tally.so/ca9c03a4-36cf-46f0-be8b-92736645d9cd/Este-color-es-calido-o-frio-6-.png"
+    ],
+    "opciones": [
+      {
+        "texto": "Las secciones de sombras",
+        "correcta": false
+      },
+      {
+        "texto": "Las secciones de luz",
+        "correcta": true
+      }
+    ]
+  },
+  {
+    "pagina": 9,
+    "textos": [
+      "Para crear este color crees que le debamos de agregar mayor cantidad de…"
+    ],
+    "imagenes": [
+      "https://storage.tally.so/495a0f2c-ab62-4ed5-acc4-aa0964e09eb7/11.png"
+    ],
+    "opciones": [
+      {
+        "texto": "Rojo",
+        "correcta": false
+      },
+      {
+        "texto": "Amarillo",
+        "correcta": true
+      }
+    ]
+  },
+  {
+    "pagina": 10,
+    "textos": [
+      "¡Sii, el amarillo predomina! \n\nObserva esta rueda cromática, este naranja se acerca mucho más al amarillo.\n Pro tip: A la hora de hacer tus mezclas de colores, el rojo es un color que suele pigmentar mucho más que el amarillo. Por lo tanto, es recomendable ir agregando de poquito en poquito hasta llegar al&nbsp;tono&nbsp;deseado.",
+      "¡Más amarillo! \n\nObserva esta rueda cromática, este naranja se acerca mucho más al amarillo.\n Pro tip: A la hora de hacer tus mezclas de colores, el rojo es un color que suele pigmentar mucho más que el amarillo. Por lo tanto, es recomendable ir agregando de poquito en poquito hasta llegar al&nbsp;tono&nbsp;deseado."
+    ],
+    "imagenes": [
+      "https://storage.tally.so/bfd53212-ac2d-47fc-92a6-a87734966e6d/12.png"
+    ],
+    "opciones": []
+  },
+  {
+    "pagina": 11,
+    "textos": [
+      "¿Consideras que este gatito tiene tonos vibrantes o apagados?"
+    ],
+    "imagenes": [
+      "https://storage.tally.so/7bca02da-d586-4b9f-a00e-59e7cb923b10/Este-color-es-calido-o-frio-7-.png"
+    ],
+    "opciones": [
+      {
+        "texto": "Tonos vibrantes",
+        "correcta": false
+      },
+      {
+        "texto": "Tonos apagados",
+        "correcta": true
+      }
+    ]
+  },
+  {
+    "pagina": 12,
+    "textos": [
+      "Este perrito tiene sombras cálidas o frías"
+    ],
+    "imagenes": [
+      "https://storage.tally.so/2a6328ea-d245-4061-9e40-011a8bfa5649/Este-color-es-calido-o-frio-8-.png"
+    ],
+    "opciones": [
+      {
+        "texto": "Sombras cálidas",
+        "correcta": false
+      },
+      {
+        "texto": "Sombras frías",
+        "correcta": false
+      },
+      {
+        "texto": "Sombras cálidas y frías",
+        "correcta": true
+      }
+    ]
+  },
+  {
+    "pagina": 13,
+    "textos": [
+      "¡Sii! Bien visto artista\n\nTiene ambas tonalidades. \n\nEsto muestra la importancia de la iluminación y el ambiente donde se encuentra el peludito, ya que la luz y las sombras pueden reflejar de manera distinta según el lugar donde se encuentre la mascota/objeto/persona a retratar.",
+      "Estás en lo correcto pero... \n\nTiene ambas tonalidades. \n\nEsto muestra la importancia de la iluminación y el ambiente donde se encuentra el peludito, ya que la luz y las sombras pueden reflejar de manera distinta según el lugar donde se encuentre la mascota/objeto/persona a retratar."
+    ],
+    "imagenes": [
+      "https://storage.tally.so/39fba18d-82af-4855-b578-f8c66eb2755e/Este-color-es-calido-o-frio-11-.png"
+    ],
+    "opciones": []
+  },
+  {
+    "pagina": 14,
+    "textos": [
+      "¡Listo artista, este fue tu puntaje! 👩🏻‍🎨",
+      "@Puntaje /18 ✨",
+      "Esto de los colores se que puede ser complicado al inicio pero recuerda que la práctica hace al maestro y en este tema en específico hay que mezclar y mezclar y mezclar para aprender y entrenar el ojo a ver los colores de una manera correcta. 💪🏼",
+      "¡Muchísimas felicidades! Pasaste con 10 este Quizz, eso quiere decir que ya cuentas con un buen fundamento acerca de los colores y un ojo entrenado. 💪🏼",
+      "En la próxima lección veremos a profundidad a observar y crear desde 0 el color base, el tono sombra y el tono luz de 4 perritos.",
+      "¿Estás list@? 🐾"
+    ],
+    "imagenes": [],
+    "opciones": []
+  }
+]

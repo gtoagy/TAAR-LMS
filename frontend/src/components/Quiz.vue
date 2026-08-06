@@ -205,13 +205,19 @@
 							>
 							</span>
 						</label>
+						<!-- Same treatment as the question and its options: an
+						explanation may carry the diagram that makes the answer
+						click (a colour wheel, a zoomed-in crop). Interpolated as
+						text those were lost, and so were the paragraph breaks of
+						longer explanations — hence whitespace-pre-line. -->
 						<div
 							v-if="questionDetails.data[`explanation_${index}`]"
-							class="mt-2 text-xs text-ink-gray-7"
+							class="mt-2 text-xs text-ink-gray-7 whitespace-pre-line [&_img]:max-w-full [&_img]:mt-2 [&_img]:rounded"
 							v-show="showAnswers.length"
-						>
-							{{ questionDetails.data[`explanation_${index}`] }}
-						</div>
+							v-html="
+								sanitizeRichHTML(questionDetails.data[`explanation_${index}`])
+							"
+						></div>
 					</div>
 					<div v-else-if="questionDetails.data.type == 'User Input'">
 						<FormControl

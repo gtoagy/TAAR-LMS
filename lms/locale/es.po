@@ -1408,7 +1408,7 @@ msgstr "Cobra a los estudiantes por inscribirse en este curso."
 
 #: frontend/src/components/Quiz.vue:307
 msgid "Check"
-msgstr "Marcar"
+msgstr "Comprobar"
 
 #: frontend/src/pages/ProgrammingExercises/ProgrammingExercises.vue:18
 msgid "Check All Submissions"
@@ -4955,7 +4955,7 @@ msgstr "Tarea manual"
 
 #: frontend/src/components/Quiz.vue:148
 msgid "Mark"
-msgstr "Marcar"
+msgstr "punto"
 
 #: frontend/src/components/Notifications/NotificationPanel.vue:25
 msgid "Mark all as read"
@@ -4978,7 +4978,7 @@ msgstr "Marcar esta opción como respuesta correcta."
 #: lms/lms/doctype/lms_quiz_question/lms_quiz_question.json
 #: lms/lms/doctype/lms_quiz_result/lms_quiz_result.json
 msgid "Marks"
-msgstr "Marcas"
+msgstr "puntos"
 
 #. Label of the marks_to_cut (Int) field in DocType 'LMS Quiz'
 #: lms/lms/doctype/lms_quiz/lms_quiz.json
