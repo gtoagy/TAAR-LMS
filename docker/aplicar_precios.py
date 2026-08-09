@@ -17,14 +17,13 @@ frappe.init(site="lms.localhost")
 frappe.connect()
 frappe.set_user("Administrator")
 
-# Mascotas se vende aparte y queda FUERA de la membresía.
-# Retratos y Teoría del color entran con el plan anual y además se pueden
-# comprar sueltos; con el plan mensual no se ven.
+# Los tres cursos grandes entran con el plan ANUAL y además se pueden comprar
+# sueltos; con el plan mensual no se ven. El resto entra con cualquier plan.
 CONFIG = {
     "curso-de-mascotas": {
-        "taar_incluido_en_membresia": 0,
+        "taar_incluido_en_membresia": 1,
         "taar_venta_individual": 1,
-        "taar_solo_plan_anual": 0,
+        "taar_solo_plan_anual": 1,
         "taar_stripe_price_id": "price_1Tv6TdHxzDlE1j2fas1jKy5V",
         "taar_precio_display": "$1,490 MXN",
     },
