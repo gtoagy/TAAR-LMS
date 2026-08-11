@@ -81,12 +81,10 @@ for estado in VIVAS + ("canceled",):
         for item in sub["items"]["data"]:
             pid = item["price"]["id"]
             info = precios.get(pid, {})
+            # En Stripe, quien pide la baja sigue en "active" con
+            # cancel_at_period_end hasta que le vence el periodo pagado. Si ya
+            # figura como "canceled", se acabó: no arrastra acceso.
             vigente = estado in VIVAS
-            # Una cancelada puede tener periodo pagado por delante.
-            if estado == "canceled" and (item.get("current_period_end") or 0) > 0:
-                import time
-
-                vigente = item["current_period_end"] > time.time()
             filas.append(
                 {
                     "correo": email,
@@ -97,6 +95,7 @@ for estado in VIVAS + ("canceled",):
                     "periodo": info.get("intervalo") or "",
                     "estado": estado,
                     "vigente": "si" if vigente else "no",
+                    "baja_pedida": "si" if sub.get("cancel_at_period_end") else "",
                     "origen_disco": "si" if info.get("es_disco") else "",
                     "referencia": sub.id,
                     "precio": pid,
@@ -140,6 +139,7 @@ for sesion in stripe.checkout.Session.list(limit=100, status="complete").auto_pa
                 "periodo": "de por vida",
                 "estado": "pagado",
                 "vigente": "si",
+                "baja_pedida": "",
                 "origen_disco": "si" if info.get("es_disco") else "",
                 "referencia": sesion.id,
                 "precio": pid or "",
@@ -174,6 +174,7 @@ campos = [
     "periodo",
     "estado",
     "vigente",
+    "baja_pedida",
     "origen_disco",
     "referencia",
     "precio",
