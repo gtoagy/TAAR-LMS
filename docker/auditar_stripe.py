@@ -28,6 +28,12 @@ try:
 except ImportError:
     sys.exit("Falta la librería: pip install stripe")
 
+# La consola de Windows viene en cp1252 y se come los acentos.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 clave = os.environ.get("STRIPE_SECRET_KEY")
 if not clave:
     sys.exit("Falta STRIPE_SECRET_KEY en el entorno.")
@@ -43,16 +49,32 @@ def dinero(centavos, moneda):
     return f"{(centavos or 0) / 100:,.2f} {(moneda or '').upper()}"
 
 
+def g(objeto, clave, por_defecto=None):
+    """Lee un campo de un objeto de Stripe.
+
+    A partir de la versión 12 de la librería los objetos ya no admiten .get(),
+    así que se accede por clave. Sirve igual para dicts sueltos.
+    """
+    if objeto is None:
+        return por_defecto
+    try:
+        valor = objeto[clave]
+    except (KeyError, TypeError, AttributeError):
+        return por_defecto
+    return por_defecto if valor is None else valor
+
+
 print("Leyendo el catálogo...")
 productos = {p.id: p.name for p in stripe.Product.list(limit=100).auto_paging_iter()}
 precios = {}
 for pr in stripe.Price.list(limit=100).auto_paging_iter():
+    recurrente = g(pr, "recurring")
     precios[pr.id] = {
-        "producto": productos.get(pr.product, pr.product),
-        "importe": dinero(pr.unit_amount, pr.currency),
-        "recurrente": bool(pr.recurring),
-        "intervalo": (pr.recurring or {}).get("interval") if pr.recurring else None,
-        "es_disco": (pr.metadata or {}).get("app") == "disco",
+        "producto": productos.get(g(pr, "product"), g(pr, "product")),
+        "importe": dinero(g(pr, "unit_amount", 0), g(pr, "currency", "")),
+        "recurrente": bool(recurrente),
+        "intervalo": g(recurrente, "interval") if recurrente else None,
+        "es_disco": g(g(pr, "metadata", {}), "app") == "disco",
     }
 print(f"  {len(productos)} productos, {len(precios)} precios\n")
 
@@ -76,10 +98,10 @@ def cliente(cid):
 print("Leyendo suscripciones...")
 for estado in VIVAS + ("canceled",):
     for sub in stripe.Subscription.list(status=estado, limit=100).auto_paging_iter():
-        c = cliente(sub.customer)
-        email = (c.get("email") if c else None) or ""
-        for item in sub["items"]["data"]:
-            pid = item["price"]["id"]
+        c = cliente(g(sub, "customer"))
+        email = g(c, "email", "")
+        for item in g(g(sub, "items", {}), "data", []):
+            pid = g(g(item, "price", {}), "id", "")
             info = precios.get(pid, {})
             # En Stripe, quien pide la baja sigue en "active" con
             # cancel_at_period_end hasta que le vence el periodo pagado. Si ya
@@ -88,14 +110,14 @@ for estado in VIVAS + ("canceled",):
             filas.append(
                 {
                     "correo": email,
-                    "nombre": (c.get("name") if c else "") or "",
+                    "nombre": g(c, "name", ""),
                     "acceso": "Membresía",
                     "producto": info.get("producto", pid),
                     "importe": info.get("importe", ""),
                     "periodo": info.get("intervalo") or "",
                     "estado": estado,
                     "vigente": "si" if vigente else "no",
-                    "baja_pedida": "si" if sub.get("cancel_at_period_end") else "",
+                    "baja_pedida": "si" if g(sub, "cancel_at_period_end") else "",
                     "origen_disco": "si" if info.get("es_disco") else "",
                     "referencia": sub.id,
                     "precio": pid,
@@ -104,7 +126,7 @@ for estado in VIVAS + ("canceled",):
             if email:
                 correos[email.lower().strip()].append(email)
             else:
-                avisos.append(f"SIN CORREO: suscripción {sub.id} (cliente {sub.customer})")
+                avisos.append(f"SIN CORREO: suscripción {sub.id} (cliente {g(sub, 'customer')})")
 print(f"  {len(filas)} líneas de suscripción\n")
 
 # --- pagos únicos -----------------------------------------------------------
@@ -114,28 +136,28 @@ print(f"  {len(filas)} líneas de suscripción\n")
 print("Leyendo pagos únicos...")
 n_pagos = 0
 for sesion in stripe.checkout.Session.list(limit=100, status="complete").auto_paging_iter():
-    if sesion.mode != "payment" or sesion.payment_status != "paid":
+    if g(sesion, "mode") != "payment" or g(sesion, "payment_status") != "paid":
         continue
     n_pagos += 1
-    detalles = sesion.get("customer_details") or {}
-    email = detalles.get("email") or ""
+    detalles = g(sesion, "customer_details", {})
+    email = g(detalles, "email", "")
     try:
         lineas = stripe.checkout.Session.list_line_items(sesion.id, limit=10)
     except Exception as e:
         avisos.append(f"sesión sin detalle {sesion.id}: {e}")
         continue
-    for li in lineas.data:
-        pid = (li.get("price") or {}).get("id")
+    for li in g(lineas, "data", []):
+        pid = g(g(li, "price", {}), "id", "")
         info = precios.get(pid, {})
-        nombre_producto = info.get("producto") or li.get("description") or pid
+        nombre_producto = info.get("producto") or g(li, "description") or pid
         es_regalo = "gift" in (nombre_producto or "").lower()
         filas.append(
             {
                 "correo": email,
-                "nombre": detalles.get("name") or "",
+                "nombre": g(detalles, "name", ""),
                 "acceso": "Regalo (revisar)" if es_regalo else "Pago único",
                 "producto": nombre_producto,
-                "importe": dinero(li.get("amount_total"), sesion.currency),
+                "importe": dinero(g(li, "amount_total", 0), g(sesion, "currency", "")),
                 "periodo": "de por vida",
                 "estado": "pagado",
                 "vigente": "si",
@@ -160,8 +182,8 @@ print(f"  {n_pagos} pagos únicos\n")
 print("Comprobando reembolsos...")
 reembolsados = set()
 for r in stripe.Refund.list(limit=100).auto_paging_iter():
-    if r.status == "succeeded" and r.payment_intent:
-        reembolsados.add(r.payment_intent)
+    if g(r, "status") == "succeeded" and g(r, "payment_intent"):
+        reembolsados.add(g(r, "payment_intent"))
 print(f"  {len(reembolsados)} cobros reembolsados\n")
 
 # --- escritura ---------------------------------------------------------------
