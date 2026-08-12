@@ -83,6 +83,19 @@
 			</div>
 		</div>
 		<div class="m-2 flex flex-col gap-1">
+			<!-- Quien ya es alumno y llega desde la web necesita ver por dónde se
+			     entra: escondido en el menú del logo no lo encontraba nadie. -->
+			<a v-if="!user" href="/login" class="block">
+				<Button
+					variant="subtle"
+					class="w-full"
+					:label="sidebarStore.isSidebarCollapsed ? '' : __('Log in')"
+				>
+					<template #prefix>
+						<span class="lucide-log-in h-4 w-4 text-ink-gray-7" />
+					</template>
+				</Button>
+			</a>
 			<div
 				v-if="readOnlyMode && !sidebarStore.isSidebarCollapsed"
 				class="z-10 m-2 bg-surface-elevation-2 py-2.5 px-3 text-xs text-ink-gray-7 leading-5 rounded-md"

@@ -23,7 +23,10 @@ def get_context():
 	title = frappe.db.get_single_value("Website Settings", "app_name") or "Frappe Learning"
 
 	context.meta = get_meta(app_path, title, favicon)
-	context.title = title
+	# La pestaña y el resultado de búsqueda decían siempre "TanArtistic": el
+	# nombre de lo que se está mirando va delante, que es lo que se reconoce.
+	nombre = context.meta.get("title")
+	context.title = f"{nombre} · {title}" if nombre and nombre != title else title
 	context.favicon = favicon
 
 	capture("active_site", "lms")
@@ -84,6 +87,14 @@ def get_meta(app_path, title, favicon):
 			"image": favicon,
 			"description": description,
 		}
+
+	# WhatsApp, Instagram y Facebook descartan las imágenes con ruta relativa:
+	# al compartir un curso no se veía su portada, solo el enlace pelado.
+	imagen = meta.get("image")
+	if imagen and not imagen.startswith(("http://", "https://")):
+		meta["image"] = frappe.utils.get_url(imagen)
+
+	meta["link"] = frappe.utils.get_url(meta.get("link") or get_lms_route(app_path or ""))
 
 	return meta
 

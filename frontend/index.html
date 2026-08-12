@@ -215,6 +215,11 @@
 		<meta name="twitter:title" content="{{ meta.title | e }}" />
 		<meta name="twitter:image" content="{{ meta.image | e }}" />
 		<meta name="twitter:description" content="{{ meta.description | e }}" />
+		<!-- Sin esto, al pegar el enlace en WhatsApp o Instagram sale un
+		     recuadro de texto en vez de la portada del curso -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="{{ meta.link | e }}" />
+		<meta name="twitter:card" content="summary_large_image" />
 	</head>
 	<body class="sm:overscroll-y-none no-scrollbar">
 		<div id="app">

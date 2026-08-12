@@ -10245,3 +10245,51 @@ msgstr "Mínimo 8 caracteres"
 
 msgid "This account already has access. Log in to continue."
 msgstr "Esta cuenta ya tiene acceso. Inicia sesión para continuar."
+
+msgid "{0} courses of the membership"
+msgstr "{0} cursos de la membresía"
+
+msgid "All {0} courses included"
+msgstr "Los {0} cursos incluidos"
+
+msgid "Choose monthly"
+msgstr "Elegir mensual"
+
+msgid "Choose annual"
+msgstr "Elegir anual"
+
+msgid "Bought separately they cost {0}."
+msgstr "Comprados por separado cuestan {0}."
+
+msgid "You save {0}."
+msgstr "Ahorras {0}."
+
+msgid ""
+"This course comes with the annual membership. The monthly plan does not "
+"include it."
+msgstr ""
+"Este curso entra con la membresía anual. El plan mensual no lo incluye."
+
+msgid "This course is already included in your membership."
+msgstr "Este curso ya entra con tu membresía."
+
+msgid "Upgrade to annual"
+msgstr "Mejorar a plan anual"
+
+msgid "See the annual membership"
+msgstr "Ver la membresía anual"
+
+msgid "Log out"
+msgstr "Cerrar sesión"
+
+msgid "Toggle Theme"
+msgstr "Cambiar el tema"
+
+msgid "Profile"
+msgstr "Mi perfil"
+
+msgid "All courses"
+msgstr "Todos los cursos"
+
+msgid "My courses"
+msgstr "Mis cursos"

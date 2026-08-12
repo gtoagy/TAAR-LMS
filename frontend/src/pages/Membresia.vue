@@ -12,7 +12,7 @@
 			<LoadingIndicator class="size-5 text-ink-gray-5" />
 		</div>
 		<div v-else-if="membership.data" class="p-5">
-			<div class="max-w-xl mx-auto mt-8 text-center">
+			<div class="max-w-3xl mx-auto mt-8 text-center">
 				<div
 					class="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-surface-gray-2"
 				>
@@ -84,85 +84,142 @@
 					</p>
 				</div>
 
-				<!-- Sin membresía / cancelada -->
-				<div
-					v-else
-					class="rounded-lg border border-outline-gray-2 bg-surface-base p-8"
-				>
+				<!-- Sin membresía / cancelada: los dos planes a la vista. Lo que
+				     separa a uno de otro son los cursos maestros, y callarlo
+				     acaba en reclamación de quien paga el mensual. -->
+				<div v-else class="grid gap-4 text-start sm:grid-cols-2">
+					<!-- Mensual -->
 					<div
-						class="mb-6 grid grid-cols-2 gap-1 rounded-lg bg-surface-gray-2 p-1"
+						class="flex flex-col rounded-lg border border-outline-gray-2 bg-surface-base p-6"
 					>
-						<button
-							class="rounded-md px-3 py-2 text-base font-medium transition"
-							:class="
-								plan === 'mensual'
-									? 'bg-surface-base text-ink-gray-9 shadow-sm'
-									: 'text-ink-gray-5 hover:text-ink-gray-7'
-							"
-							@click="plan = 'mensual'"
+						<div
+							class="text-sm font-medium uppercase tracking-wide text-ink-gray-5"
 						>
 							{{ __('Monthly') }}
-						</button>
-						<button
-							class="rounded-md px-3 py-2 text-base font-medium transition"
-							:class="
-								plan === 'anual'
-									? 'bg-surface-base text-ink-gray-9 shadow-sm'
-									: 'text-ink-gray-5 hover:text-ink-gray-7'
-							"
-							@click="plan = 'anual'"
-						>
-							{{ __('Annual') }}
+						</div>
+						<div class="mt-2 text-3xl font-bold text-ink-gray-9">
+							{{ membership.data.price_display }}
+							<span class="text-base font-normal text-ink-gray-5">
+								{{ __('/ month') }}
+							</span>
+						</div>
+						<div class="my-5 flex-1 space-y-2 text-base text-ink-gray-8">
+							<div class="flex items-start gap-2">
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								{{
+									__('{0} courses of the membership').format(
+										comparativa.cursos_mensual
+									)
+								}}
+							</div>
+							<div class="flex items-start gap-2">
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								{{ __('New courses at no extra cost') }}
+							</div>
+							<div class="flex items-start gap-2">
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								{{ __('Cancel anytime') }}
+							</div>
+							<div
+								v-for="curso in comparativa.cursos_solo_anual"
+								:key="curso"
+								class="flex items-start gap-2 text-ink-gray-5"
+							>
+								<X class="mt-1 size-4 shrink-0 text-ink-gray-4" />
+								{{ curso }}
+							</div>
+						</div>
+						<Button size="md" class="w-full" @click="irACheckout('mensual')">
+							{{ __('Choose monthly') }}
+						</Button>
+					</div>
+
+					<!-- Anual -->
+					<div
+						class="flex flex-col rounded-lg border-2 border-outline-gray-4 bg-surface-base p-6"
+					>
+						<div class="flex items-center gap-2">
 							<span
-								class="ms-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
+								class="text-sm font-medium uppercase tracking-wide text-ink-gray-5"
+							>
+								{{ __('Annual') }}
+							</span>
+							<span
+								class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
 							>
 								{{ __('2 months free') }}
 							</span>
-						</button>
-					</div>
-					<div class="text-4xl font-bold text-ink-gray-9">
-						{{
-							plan === 'anual'
-								? membership.data.price_display_anual
-								: membership.data.price_display
-						}}
-						<span class="text-base font-normal text-ink-gray-5">
-							{{ plan === 'anual' ? __('/ year') : __('/ month') }}
-						</span>
-					</div>
-					<div class="my-6 space-y-2 text-start text-base text-ink-gray-8">
-						<div class="flex items-center gap-2">
-							<Check class="size-4 text-green-600" />
-							{{ __('All membership courses included') }}
 						</div>
-						<div class="flex items-center gap-2">
-							<Check class="size-4 text-green-600" />
-							{{ __('New courses at no extra cost') }}
+						<div class="mt-2 text-3xl font-bold text-ink-gray-9">
+							{{ membership.data.price_display_anual }}
+							<span class="text-base font-normal text-ink-gray-5">
+								{{ __('/ year') }}
+							</span>
 						</div>
-						<div class="flex items-center gap-2">
-							<Check class="size-4 text-green-600" />
-							{{ __('Cancel anytime') }}
+						<div class="my-5 flex-1 space-y-2 text-base text-ink-gray-8">
+							<div class="flex items-start gap-2">
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								<strong>
+									{{
+										__('All {0} courses included').format(
+											comparativa.cursos_totales
+										)
+									}}
+								</strong>
+							</div>
+							<div
+								v-for="curso in comparativa.cursos_solo_anual"
+								:key="curso"
+								class="flex items-start gap-2"
+							>
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								{{ curso }}
+							</div>
+							<div class="flex items-start gap-2">
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								{{ __('New courses at no extra cost') }}
+							</div>
 						</div>
+						<p
+							v-if="comparativa.valor_sueltos"
+							class="mb-4 text-sm text-ink-gray-6"
+						>
+							{{
+								__('Bought separately they cost {0}.').format(
+									comparativa.valor_sueltos
+								)
+							}}
+							<template v-if="comparativa.ahorro_anual">
+								<strong class="text-ink-gray-8">
+									{{ __('You save {0}.').format(comparativa.ahorro_anual) }}
+								</strong>
+							</template>
+						</p>
+						<Button
+							variant="solid"
+							size="md"
+							class="w-full"
+							@click="irACheckout('anual')"
+						>
+							{{ __('Choose annual') }}
+						</Button>
 					</div>
-					<Button variant="solid" size="md" class="w-full" @click="irACheckout()">
-						{{ __('Become a member') }}
-					</Button>
-					<p class="text-sm text-ink-gray-5 mt-4">
-						{{ __('Some master courses are sold separately.') }}
-					</p>
-					<p class="text-sm text-ink-gray-5 mt-2">
-						{{ __('Prices are shown in your local currency at checkout.') }}
-					</p>
-					<p
-						v-if="membership.data.status === 'Cancelada'"
-						class="text-sm text-ink-gray-5 mt-2"
-					>
-						{{
-							__(
-								'Your previous membership is canceled. Reactivate it to regain access immediately.'
-							)
-						}}
-					</p>
+
+					<div class="sm:col-span-2 text-center">
+						<p class="text-sm text-ink-gray-5">
+							{{ __('Prices are shown in your local currency at checkout.') }}
+						</p>
+						<p
+							v-if="membership.data.status === 'Cancelada'"
+							class="mt-2 text-sm text-ink-gray-5"
+						>
+							{{
+								__(
+									'Your previous membership is canceled. Reactivate it to regain access immediately.'
+								)
+							}}
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -176,13 +233,11 @@ import {
 	createResource,
 	LoadingIndicator,
 } from 'frappe-ui'
-import { computed, ref } from 'vue'
-import { Check, Crown } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { Check, Crown, X } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
 
 const { user } = sessionStore()
-
-const plan = ref('mensual')
 
 const membership = createResource({
 	url: 'taar_lms.api.get_my_membership',
@@ -190,8 +245,23 @@ const membership = createResource({
 	cache: ['membership', user],
 })
 
-const irACheckout = () => {
-	window.location.href = `/api/method/taar_lms.api.ir_a_checkout?plan=${plan.value}`
+// La diferencia entre planes la calcula el servidor leyendo los cursos, para que
+// esta página no pueda quedarse prometiendo lo que ya dejó de ser cierto.
+const comparativa = computed(
+	() =>
+		membership.data?.comparativa || {
+			cursos_solo_anual: [],
+			cursos_totales: 0,
+			cursos_mensual: 0,
+			valor_sueltos: null,
+			ahorro_anual: null,
+		}
+)
+
+const irACheckout = (plan) => {
+	// Misma puerta que usan los botones de la landing: sabe explicarse si la
+	// compra no puede empezar, y devuelve aquí a quien se arrepienta en Stripe.
+	window.location.href = `/comprar/${plan}?volver=/lms/membresia`
 }
 
 const irAPortal = () => {

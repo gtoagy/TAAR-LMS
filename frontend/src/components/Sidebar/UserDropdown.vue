@@ -116,7 +116,7 @@ const userDropdownOptions = computed(() => {
 			items: [
 				{
 					icon: 'lucide-user',
-					label: 'My Profile',
+					label: __('My Profile'),
 					onClick: () => {
 						router.push(`/user/${userResource.data?.username}`)
 					},
@@ -126,7 +126,7 @@ const userDropdownOptions = computed(() => {
 				},
 				{
 					icon: theme.value === 'light' ? Moon : Sun,
-					label: 'Toggle Theme',
+					label: __('Toggle Theme'),
 					onClick: () => {
 						toggleTheme()
 					},
@@ -144,7 +144,7 @@ const userDropdownOptions = computed(() => {
 				},
 				{
 					icon: 'lucide-settings',
-					label: 'Settings',
+					label: __('Settings'),
 					onClick: () => {
 						settingsStore.isSettingsOpen = true
 					},
@@ -201,7 +201,7 @@ const userDropdownOptions = computed(() => {
 				},
 				{
 					icon: 'lucide-log-out',
-					label: 'Log out',
+					label: __('Log out'),
 					onClick: () => {
 						logout.submit().then(() => {
 							isLoggedIn = false
@@ -213,7 +213,7 @@ const userDropdownOptions = computed(() => {
 				},
 				{
 					icon: 'lucide-log-in',
-					label: 'Log in',
+					label: __('Log in'),
 					onClick: () => {
 						window.location.href = '/login'
 					},

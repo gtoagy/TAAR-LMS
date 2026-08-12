@@ -328,9 +328,16 @@ watch(currentTab, () => {
 })
 
 const courseTabs = computed(() => {
+	const gestiona =
+		user.data?.is_moderator ||
+		user.data?.is_instructor ||
+		user.data?.is_evaluator
+
+	// "Publicado" solo dice algo frente a "Sin publicar": para el alumno, que
+	// nunca ve los borradores, es jerga de administración.
 	let tabs = [
 		{
-			label: __('Published'),
+			label: gestiona ? __('Published') : __('All courses'),
 			value: 'live',
 		},
 		{
@@ -338,15 +345,11 @@ const courseTabs = computed(() => {
 			value: 'upcoming',
 		},
 	]
-	if (
-		user.data?.is_moderator ||
-		user.data?.is_instructor ||
-		user.data?.is_evaluator
-	) {
+	if (gestiona) {
 		tabs.push({ label: __('Created'), value: 'created' })
 		tabs.push({ label: __('Unpublished'), value: 'unpublished' })
 	} else if (user.data) {
-		tabs.push({ label: __('Enrolled'), value: 'enrolled' })
+		tabs.push({ label: __('My courses'), value: 'enrolled' })
 	}
 	return tabs
 })

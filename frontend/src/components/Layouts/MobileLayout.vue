@@ -26,7 +26,7 @@
 						:is="icons[link.icon]"
 						class="h-4 w-4 stroke-1.5 text-ink-gray-5"
 					/>
-					<div>{{ link.label }}</div>
+					<div>{{ __(link.label) }}</div>
 				</div>
 			</div>
 
@@ -36,11 +36,13 @@
 				v-if="sidebarSettings.data"
 				class="standalone:pb-[max(1rem,env(safe-area-inset-bottom))] z-10 flex w-full items-center justify-around border-t border-outline-gray-2 bg-surface-base"
 			>
+				<!-- Con etiqueta: tres iconos sueltos no le dicen nada a quien
+				     entra por primera vez desde el móvil, que es la mayoría -->
 				<button
 					v-for="tab in sidebarLinks"
 					:key="tab.label"
-					:class="isVisible(tab) ? 'block' : 'hidden'"
-					class="flex flex-col items-center justify-center py-3 transition active:scale-95"
+					:class="isVisible(tab) ? 'flex' : 'hidden'"
+					class="flex-col items-center justify-center gap-1 py-2.5 transition active:scale-95"
 					@click="handleClick(tab)"
 				>
 					<component
@@ -48,12 +50,24 @@
 						class="h-6 w-6 stroke-1.5"
 						:class="[isActive(tab) ? 'text-ink-gray-9' : 'text-ink-gray-5']"
 					/>
+					<span
+						class="text-xs leading-none"
+						:class="[isActive(tab) ? 'text-ink-gray-9' : 'text-ink-gray-5']"
+					>
+						{{ __(tab.label) }}
+					</span>
 				</button>
-				<button @click="toggleMenu">
+				<button
+					class="flex flex-col items-center justify-center gap-1 py-2.5 transition active:scale-95"
+					@click="toggleMenu"
+				>
 					<component
 						:is="icons['List']"
 						class="h-6 w-6 stroke-1.5 text-ink-gray-5"
 					/>
+					<span class="text-xs leading-none text-ink-gray-5">
+						{{ __('More') }}
+					</span>
 				</button>
 			</div>
 		</div>

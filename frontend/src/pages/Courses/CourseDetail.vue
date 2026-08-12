@@ -4,7 +4,9 @@
 		<LayoutHeader :isLoading="!course.data">
 			<template #left-header>
 				<Breadcrumbs class="h-7" :items="breadcrumbs" />
-				<Badge v-if="course.data?.published" theme="green">
+				<!-- "Publicado" es estado de edición: le sirve a quien administra
+				     el curso, al alumno solo le ensucia la ficha -->
+				<Badge v-if="course.data?.published && isAdmin" theme="green">
 					{{ __('Published') }}
 				</Badge>
 			</template>

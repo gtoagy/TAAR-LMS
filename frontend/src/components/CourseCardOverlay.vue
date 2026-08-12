@@ -47,9 +47,47 @@
 					v-else-if="protectedCourse && !isAdmin"
 					class="space-y-2 mb-8"
 				>
+					<!-- Curso reservado al plan anual: hay que decirlo antes de que
+					     alguien pague el mensual creyendo que lo incluye. -->
+					<p
+						v-if="soloPlanAnual"
+						class="rounded-md bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7"
+					>
+						{{
+							__(
+								'This course comes with the annual membership. The monthly plan does not include it.'
+							)
+						}}
+					</p>
+					<!-- Ya tiene derecho a este curso: avisar antes de que lo pague
+					     por segunda vez. -->
+					<p
+						v-else-if="isMember && !necesitaMejorarPlan"
+						class="rounded-md bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7"
+					>
+						{{ __('This course is already included in your membership.') }}
+					</p>
+					<router-link
+						v-if="incluidoEnMembresia && (!isMember || necesitaMejorarPlan)"
+						:to="{ name: 'Membresia' }"
+						class="block"
+					>
+						<Button variant="solid" size="md" class="w-full">
+							<template #prefix>
+								<span class="lucide-crown size-4" />
+							</template>
+							{{
+								necesitaMejorarPlan
+									? __('Upgrade to annual')
+									: soloPlanAnual
+										? __('See the annual membership')
+										: __('Become a member')
+							}}
+						</Button>
+					</router-link>
 					<Button
 						v-if="ventaIndividual"
-						variant="solid"
+						:variant="incluidoEnMembresia ? 'subtle' : 'solid'"
 						size="md"
 						class="w-full"
 						@click="comprarCurso()"
@@ -59,22 +97,6 @@
 						</template>
 						{{ __('Buy this course') }}
 					</Button>
-					<router-link
-						v-if="incluidoEnMembresia && !isMember"
-						:to="{ name: 'Membresia' }"
-						class="block"
-					>
-						<Button
-							:variant="ventaIndividual ? 'subtle' : 'solid'"
-							size="md"
-							class="w-full"
-						>
-							<template #prefix>
-								<span class="lucide-crown size-4" />
-							</template>
-							{{ __('Become a member') }}
-						</Button>
-					</router-link>
 					<p
 						v-if="ventaIndividual"
 						class="text-sm text-ink-gray-5 text-center"
@@ -268,6 +290,13 @@ const incluidoEnMembresia = computed<boolean>(() =>
 	Boolean(accessInfo.data?.incluido_en_membresia)
 )
 const isMember = computed<boolean>(() => Boolean(accessInfo.data?.is_member))
+const soloPlanAnual = computed<boolean>(() =>
+	Boolean(accessInfo.data?.solo_plan_anual)
+)
+// Miembro cuyo plan no llega a este curso: no le sirve "hacerse miembro", ya lo es.
+const necesitaMejorarPlan = computed<boolean>(
+	() => isMember.value && !accessInfo.data?.cubierto_por_mi_plan
+)
 const protectedCourse = computed<boolean>(
 	() => ventaIndividual.value || incluidoEnMembresia.value
 )
@@ -278,9 +307,12 @@ function comprarCurso() {
 	const courseName = props.course.data?.name
 	if (!courseName) return
 	capture('buy_course_clicked', { course: courseName })
-	window.location.href = `/api/method/taar_lms.api.ir_a_checkout_curso?curso=${encodeURIComponent(
+	// Misma puerta que los botones de la landing; al cancelar en Stripe se
+	// vuelve a la ficha del curso, que es desde donde se hizo clic.
+	const volver = encodeURIComponent(`/lms/courses/${courseName}`)
+	window.location.href = `/comprar/curso/${encodeURIComponent(
 		courseName
-	)}`
+	)}?volver=${volver}`
 }
 
 const priceLabel = computed<string>(() => {
