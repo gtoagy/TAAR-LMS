@@ -92,6 +92,24 @@ export function formatEnrollments(count) {
 	return `${Math.floor(n / tier) * tier}+`
 }
 
+export function courseCardRoute(course) {
+	// Quien ya tiene el curso no necesita volver a leer la ficha de venta: la
+	// tarjeta lo devuelve directamente a la lección donde lo dejó. La ficha
+	// sigue a un clic, en el nombre del curso de las migas de pan.
+	if (!course.membership) {
+		return { name: 'CourseDetail', params: { courseName: course.name } }
+	}
+	// El catálogo y la ficha traen el índice en sitios distintos; el nombre
+	// crudo de la lección no sirve como ruta, así que nunca se usa.
+	const [chapterNumber, lessonNumber] = (
+		course.current_lesson || course.membership.current_lesson_index || '1-1'
+	).split('-')
+	return {
+		name: 'Lesson',
+		params: { courseName: course.name, chapterNumber, lessonNumber },
+	}
+}
+
 export function convertToTitleCase(str) {
 	if (!str) {
 		return ''

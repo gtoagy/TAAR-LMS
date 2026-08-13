@@ -11,7 +11,7 @@
 			<router-link
 				v-for="course in relatedCourses.data"
 				:key="course.name"
-				:to="{ name: 'CourseDetail', params: { courseName: course.name } }"
+				:to="courseCardRoute(course)"
 				target="_blank"
 				rel="noopener"
 				class="cursor-pointer"
@@ -26,6 +26,7 @@
 import { createResource } from 'frappe-ui'
 import { watch } from 'vue'
 import CourseCard from '@/components/CourseCard.vue'
+import { courseCardRoute } from '@/utils'
 import type { LMSCourse } from '@/types/lms/LMSCourse'
 import type { Resource } from '@/types/api'
 

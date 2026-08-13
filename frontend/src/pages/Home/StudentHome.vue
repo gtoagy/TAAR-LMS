@@ -25,7 +25,7 @@
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 				<router-link
 					v-for="course in myCourses.data"
-					:to="{ name: 'CourseDetail', params: { courseName: course.name } }"
+					:to="courseCardRoute(course)"
 				>
 					<CourseCard :course="course" />
 				</router-link>
@@ -70,6 +70,7 @@ import { inject } from 'vue'
 import { createResource } from 'frappe-ui'
 import CourseCard from '@/components/CourseCard.vue'
 import BatchCard from '@/pages/Batches/components/BatchCard.vue'
+import { courseCardRoute } from '@/utils'
 
 const user = inject<any>('$user')
 

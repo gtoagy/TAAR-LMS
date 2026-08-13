@@ -95,7 +95,7 @@
 		>
 			<router-link
 				v-for="course in courses.data"
-				:to="{ name: 'CourseDetail', params: { courseName: course.name } }"
+				:to="courseCardRoute(course)"
 			>
 				<CourseCard :course="course" />
 			</router-link>
@@ -140,7 +140,7 @@ import ClearableCombobox from '@/components/Controls/ClearableCombobox.vue'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { sessionStore } from '@/stores/session'
 import { useSettings } from '@/stores/settings'
-import { canCreateCourse } from '@/utils'
+import { canCreateCourse, courseCardRoute } from '@/utils'
 import CourseCard from '@/components/CourseCard.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import EmptyStateLayout from '@/components/Layouts/EmptyStateLayout.vue'

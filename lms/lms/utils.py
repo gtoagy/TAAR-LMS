@@ -897,6 +897,13 @@ def get_enrollment_details(courses: list) -> list:
 				["name", "course", "current_lesson", "progress", "member"],
 				as_dict=1,
 			)
+			# El índice "capítulo-lección", que es lo que necesita la ruta para
+			# que la tarjeta abra el curso donde la alumna lo dejó en vez de
+			# pasar otra vez por la ficha.
+			if course.membership.current_lesson:
+				course.membership.current_lesson_index = get_lesson_index(
+					course.membership.current_lesson
+				)
 
 	return courses
 

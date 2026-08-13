@@ -384,7 +384,6 @@ const lessonContainer = ref(null)
 const zenModeEnabled = ref(false)
 const showStatsDialog = ref(false)
 const hasQuiz = ref(false)
-const hasAssignment = ref(false)
 const discussionsContainer = ref(null)
 const timer = ref(0)
 const { brand } = sessionStore()
@@ -508,7 +507,6 @@ const setupLesson = (data) => {
 		})
 	}
 	lessonProgress.value = data.membership?.progress
-	detectAssignment(data)
 	if (data.content) editor.value = renderEditor('editor', data.content)
 	if (
 		data.instructor_content &&
@@ -522,26 +520,6 @@ const setupLesson = (data) => {
 		checkIfDiscussionsAllowed()
 	})
 	checkQuiz()
-}
-
-// Una lección de tarea se completa entregando el trabajo, no dejándola abierta:
-// el temporizador de permanencia la daba por hecha en cuanto se abría, y el
-// enunciado promete lo contrario ("sube una foto para completar esta lección").
-// La marca la pone Assignment.vue al guardar la entrega.
-const detectAssignment = (data) => {
-	hasAssignment.value = false
-	if (data?.content) {
-		try {
-			JSON.parse(data.content)?.blocks?.forEach((block) => {
-				if (block.type === 'assignment') hasAssignment.value = true
-			})
-		} catch {
-			// lecciones antiguas en markdown
-		}
-	}
-	if (!hasAssignment.value && data?.body) {
-		hasAssignment.value = /\{\{ Assignment\(".*"\) \}\}/.test(data.body)
-	}
 }
 
 const checkQuiz = () => {
@@ -586,8 +564,7 @@ const markProgress = () => {
 		!user.data ||
 		!lesson.data ||
 		!lesson.data.membership ||
-		lesson.data.progress ||
-		hasAssignment.value
+		lesson.data.progress
 	)
 		return
 	progressSubmitting = true
