@@ -84,6 +84,58 @@
 					</p>
 				</div>
 
+				<!-- Con el plan mensual los cursos maestros siguen fuera, y hasta
+				     ahora solo se enteraba quien abría una de sus fichas. Aquí es
+				     donde se mira la membresía, así que aquí se cuenta. -->
+				<div
+					v-if="puedeMejorar"
+					class="mt-4 rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-6 text-start"
+				>
+					<div class="text-lg font-medium text-ink-gray-9 mb-1">
+						{{ __('Your plan is the monthly one.') }}
+					</div>
+					<p class="text-base text-ink-gray-7">
+						{{ __('With the annual plan you also get:') }}
+					</p>
+					<div class="my-4 space-y-2 text-base text-ink-gray-8">
+						<div
+							v-for="curso in comparativa.cursos_solo_anual"
+							:key="curso"
+							class="flex items-start gap-2"
+						>
+							<Check class="mt-1 size-4 shrink-0 text-green-600" />
+							{{ curso }}
+						</div>
+						<div class="flex items-start gap-2">
+							<Check class="mt-1 size-4 shrink-0 text-green-600" />
+							{{ __('2 months free compared to paying month by month') }}
+						</div>
+					</div>
+					<p
+						v-if="comparativa.valor_sueltos"
+						class="mb-4 text-sm text-ink-gray-6"
+					>
+						{{
+							__('Bought separately they cost {0}.').format(
+								comparativa.valor_sueltos
+							)
+						}}
+					</p>
+					<Button variant="solid" @click="irAPortal(true)">
+						<template #prefix>
+							<Crown class="size-4" />
+						</template>
+						{{ __('Change to the annual plan') }}
+					</Button>
+					<p class="text-sm text-ink-gray-5 mt-3">
+						{{
+							__(
+								'Stripe shows you what you pay today, with the part you already paid this month discounted.'
+							)
+						}}
+					</p>
+				</div>
+
 				<!-- Sin membresía / cancelada: los dos planes a la vista. Lo que
 				     separa a uno de otro son los cursos maestros, y callarlo
 				     acaba en reclamación de quien paga el mensual. -->
@@ -264,8 +316,20 @@ const irACheckout = (plan) => {
 	window.location.href = `/comprar/${plan}?volver=/lms/membresia`
 }
 
-const irAPortal = () => {
-	window.location.href = '/api/method/taar_lms.api.ir_a_portal'
+// Solo con el plan mensual identificado: a los miembros migrados que todavía no
+// tienen plan anotado no se les ofrece un cambio que quizá ya hicieron.
+const puedeMejorar = computed(
+	() =>
+		membership.data?.is_member &&
+		membership.data?.plan === 'Mensual' &&
+		!membership.data?.cancel_at_period_end &&
+		comparativa.value.cursos_solo_anual.length > 0
+)
+
+const irAPortal = (mejorar = false) => {
+	window.location.href = mejorar
+		? '/api/method/taar_lms.api.ir_a_portal?mejorar=1'
+		: '/api/method/taar_lms.api.ir_a_portal'
 }
 
 const breadcrumbs = computed(() => [

@@ -965,6 +965,7 @@ def get_course_fields():
 		"taar_incluido_en_membresia",
 		"taar_venta_individual",
 		"taar_precio_display",
+		"taar_solo_plan_anual",
 	]
 
 

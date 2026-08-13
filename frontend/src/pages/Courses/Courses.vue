@@ -340,12 +340,11 @@ const courseTabs = computed(() => {
 			label: gestiona ? __('Published') : __('All courses'),
 			value: 'live',
 		},
-		{
-			label: __('Upcoming'),
-			value: 'upcoming',
-		},
 	]
+	// "Próximamente" es una herramienta de quien prepara el catálogo. Para la
+	// alumna era una pestaña más que casi siempre lleva a una pantalla vacía.
 	if (gestiona) {
+		tabs.push({ label: __('Upcoming'), value: 'upcoming' })
 		tabs.push({ label: __('Created'), value: 'created' })
 		tabs.push({ label: __('Unpublished'), value: 'unpublished' })
 	} else if (user.data) {

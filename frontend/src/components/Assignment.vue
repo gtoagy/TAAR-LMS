@@ -1,12 +1,15 @@
 <template>
 	<div
 		v-if="assignment.data"
-		class="grid grid-cols-2 h-full"
+		class="grid grid-cols-1 md:grid-cols-2 h-full"
 		:class="{ 'border rounded-lg overflow-auto': !showTitle }"
 	>
+		<!-- Una sola columna en el móvil: a dos columnas el enunciado y el
+		     recuadro de subida quedaban en 165 px cada uno, y ahí es donde la
+		     mayoría entrega su trabajo. -->
 		<div
-			class="border-e p-5 overflow-y-auto h-[calc(100vh-3.2rem)]"
-			:class="{ 'h-full': !showTitle }"
+			class="border-b md:border-b-0 md:border-e p-5 overflow-y-auto md:h-[calc(100vh-3.2rem)]"
+			:class="{ 'md:h-full': !showTitle }"
 		>
 			<div v-if="showTitle" class="text-xl-semibold mb-5 text-ink-gray-9">
 				<div v-if="submissionName === 'new'">
@@ -40,10 +43,13 @@
 							:theme="statusTheme"
 							size="lg"
 						>
-							{{ submissionResource.doc?.status }}
+							{{ __(submissionResource.doc?.status) }}
 						</Badge>
+						<!-- Solo cuando queda algo por guardar: subir el archivo ya
+						     entrega, así que el botón sobraba y competía en atención
+						     con el de subir. -->
 						<ShortcutTooltip
-							v-if="canModifyAssignment || canGradeSubmission"
+							v-if="(canModifyAssignment && isDirty) || canGradeSubmission"
 							:label="__('Save')"
 							combo="Mod+S"
 						>
@@ -375,6 +381,11 @@ const updateSubmission = () => {
 const saveSubmission = (file) => {
 	isDirty.value = true
 	attachment.value = file.file_url
+	// Subir el archivo es entregar. Antes el trabajo se quedaba solo en la
+	// pantalla y había que acordarse de pulsar "Guardar", arriba del todo y
+	// lejos del botón de subir: quien cerraba la lección después de subir su
+	// obra perdía la entrega sin enterarse.
+	submitAssignment()
 }
 
 const markLessonProgress = () => {

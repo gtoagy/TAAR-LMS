@@ -52,6 +52,28 @@ const setupPlyrForVideo = (video, players) => {
 	const player = new Plyr(video, {
 		youtube: { noCookie: true },
 		controls: controls,
+		// Plyr trae sus etiquetas en inglés y no pasa por el catálogo del LMS:
+		// sin esto, una escuela en español muestra Play, Mute y Settings.
+		i18n: {
+			play: __('Play'),
+			pause: __('Pause'),
+			seek: __('Seek'),
+			seekLabel: '{currentTime} / {duration}',
+			played: __('Played'),
+			buffered: __('Buffered'),
+			currentTime: __('Current time'),
+			duration: __('Duration'),
+			volume: __('Volume'),
+			mute: __('Mute'),
+			unmute: __('Unmute'),
+			enterFullscreen: __('Enter fullscreen'),
+			exitFullscreen: __('Exit fullscreen'),
+			settings: __('Settings'),
+			menuBack: __('Go back to previous menu'),
+			speed: __('Speed'),
+			normal: __('Normal'),
+			quality: __('Quality'),
+		},
 		settings: ['speed'],
 		speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
 		listeners: {

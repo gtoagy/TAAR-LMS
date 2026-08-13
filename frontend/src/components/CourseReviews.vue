@@ -1,20 +1,24 @@
 <template>
 	<div v-if="reviews.data?.length || membership" class="mt-12">
 		<div class="flex items-center justify-between gap-3 mb-8">
-			<div class="flex items-center gap-2">
+			<div v-if="reviews.data?.length" class="flex items-center gap-2">
 				<LucideStar class="size-5 text-transparent fill-yellow-500" />
 				<span class="text-4xl-semibold text-ink-gray-9">
-					{{ avg_rating ? formatRating(avg_rating) : '0' }}
+					{{ formatRating(avg_rating) }}
 				</span>
 				<span class="text-xl text-ink-gray-7">
-					{{ __('course rating') }} &amp;
-					{{ reviews.data?.length || 0 }}
 					{{
-						(reviews.data?.length || 0) === 1
-							? __('user rating')
-							: __('user ratings')
+						reviews.data.length === 1
+							? __('{0} review').format(reviews.data.length)
+							: __('{0} reviews').format(reviews.data.length)
 					}}
 				</span>
+			</div>
+			<!-- Un curso recién abierto no tiene reseñas, y anunciar "0
+			     valoraciones" resta más de lo que informa. Se lo pedimos a quien
+			     ya está dentro, que es de donde salen las primeras. -->
+			<div v-else class="text-xl text-ink-gray-7">
+				{{ __('Be the first to review this course.') }}
 			</div>
 			<Button v-if="membership && !hasReviewed.data" @click="openReviewModal()">
 				{{ __('Write a Review') }}

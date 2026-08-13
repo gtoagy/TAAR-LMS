@@ -1599,7 +1599,7 @@ msgstr "Palabras clave comunes que se usarán en todas las páginas"
 
 #: frontend/src/pages/Lesson.vue:1091
 msgid "Community"
-msgstr "Communidad"
+msgstr "Comunidad"
 
 #: frontend/src/pages/PersonaForm.vue:105
 msgid "Community Manager"
@@ -3395,7 +3395,7 @@ msgstr "Exportar"
 #: lms/lms/doctype/lms_assignment_submission/lms_assignment_submission.json
 #: lms/lms/doctype/lms_certificate_evaluation/lms_certificate_evaluation.json
 msgid "Fail"
-msgstr "Falla"
+msgstr "No aprobado"
 
 #. Option for the 'Status' (Select) field in DocType 'LMS Programming Exercise
 #. Submission'
@@ -3466,8 +3466,7 @@ msgstr "Retroalimentación"
 
 #: frontend/src/components/Assignment.vue:68
 msgid "Feel free to make edits to your submission if needed."
-msgstr ""
-"Siéntase libre de realizar modificaciones en su envío si es necesario."
+msgstr "Si quieres cambiarlo, puedes subir otro archivo."
 
 #. Label of the field_to_check (Select) field in DocType 'LMS Badge'
 #: lms/lms/doctype/lms_badge/lms_badge.json
@@ -5794,8 +5793,7 @@ msgstr "Una vez más, felicidades por este importante logro."
 #: frontend/src/components/Assignment.vue:64
 msgid ""
 "Once the moderator grades your submission, you'll find the details here."
-msgstr ""
-"Una vez que el moderador califique su envío, encontrará los detalles aquí."
+msgstr "Cuando lo revisemos, verás aquí los comentarios."
 
 #. Option for the 'Medium' (Select) field in DocType 'LMS Batch'
 #: frontend/src/pages/Batches/BatchForm.vue:564
@@ -6067,7 +6065,7 @@ msgstr "Parcialmente completo"
 #: lms/lms/doctype/lms_assignment_submission/lms_assignment_submission.json
 #: lms/lms/doctype/lms_certificate_evaluation/lms_certificate_evaluation.json
 msgid "Pass"
-msgstr "Aprobar"
+msgstr "Aprobado"
 
 #. Option for the 'Status' (Select) field in DocType 'LMS Programming Exercise
 #. Submission'
@@ -6359,15 +6357,15 @@ msgstr ""
 
 #: frontend/src/pages/Billing.vue:350
 msgid "Please let us know where you heard about us from."
-msgstr "Por favor, háganos saber dónde se enteró de nosotros."
+msgstr "Cuéntanos cómo nos conociste."
 
 #: frontend/src/components/QuizBlock.vue:5
 msgid "Please login to access the quiz."
-msgstr "Inicie sesión para acceder al cuestionario."
+msgstr "Inicia sesión para hacer el cuestionario."
 
 #: lms/lms/api.py:163
 msgid "Please login to continue with payment."
-msgstr "Por favor inicie sesión para continuar con el pago."
+msgstr "Inicia sesión para seguir con el pago."
 
 #: lms/lms/utils.py:2280
 msgid "Please login to view program details."
@@ -6965,11 +6963,11 @@ msgstr ""
 
 #: frontend/src/components/CourseCardOverlay.vue:129
 msgid "Quiz topic"
-msgstr "Tema del cuestionario"
+msgstr "cuestionario"
 
 #: frontend/src/components/CourseCardOverlay.vue:130
 msgid "Quiz topics"
-msgstr "Temas del cuestionario"
+msgstr "cuestionarios"
 
 #: frontend/src/pages/QuizForm.vue:339
 msgid "Quiz updated successfully"
@@ -7424,7 +7422,7 @@ msgstr "Selecciona una lección a la derecha para comenzar a editar."
 
 #: frontend/src/components/Modals/Question.vue:143
 msgid "Select a question"
-msgstr "Seleccione una pregunta"
+msgstr "Elige una pregunta"
 
 #: frontend/src/components/Discussions.vue:72
 msgid "Select a question to view the thread"
@@ -7432,7 +7430,7 @@ msgstr "Selecciona una pregunta para ver el hilo"
 
 #: frontend/src/components/AssessmentPlugin.vue:27
 msgid "Select a quiz"
-msgstr "Seleccione un cuestionario"
+msgstr "Elige un cuestionario"
 
 #: frontend/src/components/AssessmentPlugin.vue:40
 #: frontend/src/components/AssessmentPlugin.vue:48
@@ -7924,7 +7922,7 @@ msgstr "El Asunto es obligatorio"
 
 #: frontend/src/components/Assignment.vue:32
 msgid "Submission"
-msgstr "Envío"
+msgstr "Tu entrega"
 
 #: frontend/src/components/Modals/AssignmentForm.vue:22
 msgid "Submission Type"
@@ -9218,7 +9216,7 @@ msgstr ""
 
 #: frontend/src/components/NoPermission.vue:23
 msgid "You are not permitted to access this page."
-msgstr "Usted no está autorizado a acceder a esta página."
+msgstr "No tienes acceso a esta página."
 
 #: lms/lms/api.py:757 lms/lms/api.py:808
 msgid "You are not the assigned evaluator for this course and batch."
@@ -9520,7 +9518,7 @@ msgstr ""
 
 #: frontend/src/components/Assignment.vue:62
 msgid "You've successfully submitted the assignment."
-msgstr "Ha enviado correctamente la tarea."
+msgstr "Tu trabajo ya está entregado."
 
 #. Label of the youtube (Data) field in DocType 'Course Lesson'
 #: lms/lms/doctype/course_lesson/course_lesson.json
@@ -9543,7 +9541,7 @@ msgstr ""
 
 #: lms/www/new-sign-up.html:56
 msgid "Your Account has been successfully created!"
-msgstr "¡Su cuenta ha sido creada satisfactoriamente!"
+msgstr "¡Tu cuenta ya está lista!"
 
 #: frontend/src/pages/ProgrammingExercises/ProgrammingExerciseSubmission.vue:124
 msgid "Your Output"
@@ -10293,3 +10291,81 @@ msgstr "Todos los cursos"
 
 msgid "My courses"
 msgstr "Mis cursos"
+
+msgid "You do not have access to this course yet."
+msgstr "Todavía no tienes acceso a este curso."
+
+msgid "View the course"
+msgstr "Ver el curso"
+
+msgid "Play"
+msgstr "Reproducir"
+
+msgid "Pause"
+msgstr "Pausa"
+
+msgid "Seek"
+msgstr "Avanzar"
+
+msgid "Played"
+msgstr "Reproducido"
+
+msgid "Buffered"
+msgstr "Cargado"
+
+msgid "Current time"
+msgstr "Tiempo actual"
+
+msgid "Volume"
+msgstr "Volumen"
+
+msgid "Mute"
+msgstr "Silenciar"
+
+msgid "Unmute"
+msgstr "Activar el sonido"
+
+msgid "Enter fullscreen"
+msgstr "Pantalla completa"
+
+msgid "Exit fullscreen"
+msgstr "Salir de pantalla completa"
+
+msgid "Go back to previous menu"
+msgstr "Volver al menú anterior"
+
+msgid "Speed"
+msgstr "Velocidad"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Quality"
+msgstr "Calidad"
+
+msgid "Your plan is the monthly one."
+msgstr "Tu plan es el mensual."
+
+msgid "With the annual plan you also get:"
+msgstr "Con el plan anual también entran:"
+
+msgid "2 months free compared to paying month by month"
+msgstr "2 meses gratis frente a pagar mes a mes"
+
+msgid "Change to the annual plan"
+msgstr "Cambiar al plan anual"
+
+msgid "Stripe shows you what you pay today, with the part you already paid this month discounted."
+msgstr "Stripe te enseña lo que pagas hoy, descontando lo que ya pagaste este mes."
+
+msgid "With the annual plan"
+msgstr "Con el plan anual"
+
+msgid "{0} review"
+msgstr "{0} reseña"
+
+msgid "{0} reviews"
+msgstr "{0} reseñas"
+
+msgid "Be the first to review this course."
+msgstr "Todavía no hay reseñas. ¡Anímate a dejar la primera!"

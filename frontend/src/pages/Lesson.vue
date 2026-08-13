@@ -32,33 +32,39 @@
 						</div>
 					</div>
 					<div class="mt-1 mb-4 text-ink-gray-7">
-						{{
-							__(
-								'This lesson is not available for preview. Please enroll in the course to access it.'
-							)
-						}}
+						{{ __('You do not have access to this course yet.') }}
 					</div>
-					<Button
-						v-if="user.data && !lesson.data.disable_self_learning"
-						@click="enrollStudent()"
-						variant="solid"
-					>
-						{{ __('Start Learning') }}
-					</Button>
+					<!-- A la ficha del curso, que es donde están todas las salidas:
+					     entrar con la membresía, subir de plan o comprarlo suelto. El
+					     botón anterior intentaba inscribir en el acto y en un curso de
+					     pago solo devolvía un error, dejando a quien llegaba aquí sin
+					     ningún camino. -->
+					<div class="flex items-center justify-center gap-x-2">
+						<router-link
+							:to="{
+								name: 'CourseDetail',
+								params: { courseName: courseName },
+							}"
+						>
+							<Button variant="solid">
+								{{ __('View the course') }}
+							</Button>
+						</router-link>
+						<Button v-if="!user.data" @click="redirectToLogin()">
+							<template #prefix>
+								<span class="lucide-log-in size-4" />
+							</template>
+							{{ __('Login') }}
+						</Button>
+					</div>
 					<Badge
 						theme="blue"
 						size="lg"
-						v-else-if="lesson.data.disable_self_learning"
-						class="mt-2"
+						v-if="lesson.data.disable_self_learning"
+						class="mt-4"
 					>
 						{{ __('Contact the Administrator to enroll for this course.') }}
 					</Badge>
-					<Button v-else @click="redirectToLogin()">
-						<template #prefix>
-							<span class="lucide-log-in size-4" />
-						</template>
-						{{ __('Login') }}
-					</Button>
 				</div>
 			</div>
 			<div
@@ -378,6 +384,7 @@ const lessonContainer = ref(null)
 const zenModeEnabled = ref(false)
 const showStatsDialog = ref(false)
 const hasQuiz = ref(false)
+const hasAssignment = ref(false)
 const discussionsContainer = ref(null)
 const timer = ref(0)
 const { brand } = sessionStore()
@@ -501,6 +508,7 @@ const setupLesson = (data) => {
 		})
 	}
 	lessonProgress.value = data.membership?.progress
+	detectAssignment(data)
 	if (data.content) editor.value = renderEditor('editor', data.content)
 	if (
 		data.instructor_content &&
@@ -514,6 +522,26 @@ const setupLesson = (data) => {
 		checkIfDiscussionsAllowed()
 	})
 	checkQuiz()
+}
+
+// Una lección de tarea se completa entregando el trabajo, no dejándola abierta:
+// el temporizador de permanencia la daba por hecha en cuanto se abría, y el
+// enunciado promete lo contrario ("sube una foto para completar esta lección").
+// La marca la pone Assignment.vue al guardar la entrega.
+const detectAssignment = (data) => {
+	hasAssignment.value = false
+	if (data?.content) {
+		try {
+			JSON.parse(data.content)?.blocks?.forEach((block) => {
+				if (block.type === 'assignment') hasAssignment.value = true
+			})
+		} catch {
+			// lecciones antiguas en markdown
+		}
+	}
+	if (!hasAssignment.value && data?.body) {
+		hasAssignment.value = /\{\{ Assignment\(".*"\) \}\}/.test(data.body)
+	}
 }
 
 const checkQuiz = () => {
@@ -558,7 +586,8 @@ const markProgress = () => {
 		!user.data ||
 		!lesson.data ||
 		!lesson.data.membership ||
-		lesson.data.progress
+		lesson.data.progress ||
+		hasAssignment.value
 	)
 		return
 	progressSubmitting = true
@@ -968,34 +997,6 @@ const lessonHasVideo = computed(() => hasVideoContent(lesson.data))
 const allowInstructorContent = () => {
 	if (window.read_only_mode) return false
 	return isAdmin.value
-}
-
-const enrollment = createResource({
-	url: 'frappe.client.insert',
-	makeParams() {
-		return {
-			doc: {
-				doctype: 'LMS Enrollment',
-				course: props.courseName,
-				member: user.data?.name,
-			},
-		}
-	},
-})
-
-const enrollStudent = () => {
-	enrollment.submit(
-		{},
-		{
-			onSuccess() {
-				window.location.reload()
-			},
-			onError(err) {
-				toast.error(__(err.messages?.[0] || err))
-				console.error(err)
-			},
-		}
-	)
 }
 
 const toggleInlineMenu = async () => {

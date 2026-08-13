@@ -122,7 +122,11 @@
 					<div
 						v-if="priceLabel"
 						class="whitespace-nowrap font-semibold"
-						:class="ventaIndividual ? 'text-base' : 'text-xs text-ink-gray-6'"
+						:class="
+							ventaIndividual && !soloConPlanAnual
+								? 'text-base'
+								: 'text-xs text-ink-gray-6'
+						"
 					>
 						{{ priceLabel }}
 					</div>
@@ -140,6 +144,7 @@
 </template>
 <script setup>
 import { sessionStore } from '@/stores/session'
+import { usersStore } from '@/stores/user'
 import { Tooltip } from 'frappe-ui'
 import { formatEnrollments, formatRating } from '@/utils'
 import { theme } from '@/utils/theme'
@@ -150,6 +155,7 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import colors from '@/utils/frappe-ui-colors.json'
 
 const { user } = sessionStore()
+const { userResource } = usersStore()
 
 const props = defineProps({
 	course: {
@@ -166,9 +172,19 @@ const ventaIndividual = computed(
 		Boolean(props.course.taar_precio_display)
 )
 
+// A quien ya paga el plan mensual, el precio suelto no le dice lo que necesita
+// saber: ese curso también entra subiendo al anual, y verlo aquí es lo que le
+// hace mirar la membresía en vez de irse.
+const soloConPlanAnual = computed(
+	() =>
+		Boolean(props.course.taar_solo_plan_anual) &&
+		userResource.data?.taar_plan === 'Mensual'
+)
+
 // Solo los cursos que se pagan aparte llevan precio; el resto se distingue con
 // una nota discreta de que la membresía ya los cubre.
 const priceLabel = computed(() => {
+	if (soloConPlanAnual.value) return __('With the annual plan')
 	if (ventaIndividual.value) return props.course.taar_precio_display
 	if (props.course.taar_incluido_en_membresia)
 		return __('Included in the membership')
