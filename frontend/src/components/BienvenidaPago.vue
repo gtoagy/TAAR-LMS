@@ -9,7 +9,7 @@
 					{{
 						tipo === 'membresia'
 							? __(
-									'Your payment was successful. Your access to all courses will be ready in a few seconds.'
+									'Your payment went through. Your access to the membership courses will be ready in a few seconds.'
 							  )
 							: __(
 									'Purchase successful! Your access will be ready in a few seconds.'

@@ -10369,3 +10369,6 @@ msgstr "{0} reseñas"
 
 msgid "Be the first to review this course."
 msgstr "Todavía no hay reseñas. ¡Anímate a dejar la primera!"
+
+msgid "Your payment went through. Your access to the membership courses will be ready in a few seconds."
+msgstr "¡Listo, tu pago se completó! En unos segundos tendrás acceso a los cursos de tu membresía."
