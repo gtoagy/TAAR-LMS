@@ -27,6 +27,16 @@
 
 				<!-- Cuenta nueva: crear contraseña aquí mismo -->
 				<template v-else-if="info.data?.necesita_password">
+					<!-- El nombre se pide aquí porque es la única vez que la escuela
+					     puede preguntarlo. Stripe solo entrega el de la tarjeta: llega
+					     en mayúsculas, o es el de quien prestó la tarjeta, y a veces no
+					     llega. Se propone partido para que casi siempre solo haya que
+					     mirarlo. -->
+					<div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+						<FormControl v-model="nombre" :label="__('First Name')" />
+						<FormControl v-model="apellido" :label="__('Last Name')" />
+					</div>
+
 					<!-- El correo se enseña como un dato, no como un campo: es el que
 					     usó para pagar y el que va a recibir sus accesos. Pero se
 					     puede corregir, porque escribirlo mal en el checkout es de lo
@@ -157,6 +167,8 @@ const password = ref('')
 const password2 = ref('')
 const creando = ref(false)
 const correo = ref('')
+const nombre = ref('')
+const apellido = ref('')
 const editandoCorreo = ref(false)
 const enviandoEnlace = ref(false)
 const enlaceEnviado = ref(false)
@@ -168,6 +180,8 @@ const info = createResource({
 	},
 	onSuccess(data) {
 		correo.value = data?.email || ''
+		nombre.value = data?.nombre || ''
+		apellido.value = data?.apellido || ''
 	},
 })
 
@@ -180,6 +194,10 @@ watch(
 )
 
 const crearPassword = async () => {
+	if (!nombre.value.trim()) {
+		toast.warning(__('Tell us your name.'))
+		return
+	}
 	if (password.value.length < 8) {
 		toast.warning(__('The password must have at least 8 characters.'))
 		return
@@ -194,6 +212,8 @@ const crearPassword = async () => {
 			session_id: props.sessionId,
 			password: password.value,
 			correo: correo.value || undefined,
+			nombre: nombre.value,
+			apellido: apellido.value,
 		})
 		toast.success(__('Your account is ready!'))
 		// La sesión ya quedó iniciada en el servidor: recargar para entrar.

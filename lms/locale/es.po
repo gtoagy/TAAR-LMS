@@ -3517,7 +3517,7 @@ msgstr "Filtrar por estado"
 #: frontend/src/components/Modals/EditProfile.vue:143
 #: frontend/src/components/Modals/NewMemberModal.vue:29
 msgid "First Name"
-msgstr "Primer Nombre"
+msgstr "Nombre"
 
 #. Option for the 'Time Preference' (Select) field in DocType 'User'
 #: lms/fixtures/custom_field.json
@@ -10228,6 +10228,10 @@ msgstr "Crea tu contraseña para entrar a tus cursos."
 
 msgid "Create my password and start"
 msgstr "Crear mi contraseña y entrar"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Tell us your name."
+msgstr "Escribe tu nombre."
 
 msgid "Passwords do not match."
 msgstr "Las contraseñas no coinciden."
