@@ -10372,3 +10372,24 @@ msgstr "Todavía no hay reseñas. ¡Anímate a dejar la primera!"
 
 msgid "Your payment went through. Your access to the membership courses will be ready in a few seconds."
 msgstr "¡Listo, tu pago se completó! En unos segundos tendrás acceso a los cursos de tu membresía."
+
+msgid "Your account"
+msgstr "Tu cuenta"
+
+msgid "Not your email?"
+msgstr "¿no es tu correo?"
+
+msgid "Here is where your access and your invoices arrive."
+msgstr "Aquí te llegan tus accesos y tus facturas."
+
+msgid "You already have an account with {0}."
+msgstr "Ya tienes una cuenta con {0}."
+
+msgid "Log in with my password"
+msgstr "Entrar con mi contraseña"
+
+msgid "I do not remember it, send me a link"
+msgstr "No la recuerdo, envíame un enlace"
+
+msgid "We sent you a link to {0}. Check your inbox."
+msgstr "Te enviamos un enlace a {0}. Revisa tu correo."

@@ -27,9 +27,36 @@
 
 				<!-- Cuenta nueva: crear contraseña aquí mismo -->
 				<template v-else-if="info.data?.necesita_password">
-					<p v-if="info.data.email">
-						{{ __('Your purchase is linked to {0}.').format(info.data.email) }}
-					</p>
+					<!-- El correo se enseña como un dato, no como un campo: es el que
+					     usó para pagar y el que va a recibir sus accesos. Pero se
+					     puede corregir, porque escribirlo mal en el checkout es de lo
+					     más común y con la cuenta atada a un correo equivocado se
+					     queda fuera de algo que ya pagó. -->
+					<div
+						v-if="info.data.email"
+						class="rounded-md bg-surface-gray-2 px-3 py-2"
+					>
+						<div class="text-sm text-ink-gray-6">
+							{{ __('Your account') }}
+						</div>
+						<div v-if="!editandoCorreo" class="flex items-center gap-2">
+							<span class="font-medium text-ink-gray-9 break-all">
+								{{ correo }}
+							</span>
+							<button
+								class="shrink-0 text-sm text-ink-gray-6 underline"
+								@click="editandoCorreo = true"
+							>
+								{{ __('Not your email?') }}
+							</button>
+						</div>
+						<template v-else>
+							<FormControl v-model="correo" type="email" class="mt-1" />
+							<p class="mt-1 text-sm text-ink-gray-6">
+								{{ __('Here is where your access and your invoices arrive.') }}
+							</p>
+						</template>
+					</div>
 					<p class="font-medium text-ink-gray-9">
 						{{ __('Create your password to access your courses.') }}
 					</p>
@@ -55,10 +82,16 @@
 					</Button>
 				</template>
 
-				<!-- Cuenta existente sin sesión: a iniciar sesión -->
+				<!-- Ya era alumna: no puede poner contraseña nueva sin identificarse
+				     (si no, quien pagara con el correo de otra se quedaría con su
+				     cuenta), pero sí resolverlo aquí mismo si no la recuerda. -->
 				<template v-else-if="info.data && !info.data.sesion_activa">
 					<p>
-						{{ __('This account already has access. Log in to continue.') }}
+						{{
+							__('You already have an account with {0}.').format(
+								info.data.email
+							)
+						}}
 					</p>
 					<Button
 						variant="solid"
@@ -66,7 +99,23 @@
 						class="w-full"
 						@click="irALogin()"
 					>
-						{{ __('Log in') }}
+						{{ __('Log in with my password') }}
+					</Button>
+					<p v-if="enlaceEnviado" class="text-sm text-ink-gray-6">
+						{{
+							__('We sent you a link to {0}. Check your inbox.').format(
+								info.data.email
+							)
+						}}
+					</p>
+					<Button
+						v-else
+						size="md"
+						class="w-full"
+						:loading="enviandoEnlace"
+						@click="enviarEnlace()"
+					>
+						{{ __('I do not remember it, send me a link') }}
 					</Button>
 				</template>
 
@@ -107,11 +156,18 @@ const props = defineProps({
 const password = ref('')
 const password2 = ref('')
 const creando = ref(false)
+const correo = ref('')
+const editandoCorreo = ref(false)
+const enviandoEnlace = ref(false)
+const enlaceEnviado = ref(false)
 
 const info = createResource({
 	url: 'taar_lms.api.info_post_pago',
 	makeParams() {
 		return { session_id: props.sessionId }
+	},
+	onSuccess(data) {
+		correo.value = data?.email || ''
 	},
 })
 
@@ -137,6 +193,7 @@ const crearPassword = async () => {
 		await call('taar_lms.api.completar_registro', {
 			session_id: props.sessionId,
 			password: password.value,
+			correo: correo.value || undefined,
 		})
 		toast.success(__('Your account is ready!'))
 		// La sesión ya quedó iniciada en el servidor: recargar para entrar.
@@ -146,6 +203,20 @@ const crearPassword = async () => {
 		toast.error(__(msg))
 		creando.value = false
 	}
+}
+
+const enviarEnlace = async () => {
+	enviandoEnlace.value = true
+	try {
+		await call('taar_lms.api.enviar_enlace_acceso', {
+			session_id: props.sessionId,
+		})
+		enlaceEnviado.value = true
+	} catch (err) {
+		const msg = typeof err === 'string' ? err : err.messages?.[0] ?? 'Error'
+		toast.error(__(msg))
+	}
+	enviandoEnlace.value = false
 }
 
 const irALogin = () => {
