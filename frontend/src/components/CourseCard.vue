@@ -104,20 +104,9 @@
 				{{ Math.ceil(course.membership.progress) }}% {{ __('completed') }}
 			</div>
 
-			<div class="flex items-center justify-between mt-auto">
-				<div class="flex avatar-group overlap">
-					<div
-						class="h-6 me-1"
-						:class="{ 'avatar-group overlap': course.instructors.length > 1 }"
-					>
-						<UserAvatar
-							v-for="instructor in course.instructors"
-							:user="instructor"
-						/>
-					</div>
-					<CourseInstructors :instructors="course.instructors" />
-				</div>
-
+			<!-- Sin el instructor: en esta escuela los da todos la misma persona,
+			     así que repetirlo en cada carta no dice nada. En la ficha sigue. -->
+			<div class="flex items-center justify-end mt-auto">
 				<div class="flex items-center gap-x-2">
 					<div
 						v-if="priceLabel"
@@ -149,8 +138,6 @@ import { Tooltip } from 'frappe-ui'
 import { formatEnrollments, formatRating } from '@/utils'
 import { theme } from '@/utils/theme'
 import { computed, watch } from 'vue'
-import CourseInstructors from '@/components/CourseInstructors.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import colors from '@/utils/frappe-ui-colors.json'
 
@@ -181,10 +168,21 @@ const soloConPlanAnual = computed(
 		userResource.data?.taar_plan === 'Mensual'
 )
 
+// Lo que ya es suyo no se vuelve a vender: ni el precio ni el recordatorio de
+// que la membresía lo cubre le dicen nada nuevo a quien ya entra al curso.
+// `user` llega ya desenvuelto (el store es reactive), como en la plantilla.
+const yaEsSuyo = computed(() => Boolean(user && props.course.membership))
+
 // Solo los cursos que se pagan aparte llevan precio; el resto se distingue con
 // una nota discreta de que la membresía ya los cubre.
 const priceLabel = computed(() => {
-	if (soloConPlanAnual.value) return __('With the annual plan')
+	if (yaEsSuyo.value) return ''
+	if (soloConPlanAnual.value)
+		// Con las dos salidas a la vista se entiende que no está fuera de su
+		// alcance, y el precio suelto es lo que hace ver barato el plan anual.
+		return ventaIndividual.value
+			? __('{0} or annual plan').format(props.course.taar_precio_display)
+			: __('With the annual plan')
 	if (ventaIndividual.value) return props.course.taar_precio_display
 	if (props.course.taar_incluido_en_membresia)
 		return __('Included in the membership')

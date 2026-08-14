@@ -35,8 +35,16 @@
 							: 'border-outline-gray-2 bg-surface-base'
 					"
 				>
-					<div class="text-lg font-medium text-ink-gray-9 mb-1">
-						{{ __('Your membership is active.') }}
+					<div class="mb-1 flex flex-wrap items-center gap-2">
+						<span class="text-lg font-medium text-ink-gray-9">
+							{{ __('Your membership is active.') }}
+						</span>
+						<span
+							v-if="nombrePlan"
+							class="rounded-full bg-surface-gray-3 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-ink-gray-7"
+						>
+							{{ nombrePlan }}
+						</span>
 					</div>
 					<p
 						v-if="membership.data.status === 'En mora'"
@@ -136,10 +144,15 @@
 					</p>
 				</div>
 
-				<!-- Sin membresía / cancelada: los dos planes a la vista. Lo que
-				     separa a uno de otro son los cursos maestros, y callarlo
-				     acaba en reclamación de quien paga el mensual. -->
-				<div v-else class="grid gap-4 text-start sm:grid-cols-2">
+				<!-- Solo para quien no es miembro. A quien ya paga no se le vuelven
+				     a ofrecer los dos planes: con el anual ya tiene todo, y al del
+				     mensual se le habla arriba, en su caja. Lo que separa a un plan
+				     de otro son los cursos maestros, y callarlo acaba en
+				     reclamación de quien paga el mensual. -->
+				<div
+					v-else-if="!membership.data.is_member"
+					class="grid gap-4 text-start sm:grid-cols-2"
+				>
 					<!-- Mensual -->
 					<div
 						class="flex flex-col rounded-lg border border-outline-gray-2 bg-surface-base p-6"
@@ -309,6 +322,14 @@ const comparativa = computed(
 			ahorro_anual: null,
 		}
 )
+
+// Qué plan tiene en vigor. Los miembros que llegaron de Disco todavía no lo
+// tienen anotado: a esos no se les inventa uno.
+const nombrePlan = computed(() => {
+	if (membership.data?.plan === 'Anual') return __('TAN PRO annual')
+	if (membership.data?.plan === 'Mensual') return __('TAN PRO monthly')
+	return ''
+})
 
 const irACheckout = (plan) => {
 	// Misma puerta que usan los botones de la landing: sabe explicarse si la

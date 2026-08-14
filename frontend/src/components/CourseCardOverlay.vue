@@ -5,7 +5,7 @@
 			:fallback-image="course.data?.image"
 		/>
 		<div class="p-5">
-			<div class="text-4xl-semibold text-ink-gray-9 mb-4">
+			<div v-if="priceLabel" class="text-4xl-semibold text-ink-gray-9 mb-4">
 				{{ priceLabel }}
 			</div>
 			<div v-if="!readOnlyMode">
@@ -316,6 +316,8 @@ function comprarCurso() {
 }
 
 const priceLabel = computed<string>(() => {
+	// El curso ya es suyo: ponerle precio a lo que ya pagó solo hace dudar.
+	if (props.course.data?.membership) return ''
 	if (ventaIndividual.value && accessInfo.data?.price_display) {
 		return accessInfo.data.price_display
 	}

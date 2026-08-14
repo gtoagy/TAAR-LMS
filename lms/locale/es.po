@@ -10365,6 +10365,18 @@ msgstr "Stripe te enseña lo que pagas hoy, descontando lo que ya pagaste este m
 msgid "With the annual plan"
 msgstr "Con el plan anual"
 
+#: frontend/src/components/CourseCard.vue
+msgid "{0} or annual plan"
+msgstr "{0} o plan anual"
+
+#: frontend/src/pages/Membresia.vue
+msgid "TAN PRO annual"
+msgstr "TAN PRO anual"
+
+#: frontend/src/pages/Membresia.vue
+msgid "TAN PRO monthly"
+msgstr "TAN PRO mensual"
+
 msgid "{0} review"
 msgstr "{0} reseña"
 
