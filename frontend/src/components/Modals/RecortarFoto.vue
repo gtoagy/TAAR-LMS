@@ -22,7 +22,12 @@
 				/>
 			</div>
 
-			<div class="mt-5 flex items-center gap-3">
+			<!-- Mismo ancho que el círculo y centrada con él: suelta a todo lo
+			     ancho del diálogo se veía descolgada de la foto. -->
+			<div
+				class="mx-auto mt-5 flex items-center gap-3"
+				:style="{ width: `${LADO}px` }"
+			>
 				<span class="lucide-image size-4 shrink-0 text-ink-gray-5" />
 				<!-- Barra con tirador de verdad: el control del navegador se queda
 				     en 4 px de alto y con el dedo no hay quien lo agarre. -->
