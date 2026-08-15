@@ -10254,6 +10254,12 @@ msgstr "{0} cursos de la membresía"
 msgid "All {0} courses included"
 msgstr "Los {0} cursos incluidos"
 
+msgid "Full access"
+msgstr "Acceso completo"
+
+msgid "Only until {0}. After that, the monthly plan stops including these courses."
+msgstr "Solo hasta el {0}. Después, el plan mensual deja de incluir estos cursos."
+
 msgid "Choose monthly"
 msgstr "Elegir mensual"
 

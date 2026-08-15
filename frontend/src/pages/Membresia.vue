@@ -157,10 +157,18 @@
 					<div
 						class="flex flex-col rounded-lg border border-outline-gray-2 bg-surface-base p-6"
 					>
-						<div
-							class="text-sm font-medium uppercase tracking-wide text-ink-gray-5"
-						>
-							{{ __('Monthly') }}
+						<div class="flex items-center gap-2">
+							<span
+								class="text-sm font-medium uppercase tracking-wide text-ink-gray-5"
+							>
+								{{ __('Monthly') }}
+							</span>
+							<span
+								v-if="membership.data.especial"
+								class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800"
+							>
+								{{ __('Full access') }}
+							</span>
 						</div>
 						<div class="mt-2 text-3xl font-bold text-ink-gray-9">
 							{{ membership.data.price_display }}
@@ -168,7 +176,38 @@
 								{{ __('/ month') }}
 							</span>
 						</div>
-						<div class="my-5 flex-1 space-y-2 text-base text-ink-gray-8">
+						<!-- Mientras dure la oferta de apertura el mensual abre todo, así
+						     que se pinta con lo que de verdad incluye. Callarlo sería el
+						     mismo error que teníamos antes, pero al revés. -->
+						<div
+							v-if="membership.data.especial"
+							class="my-5 flex-1 space-y-2 text-base text-ink-gray-8"
+						>
+							<div class="flex items-start gap-2">
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								<strong>
+									{{
+										__('All {0} courses included').format(
+											comparativa.cursos_totales
+										)
+									}}
+								</strong>
+							</div>
+							<div
+								v-for="curso in comparativa.cursos_solo_anual"
+								:key="curso"
+								class="flex items-start gap-2"
+							>
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								{{ curso }}
+							</div>
+							<div class="flex items-start gap-2">
+								<Check class="mt-1 size-4 shrink-0 text-green-600" />
+								{{ __('Cancel anytime') }}
+							</div>
+						</div>
+
+						<div v-else class="my-5 flex-1 space-y-2 text-base text-ink-gray-8">
 							<div class="flex items-start gap-2">
 								<Check class="mt-1 size-4 shrink-0 text-green-600" />
 								{{
@@ -194,7 +233,21 @@
 								{{ curso }}
 							</div>
 						</div>
-						<Button size="md" class="w-full" @click="irACheckout('mensual')">
+						<p
+							v-if="membership.data.especial"
+							class="mb-4 text-sm font-medium text-amber-800"
+						>
+							{{
+								__(
+									'Only until {0}. After that, the monthly plan stops including these courses.'
+								).format(membership.data.especial.hasta)
+							}}
+						</p>
+						<Button
+							size="md"
+							class="w-full"
+							@click="irACheckout(membership.data.especial ? 'especial' : 'mensual')"
+						>
 							{{ __('Choose monthly') }}
 						</Button>
 					</div>
