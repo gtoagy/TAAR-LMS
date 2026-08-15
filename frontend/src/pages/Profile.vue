@@ -92,19 +92,12 @@
 					<h2 class="text-5xl-semibold text-ink-gray-9">
 						{{ profile.data.full_name }}
 					</h2>
-					<div class="text-base text-ink-gray-7 mt-1">
-						{{ profile.data.headline }}
-					</div>
+					<!-- Sin titular ni LinkedIn: aquí no se busca trabajo. -->
 					<div class="flex items-center gap-x-4 mt-2">
 						<Instagram
 							v-if="profile.data.instagram"
 							class="size-4 text-ink-gray-5 cursor-pointer"
 							@click="navigateTo(profile.data.instagram)"
-						/>
-						<Linkedin
-							v-if="profile.data.linkedin"
-							class="size-4 text-ink-gray-5 cursor-pointer"
-							@click="navigateTo(profile.data.linkedin)"
 						/>
 					</div>
 				</div>
@@ -149,7 +142,7 @@ import {
 } from 'frappe-ui'
 import { computed, inject, watch, ref, onMounted, watchEffect } from 'vue'
 import { sessionStore } from '@/stores/session'
-import { Instagram, Linkedin } from 'lucide-vue-next'
+import { Instagram } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 import { convertToTitleCase } from '@/utils'
 import UserAvatar from '@/components/UserAvatar.vue'

@@ -3873,7 +3873,7 @@ msgstr "Destacar en la página de inicio."
 
 #: frontend/src/components/Sidebar/AppSidebar.vue:110
 msgid "Highlight what makes you unique and show your skills."
-msgstr "Destaca lo que te hace único y muestra tus habilidades."
+msgstr "Sube tu foto y cuenta algo sobre ti."
 
 #. Label of the highlighted_text (Small Text) field in DocType 'LMS Lesson
 #. Note'
@@ -5402,7 +5402,7 @@ msgstr "Mis notas"
 
 #: frontend/src/components/Sidebar/AppSidebar.vue:121
 msgid "My Profile"
-msgstr "Mi Perfil"
+msgstr "Mi perfil"
 
 #: frontend/src/pages/ProfileEvaluator.vue:4
 msgid "My availability"
@@ -6680,7 +6680,7 @@ msgstr "Profesión"
 #: frontend/src/components/Modals/EditProfile.vue:27
 #: frontend/src/components/Modals/EditProfile.vue:145
 msgid "Profile Image"
-msgstr "Imagen del Perfil"
+msgstr "Foto de perfil"
 
 #: frontend/src/pages/Programs/Programs.vue:24
 msgid "Program"

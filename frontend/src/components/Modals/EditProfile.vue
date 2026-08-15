@@ -19,7 +19,9 @@
 		</template>
 		<template #default>
 			<div class="text-base">
-				<div class="grid grid-cols-2 gap-10">
+				<!-- En el teléfono las dos columnas dejaban cada campo en media
+				     pantalla; ahí va todo en una sola tira. -->
+				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-10">
 					<div class="space-y-4">
 						<div class="space-y-4">
 							<Uploader
@@ -39,15 +41,10 @@
 								:label="__('Last Name')"
 								:required="true"
 							/>
-							<FormControl v-model="profile.headline" :label="__('Headline')" />
 
 							<FormControl
 								v-model="profile.instagram"
 								:label="__('Instagram')"
-							/>
-							<FormControl
-								v-model="profile.linkedin"
-								:label="__('LinkedIn ID')"
 							/>
 						</div>
 					</div>
@@ -66,7 +63,7 @@
 								@change="(val) => (profile.bio = val)"
 								:content="profile.bio"
 								:rows="15"
-								editorClass="prose-sm py-2 px-2 min-h-[280px] border-outline-gray-2 hover:border-outline-gray-3 rounded-b-md bg-surface-gray-3"
+								editorClass="prose-sm py-2 px-2 min-h-[160px] sm:min-h-[280px] border-outline-gray-2 hover:border-outline-gray-3 rounded-b-md bg-surface-gray-3"
 							/>
 						</div>
 					</div>
@@ -87,7 +84,10 @@ import {
 } from 'frappe-ui'
 import { ref, reactive, watch } from 'vue'
 import { sanitizeHTML } from '@/utils'
+import { usersStore } from '@/stores/user'
 import Link from '@/components/Controls/Link.vue'
+
+const { userResource } = usersStore()
 
 const show = defineModel()
 const reloadProfile = defineModel('reloadProfile')
@@ -104,11 +104,9 @@ const props = defineProps({
 const profile = reactive({
 	first_name: '',
 	last_name: '',
-	headline: '',
 	bio: '',
 	image: '',
 	instagram: '',
-	linkedin: '',
 })
 
 const updateProfile = createResource({
@@ -154,6 +152,9 @@ const saveProfile = () => {
 			onSuccess() {
 				show.value = false
 				reloadProfile.value.reload()
+				// El aviso de "completa tu perfil" del menú lateral mira estos
+				// mismos datos: sin releerlos seguiría ahí hasta recargar.
+				userResource.reload()
 				if (hasLanguageChanged.value) {
 					hasLanguageChanged.value = false
 					window.location.reload()
@@ -193,11 +194,9 @@ watch(
 		if (newVal) {
 			profile.first_name = newVal.first_name
 			profile.last_name = newVal.last_name
-			profile.headline = newVal.headline
 			profile.language = newVal.language
 			profile.bio = newVal.bio
 			profile.instagram = newVal.instagram
-			profile.linkedin = newVal.linkedin
 			profile.image = newVal.user_image
 			isDirty.value = false
 		}

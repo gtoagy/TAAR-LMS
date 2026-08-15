@@ -691,12 +691,11 @@ const isStudent = computed(() => {
 	return userResource.data?.is_student
 })
 
+// Con la foto puesta y algo escrito sobre sí misma, el perfil ya cumple su
+// función aquí; el aviso se calla. El titular ya no se pide, así que exigirlo
+// dejaba el recado colgado para siempre.
 const profileIsComplete = computed(() => {
-	return (
-		userResource.data?.user_image &&
-		userResource.data?.headline &&
-		userResource.data?.bio
-	)
+	return userResource.data?.user_image && userResource.data?.bio
 })
 
 const showAppointmentIcon = computed(() => {
