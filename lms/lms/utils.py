@@ -791,7 +791,7 @@ def get_courses(filters: dict = None, start: int = 0) -> list:
 		filters=filters,
 		fields=fields,
 		or_filters=or_filters,
-		order_by="enrollments desc",
+		order_by=get_course_order_by(),
 		start=start,
 		page_length=30,
 	)
@@ -915,9 +915,28 @@ def get_featured_courses(filters: dict, or_filters: dict, fields: list) -> list:
 		filters=filters,
 		fields=fields,
 		or_filters=or_filters,
-		order_by="enrollments desc",
+		order_by=get_course_order_by(),
 	)
 	return featured_courses
+
+
+def get_course_order_by() -> str:
+	"""TanArtistic: en qué orden se enseñan los cursos.
+
+	Por número de inscritos, que era el orden de fábrica, lo primero que veía
+	quien llega era casi aleatorio. Manda el proyecto del mes (una casilla en la
+	ficha del curso), después los cursos con prioridad —los que se venden por
+	separado— y el resto se coloca solo, del más reciente al más antiguo.
+
+	Las dos columnas las crea la app taar_lms, que se despliega aparte: si este
+	repositorio llega antes que ella, se ordena como siempre en vez de dejar el
+	catálogo en blanco.
+	"""
+	columnas = frappe.db.get_table_columns("LMS Course")
+	if "taar_proyecto_del_mes" not in columnas or "taar_orden_catalogo" not in columnas:
+		return "enrollments desc"
+
+	return "taar_proyecto_del_mes desc, taar_orden_catalogo desc, published_on desc, creation desc"
 
 
 def get_course_content_stats(course: str) -> dict:
