@@ -44,6 +44,17 @@ PRODUCTOS_A_CURSO = {
 # Pagos de un solo importe que dan la escuela entera para siempre.
 MEMBRESIA_VITALICIA = {"price_1RlyYvHtYzLxc0E2ua8qO2sT"}  # 2490 MXN de un pago
 
+# Los precios del catálogo nuevo, creados el 2026-08-15. Todo lo que NO esté
+# aquí se cobró antes del corte y abre la escuela entera: esa es la regla que
+# evita tener que enumerar los precios viejos, varios de los cuales ya ni
+# existen en el catálogo de Stripe pero se siguen cobrando.
+# El precio del "acceso especial" de agosto cuelga del producto de siempre y por
+# eso no aparece: es legacy a propósito.
+PLANES_NUEVOS = {
+    "price_1U4ndNHtYzLxc0E297nOXW3i": "Mensual",
+    "price_1U4ndQHtYzLxc0E2q5jaKv9O": "Anual",
+}
+
 # Ninguna de estas dos se puede resolver sola: quien paga un regalo casi nunca
 # es quien va a estudiar, y de los workshops todavía no sabemos a qué curso del
 # LMS corresponden. Se comparan contra el nombre del producto en minúsculas.
@@ -210,6 +221,18 @@ def cliente(cid):
     return clientes[cid]
 
 
+def cliente_de(valor):
+    """El cliente de un abono o un cobro, venga expandido o como referencia.
+
+    Se piden expandidos en la propia lista: una petición por cada uno de los
+    ~800 abonos y los ~6.700 cobros serían miles de viajes a Stripe y el
+    inventario tardaría horas en vez de minutos.
+    """
+    if valor and not isinstance(valor, str):
+        return valor
+    return cliente(id_de(valor))
+
+
 def acceso_de(texto, price_id="", producto_id="", es_membresia=False):
     """Traduce una compra a lo que abre en la escuela.
 
@@ -263,7 +286,9 @@ def suscripciones(estado):
     """
     try:
         return stripe.Subscription.list(
-            status=estado, limit=100, expand=["data.latest_invoice"]
+            status=estado,
+            limit=100,
+            expand=["data.latest_invoice", "data.customer"],
         ).auto_paging_iter()
     except Exception as e:
         avisos.append(f"suscripciones {estado} sin factura expandida: {e}")
@@ -299,7 +324,7 @@ print("Leyendo suscripciones...")
 for estado in VIVAS + ("canceled",):
     for sub in suscripciones(estado):
         cid = id_de(g(sub, "customer"))
-        c = cliente(cid)
+        c = cliente_de(g(sub, "customer"))
         email = g(c, "email", "")
         centavos, moneda = ultimo_cobro(sub)
         for item in g(g(sub, "items", {}), "data", []):
@@ -318,11 +343,15 @@ for estado in VIVAS + ("canceled",):
                 producto_id=info.get("producto_id", ""),
                 es_membresia=True,
             )
+            # Quien compre el catálogo nuevo entre hoy y la migración entra con
+            # su plan, no con el acceso completo de los de siempre.
+            plan = PLANES_NUEVOS.get(pid, PLAN_LEGACY)
             filas.append(
                 {
                     "correo": email,
                     "nombre": g(c, "name", ""),
                     "acceso": "Membresía",
+                    "plan": plan,
                     "producto": info.get("producto", pid),
                     "importe": info.get("importe", ""),
                     "periodo": info.get("intervalo") or "",
@@ -412,15 +441,24 @@ def datos_de_contacto(cargo, sesion):
     email = g(detalles, "email") or g(facturacion, "email") or g(cargo, "receipt_email") or ""
     nombre = g(detalles, "name") or g(facturacion, "name") or ""
     if not email:
-        c = cliente(id_de(g(cargo, "customer")))
+        c = cliente_de(g(cargo, "customer"))
         email = g(c, "email", "")
         nombre = nombre or g(c, "name", "")
     return email, nombre
 
 
+def cobros():
+    """Todos los cobros de la cuenta, con su cliente ya incluido."""
+    try:
+        return stripe.Charge.list(limit=100, expand=["data.customer"]).auto_paging_iter()
+    except Exception as e:
+        avisos.append(f"cobros sin cliente expandido: {e}")
+        return stripe.Charge.list(limit=100).auto_paging_iter()
+
+
 print("Leyendo cobros únicos (toda la historia de la cuenta)...")
 n_cobros = 0
-for cargo in stripe.Charge.list(limit=100).auto_paging_iter():
+for cargo in cobros():
     if g(cargo, "status") != "succeeded":
         continue
     # Un cobro con factura es el recibo de una suscripción, que ya se contó
@@ -497,6 +535,7 @@ for cargo in stripe.Charge.list(limit=100).auto_paging_iter():
                 "correo": email,
                 "nombre": nombre_persona,
                 "acceso": etiqueta,
+                "plan": PLAN_LEGACY if vitalicio else "",
                 "producto": compra["texto"] or (pi or g(cargo, "id", "")),
                 "importe": dinero(compra["centavos"], moneda),
                 "periodo": "" if devuelto else "de por vida",
@@ -604,14 +643,17 @@ for fila in filas:
     if not mejor:
         continue
     persona["_rango"] = rango
+    persona["plan"] = fila["plan"] or PLAN_LEGACY
     persona["estado"] = ESTADOS_IMPORTADOR.get(fila["_estado_stripe"], fila["_estado_stripe"])
     persona["acceso_hasta"] = fecha(fila["_fin"])
     persona["stripe_subscription_id"] = fila["_suscripcion"]
     persona["stripe_customer_id"] = fila["_cliente"] or persona["stripe_customer_id"]
 
     # La invitación a reseñar es solo para quien está pagando de verdad hoy: no
-    # se le pide a quien entró con una promoción vieja de importe simbólico.
-    if fila["_estado_stripe"] in ("active", "past_due"):
+    # se le pide a quien entró con una promoción vieja de importe simbólico, ni
+    # a quien acaba de comprar el catálogo nuevo (la campaña es para las de
+    # siempre, que son las que tienen algo que contar).
+    if fila["_estado_stripe"] in ("active", "past_due") and persona["plan"] == PLAN_LEGACY:
         pesos = a_pesos(fila["_centavos"], fila["_moneda"])
         if pesos is None:
             anota(persona, f"no sé convertir {(fila['_moneda'] or '?').upper()} a pesos")
@@ -635,6 +677,10 @@ for correo in sorted(personas):
     tiene_membresia = persona.pop("_membresia")
     persona.pop("_rango")
     persona["cursos"] = sorted(persona["cursos"])
+    if not tiene_membresia:
+        # Quien solo compró cursos sueltos no tiene plan ninguno: el plan solo
+        # describe qué abre una membresía.
+        persona["plan"] = ""
     if tiene_membresia and persona["cursos"]:
         persona["acceso"] = "ambos"
     elif tiene_membresia:
@@ -659,6 +705,7 @@ campos = [
     "correo",
     "nombre",
     "acceso",
+    "plan",
     "producto",
     "importe",
     "periodo",
