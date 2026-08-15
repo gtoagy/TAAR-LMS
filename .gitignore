@@ -24,3 +24,9 @@ docker/materiales/
 docker/exportados/
 # Ficheros intermedios de los generadores
 docker/_*.txt
+
+# Lo que saca auditar_stripe.py: nombres, correos y lo que pago cada alumna.
+# Datos personales de gente real; no tienen por que acabar en GitHub.
+auditoria_accesos.csv
+auditoria_resumen.txt
+migracion.json
