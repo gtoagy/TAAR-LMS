@@ -26,6 +26,7 @@ import json
 import os
 import sys
 import time
+import unicodedata
 
 try:
     import stripe
@@ -55,10 +56,42 @@ PLANES_NUEVOS = {
     "price_1U4ndQHtYzLxc0E2q5jaKv9O": "Anual",
 }
 
-# Ninguna de estas dos se puede resolver sola: quien paga un regalo casi nunca
-# es quien va a estudiar, y de los workshops todavía no sabemos a qué curso del
-# LMS corresponden. Se comparan contra el nombre del producto en minúsculas.
-PALABRAS_A_MANO = ("gift", "regalo", "workshop", "taller")
+# Un regalo no se puede resolver solo: quien lo paga casi nunca es quien va a
+# estudiar. Se compara contra el nombre del producto en minúsculas.
+PALABRAS_A_MANO = ("gift", "regalo")
+
+# La plataforma vieja no dejaba ni precio ni producto en el cobro: solo un texto
+# del tipo "ORD002674: Teoría del color - TanArtistic". Se busca por trozo, sin
+# acentos y en minúsculas. El orden importa: gana el primero que encaje, y por
+# eso "mascotas" va al final (hay un "Mascotas - PAINT A CASE" que era una funda).
+DESCRIPCIONES_A_CURSO = (
+    ("teoria del color", "teoria-del-color"),
+    ("paint a pet", "curso-de-mascotas"),
+    ("paint a case", "resina-en-fundas"),
+    ("noche estrellada", "la-noche-estrellada"),
+    ("valor de tu", "workshop-el-valor-de-tu-obra"),
+    ("valor de sus obras", "workshop-el-valor-de-tu-obra"),
+    ("videos virales", "workshop-videos-virales"),
+    ("pelaje", "workshop-pelaje"),
+    ("mascotas", "curso-de-mascotas"),
+)
+
+# Cobros que dicen "membresía" sin decir cuál. El importe es lo único que los
+# separa: 2490 era la membresía que se vendía de una sola vez y abre todo para
+# siempre; cualquier otro importe era una mensualidad de entonces, y esa persona
+# hace años que no paga.
+NOMBRES_DE_MEMBRESIA = ("membresia tanartistic", "membresia ilimitada")
+MEMBRESIA_DE_UN_PAGO = (249000, "mxn")
+
+# La plataforma vieja cobraba las renovaciones como cargos sueltos, sin factura
+# de Stripe detrás, así que el filtro del `invoice` no las ve: son ~2.900 de los
+# ~6.700 cobros de la cuenta. No son compras, son la mensualidad de alguien que
+# ya sale contado en sus suscripciones.
+RENOVACIONES = (
+    "subscription update",
+    "subscription creation",
+    "creation d'abonnement",
+)
 
 # Hay precios denominados en dólares que se cobraron en pesos, euros y pesos
 # colombianos. Estos números NO sirven para sumar importes de monedas distintas
@@ -88,6 +121,10 @@ ESTADOS_IMPORTADOR = {
 
 TODA_LA_ESCUELA = "TODO"
 REVISAR = "Revisar a mano"
+# Cobro real y correcto que sencillamente no da acceso hoy: una mensualidad de
+# hace años. Se distingue de REVISAR para no llenar de ruido lo que hay que
+# mirar a mano, pero se conserva en el CSV para poder auditarlo.
+SIN_ACCESO = "Nada (mensualidad antigua)"
 
 # -----------------------------------------------------------------------------
 
@@ -221,6 +258,22 @@ def cliente(cid):
     return clientes[cid]
 
 
+def sin_acentos(texto):
+    """El texto en minúsculas y sin tildes, para poder compararlo.
+
+    Los cobros viejos escriben el mismo curso de varias formas ("Teoría",
+    "Teoria") según por dónde pasara el pedido.
+    """
+    limpio = unicodedata.normalize("NFD", (texto or "").lower())
+    return "".join(c for c in limpio if unicodedata.category(c) != "Mn")
+
+
+def es_renovacion(descripcion):
+    """Si el cobro es la mensualidad de un abono, no una compra."""
+    texto = sin_acentos(descripcion).strip()
+    return any(texto.startswith(r) for r in RENOVACIONES)
+
+
 def cliente_de(valor):
     """El cliente de un abono o un cobro, venga expandido o como referencia.
 
@@ -233,7 +286,7 @@ def cliente_de(valor):
     return cliente(id_de(valor))
 
 
-def acceso_de(texto, price_id="", producto_id="", es_membresia=False):
+def acceso_de(texto, price_id="", producto_id="", es_membresia=False, centavos=0, moneda=""):
     """Traduce una compra a lo que abre en la escuela.
 
     Devuelve (identificador del curso o TODO, motivo). El motivo solo se llena
@@ -241,7 +294,7 @@ def acceso_de(texto, price_id="", producto_id="", es_membresia=False):
     para que decida. Nunca se clasifica por importe: 1490 MXN pueden ser el
     curso de Mascotas, una gift card o la suscripción anual.
     """
-    nombre = (texto or "").lower()
+    nombre = sin_acentos(texto)
     # Primero lo que se revisa siempre, aunque el producto esté mapeado: un
     # regalo mapeado le daría el curso a quien pagó, no a quien va a estudiar.
     for palabra in PALABRAS_A_MANO:
@@ -254,6 +307,13 @@ def acceso_de(texto, price_id="", producto_id="", es_membresia=False):
     if es_membresia:
         # Una suscripción en esta escuela es la membresía, y la legacy abre todo.
         return TODA_LA_ESCUELA, ""
+    for trozo, curso in DESCRIPCIONES_A_CURSO:
+        if trozo in nombre:
+            return curso, ""
+    if any(t in nombre for t in NOMBRES_DE_MEMBRESIA):
+        if (centavos, (moneda or "").lower()) == MEMBRESIA_DE_UN_PAGO:
+            return TODA_LA_ESCUELA, ""
+        return SIN_ACCESO, ""
     for nombre_catalogo, curso in NOMBRES_A_CURSO.items():
         if nombre_catalogo in nombre:
             return curso, ""
@@ -458,12 +518,18 @@ def cobros():
 
 print("Leyendo cobros únicos (toda la historia de la cuenta)...")
 n_cobros = 0
+n_renovaciones = 0
 for cargo in cobros():
     if g(cargo, "status") != "succeeded":
         continue
     # Un cobro con factura es el recibo de una suscripción, que ya se contó
     # arriba; aquí solo interesan las compras sueltas.
     if g(cargo, "invoice"):
+        continue
+    # Y las renovaciones de la plataforma vieja, que no llevan factura y por eso
+    # se colaban: eran 2.900 filas de ruido que escondían las compras de verdad.
+    if es_renovacion(g(cargo, "description")):
+        n_renovaciones += 1
         continue
     n_cobros += 1
     if n_cobros % 500 == 0:
@@ -522,10 +588,17 @@ for cargo in cobros():
             compra["texto"],
             price_id=compra["price_id"],
             producto_id=compra["producto_id"],
+            centavos=compra["centavos"],
+            moneda=moneda,
         )
+        # Una mensualidad de hace años es un cobro correcto que hoy no abre
+        # nada: no se revisa ni cuenta como acceso, pero queda en la hoja.
+        caducado = acceso_a == SIN_ACCESO
         vitalicio = acceso_a == TODA_LA_ESCUELA
         if devuelto:
             etiqueta = "Reembolsado"
+        elif caducado:
+            etiqueta = "Mensualidad antigua"
         elif vitalicio:
             etiqueta = "Membresía de por vida"
         else:
@@ -538,19 +611,19 @@ for cargo in cobros():
                 "plan": PLAN_LEGACY if vitalicio else "",
                 "producto": compra["texto"] or (pi or g(cargo, "id", "")),
                 "importe": dinero(compra["centavos"], moneda),
-                "periodo": "" if devuelto else "de por vida",
+                "periodo": "" if devuelto or caducado else "de por vida",
                 "estado": "reembolsado" if devuelto else "pagado",
-                "vigente": "no" if devuelto else "si",
+                "vigente": "no" if devuelto or caducado else "si",
                 "reembolsado": "si" if devuelto else ("parcial" if parcial else ""),
                 "da_acceso_a": acceso_a,
-                "acceso_hasta": "" if devuelto else "siempre",
+                "acceso_hasta": "" if devuelto or caducado else "siempre",
                 "baja_pedida": "",
                 "origen_disco": "si" if compra["es_disco"] else "",
                 "referencia": g(sesion, "id", "") or g(cargo, "id", ""),
                 "precio": compra["price_id"],
                 "_tipo": "unico",
                 "_estado_stripe": "",
-                "_vigente": not devuelto,
+                "_vigente": not devuelto and not caducado,
                 "_vitalicio": vitalicio and not devuelto,
                 "_cliente": id_de(g(cargo, "customer")),
                 "_suscripcion": "",
@@ -578,7 +651,7 @@ for cargo in cobros():
             correos[email.lower().strip()].append(email)
         else:
             avisos.append(f"SIN CORREO: cobro único {g(cargo, 'id', '')}")
-print(f"  {n_cobros} cobros únicos\n")
+print(f"  {n_cobros} cobros únicos ({n_renovaciones} renovaciones descartadas)\n")
 
 # --- el fichero del importador ----------------------------------------------
 # Una entrada por persona, agrupando por correo en minúsculas. Solo entra quien
@@ -732,6 +805,7 @@ duplicados = {k: set(v) for k, v in correos.items() if len({x for x in v}) > 1}
 
 resumen = []
 resumen.append(f"Filas totales: {len(filas)}")
+resumen.append(f"Renovaciones descartadas (mensualidades, no compras): {n_renovaciones}")
 resumen.append(f"Accesos vigentes: {len(vigentes)}")
 resumen.append(f"Personas distintas con acceso: {len(con_acceso)}")
 resumen.append("")
@@ -803,6 +877,7 @@ if avisos:
         resumen.append(f"  ...y {len(avisos) - 120} más")
 
 texto = "\n".join(resumen)
-io.open("auditoria_resumen.txt", "w", encoding="utf-8").write(texto)
+# Con BOM, como el CSV: si no, el Bloc de notas y PowerShell se comen los acentos.
+io.open("auditoria_resumen.txt", "w", encoding="utf-8-sig").write(texto)
 print(texto)
 print("\nEscritos: auditoria_accesos.csv · auditoria_resumen.txt · migracion.json")
