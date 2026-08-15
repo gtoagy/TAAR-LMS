@@ -93,6 +93,13 @@ RENOVACIONES = (
     "creation d'abonnement",
 )
 
+# La tienda de fundas y cuadros ("PAINT A CASE", "TanArt") cobraba por esta misma
+# cuenta. Son productos físicos con envío y no abren ningún curso, pero su cobro
+# no dice qué se vendió —la descripción es el correo del comprador—, así que sin
+# esto se cuelan como compras a revisar. La plataforma de la tienda deja su
+# identificador en el cobro; los de Thinkific traen `source` y no `shop_id`.
+TIENDA_FISICA = "shop_id"
+
 # Hay precios denominados en dólares que se cobraron en pesos, euros y pesos
 # colombianos. Estos números NO sirven para sumar importes de monedas distintas
 # —eso no se hace en ningún sitio de este script—: existen solo para poder
@@ -410,6 +417,7 @@ for estado in VIVAS + ("canceled",):
                 {
                     "correo": email,
                     "nombre": g(c, "name", ""),
+                    "fecha": fecha(g(sub, "created")),
                     "acceso": "Membresía",
                     "plan": plan,
                     "producto": info.get("producto", pid),
@@ -519,6 +527,7 @@ def cobros():
 print("Leyendo cobros únicos (toda la historia de la cuenta)...")
 n_cobros = 0
 n_renovaciones = 0
+n_tienda = 0
 for cargo in cobros():
     if g(cargo, "status") != "succeeded":
         continue
@@ -530,6 +539,10 @@ for cargo in cobros():
     # se colaban: eran 2.900 filas de ruido que escondían las compras de verdad.
     if es_renovacion(g(cargo, "description")):
         n_renovaciones += 1
+        continue
+    # Y las ventas de la tienda física, que no dan acceso a nada.
+    if g(g(cargo, "metadata", {}), TIENDA_FISICA):
+        n_tienda += 1
         continue
     n_cobros += 1
     if n_cobros % 500 == 0:
@@ -607,6 +620,7 @@ for cargo in cobros():
             {
                 "correo": email,
                 "nombre": nombre_persona,
+                "fecha": fecha(g(cargo, "created")),
                 "acceso": etiqueta,
                 "plan": PLAN_LEGACY if vitalicio else "",
                 "producto": compra["texto"] or (pi or g(cargo, "id", "")),
@@ -651,7 +665,10 @@ for cargo in cobros():
             correos[email.lower().strip()].append(email)
         else:
             avisos.append(f"SIN CORREO: cobro único {g(cargo, 'id', '')}")
-print(f"  {n_cobros} cobros únicos ({n_renovaciones} renovaciones descartadas)\n")
+print(
+    f"  {n_cobros} cobros únicos "
+    f"({n_renovaciones} renovaciones y {n_tienda} ventas de la tienda descartadas)\n"
+)
 
 # --- el fichero del importador ----------------------------------------------
 # Una entrada por persona, agrupando por correo en minúsculas. Solo entra quien
@@ -777,6 +794,7 @@ print(f"  {len(migracion)} personas con acceso\n")
 campos = [
     "correo",
     "nombre",
+    "fecha",
     "acceso",
     "plan",
     "producto",
@@ -806,6 +824,7 @@ duplicados = {k: set(v) for k, v in correos.items() if len({x for x in v}) > 1}
 resumen = []
 resumen.append(f"Filas totales: {len(filas)}")
 resumen.append(f"Renovaciones descartadas (mensualidades, no compras): {n_renovaciones}")
+resumen.append(f"Ventas de la tienda descartadas (fundas y cuadros, no cursos): {n_tienda}")
 resumen.append(f"Accesos vigentes: {len(vigentes)}")
 resumen.append(f"Personas distintas con acceso: {len(con_acceso)}")
 resumen.append("")
