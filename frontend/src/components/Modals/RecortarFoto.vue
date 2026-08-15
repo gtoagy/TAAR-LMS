@@ -24,15 +24,15 @@
 
 			<div class="mt-5 flex items-center gap-3">
 				<span class="lucide-image size-4 shrink-0 text-ink-gray-5" />
-				<!-- Sin adelgazar la barra: con 4 px de alto no hay manera de
-				     agarrarla con el dedo. -->
+				<!-- Barra con tirador de verdad: el control del navegador se queda
+				     en 4 px de alto y con el dedo no hay quien lo agarre. -->
 				<input
 					v-model.number="zoom"
 					type="range"
 					min="1"
 					max="4"
 					step="0.01"
-					class="w-full cursor-pointer accent-purple-500"
+					class="barra-zoom w-full cursor-pointer"
 				/>
 				<span class="lucide-image size-6 shrink-0 text-ink-gray-5" />
 			</div>
@@ -177,3 +177,43 @@ const recortar = () => {
 	)
 }
 </script>
+
+<style scoped>
+.barra-zoom {
+	-webkit-appearance: none;
+	appearance: none;
+	height: 20px;
+	background: transparent;
+}
+
+.barra-zoom::-webkit-slider-runnable-track {
+	height: 6px;
+	border-radius: 999px;
+	background: var(--surface-gray-4);
+}
+
+.barra-zoom::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	margin-top: -6px;
+	height: 18px;
+	width: 18px;
+	border-radius: 999px;
+	border: 2px solid white;
+	background: var(--surface-gray-7);
+	box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+}
+
+.barra-zoom::-moz-range-track {
+	height: 6px;
+	border-radius: 999px;
+	background: var(--surface-gray-4);
+}
+
+.barra-zoom::-moz-range-thumb {
+	height: 18px;
+	width: 18px;
+	border-radius: 999px;
+	border: 2px solid white;
+	background: var(--surface-gray-7);
+}
+</style>
