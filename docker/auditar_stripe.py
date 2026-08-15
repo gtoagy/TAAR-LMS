@@ -128,6 +128,27 @@ ESTADOS_IMPORTADOR = {
 
 TODA_LA_ESCUELA = "TODO"
 REVISAR = "Revisar a mano"
+
+# Los cobros que ningún automatismo puede resolver —tarjetas regalo y enlaces de
+# pago hechos a medida— decididos por la dueña el 15-ago-2026. Se apuntan por el
+# identificador del cobro para no tener que volver a decidirlos en cada pasada.
+# El segundo valor es None cuando el cobro no da acceso a nada.
+DECIDIDOS = {
+    # Tarjetas regalo del "Plan Ilimitado": abren la escuela entera, para siempre.
+    "ch_3QYF8vHtYzLxc0E20lhAkoZN": (TODA_LA_ESCUELA, ""),
+    "ch_3Qa6YMHtYzLxc0E21K2TIDGx": (TODA_LA_ESCUELA, ""),
+    # Tarjeta regalo de 6 meses. Se da entera porque el sistema no sabe caducar
+    # un acceso por fecha; hay que retirarla a mano cuando pasen.
+    "ch_3Skr3uHtYzLxc0E20UdXdX56": (
+        TODA_LA_ESCUELA,
+        "tarjeta regalo de 6 meses: retirarle el acceso a mano al vencer",
+    ),
+    "ch_3Sm0W1HtYzLxc0E21sxD0E2s": ("teoria-del-color", ""),
+    # Enlaces de pago a medida: no eran cursos.
+    "ch_3Sqy0qHtYzLxc0E21anKfSpu": (None, ""),  # "Regalo Tanis"
+    "ch_3RyN40HtYzLxc0E21WkYRHDi": (None, ""),  # "Link Pao regalo Gualu"
+    "ch_3Rc8NJHtYzLxc0E20FVqR6tX": (None, ""),  # "Link Pao"
+}
 # Cobro real y correcto que sencillamente no da acceso hoy: una mensualidad de
 # hace años. Se distingue de REVISAR para no llenar de ruido lo que hay que
 # mirar a mano, pero se conserva en el CSV para poder auditarlo.
@@ -528,6 +549,7 @@ print("Leyendo cobros únicos (toda la historia de la cuenta)...")
 n_cobros = 0
 n_renovaciones = 0
 n_tienda = 0
+n_decididos_fuera = 0
 for cargo in cobros():
     if g(cargo, "status") != "succeeded":
         continue
@@ -543,6 +565,11 @@ for cargo in cobros():
     # Y las ventas de la tienda física, que no dan acceso a nada.
     if g(g(cargo, "metadata", {}), TIENDA_FISICA):
         n_tienda += 1
+        continue
+    # Lo que ya se decidió a mano manda sobre cualquier deducción.
+    acceso_forzado, nota_manual = DECIDIDOS.get(g(cargo, "id", ""), (False, ""))
+    if acceso_forzado is None:
+        n_decididos_fuera += 1
         continue
     n_cobros += 1
     if n_cobros % 500 == 0:
@@ -597,13 +624,16 @@ for cargo in cobros():
         )
 
     for compra in compras:
-        acceso_a, motivo = acceso_de(
-            compra["texto"],
-            price_id=compra["price_id"],
-            producto_id=compra["producto_id"],
-            centavos=compra["centavos"],
-            moneda=moneda,
-        )
+        if acceso_forzado:
+            acceso_a, motivo = acceso_forzado, ""
+        else:
+            acceso_a, motivo = acceso_de(
+                compra["texto"],
+                price_id=compra["price_id"],
+                producto_id=compra["producto_id"],
+                centavos=compra["centavos"],
+                moneda=moneda,
+            )
         # Una mensualidad de hace años es un cobro correcto que hoy no abre
         # nada: no se revisa ni cuenta como acceso, pero queda en la hoja.
         caducado = acceso_a == SIN_ACCESO
@@ -648,6 +678,7 @@ for cargo in cobros():
                     m
                     for m in (
                         motivo,
+                        nota_manual,
                         f"le devolvimos parte de «{compra['texto']}»: confirmar que conserva el acceso"
                         if parcial
                         else "",
@@ -825,6 +856,7 @@ resumen = []
 resumen.append(f"Filas totales: {len(filas)}")
 resumen.append(f"Renovaciones descartadas (mensualidades, no compras): {n_renovaciones}")
 resumen.append(f"Ventas de la tienda descartadas (fundas y cuadros, no cursos): {n_tienda}")
+resumen.append(f"Cobros descartados a mano (enlaces de pago sueltos): {n_decididos_fuera}")
 resumen.append(f"Accesos vigentes: {len(vigentes)}")
 resumen.append(f"Personas distintas con acceso: {len(con_acceso)}")
 resumen.append("")
