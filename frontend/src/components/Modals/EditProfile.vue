@@ -24,11 +24,10 @@
 				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-10">
 					<div class="space-y-4">
 						<div class="space-y-4">
-							<Uploader
+							<FotoDePerfil
 								v-model="profile.image"
 								:label="__('Profile Image')"
 								:required="true"
-								shape="circle"
 							/>
 
 							<FormControl
@@ -49,23 +48,15 @@
 						</div>
 					</div>
 					<div class="space-y-4">
-						<Link
-							:label="__('Language')"
-							v-model="profile.language"
-							doctype="Language"
+						<!-- Texto corriente y nada más: aquí se cuenta quién eres en
+						     tres líneas, no se maqueta una página. -->
+						<FormControl
+							v-model="bioTexto"
+							type="textarea"
+							:label="__('Bio')"
+							:rows="10"
+							:placeholder="__('Tell us a bit about yourself.')"
 						/>
-						<div>
-							<div class="mb-1.5 text-p-sm-medium text-ink-gray-7">
-								{{ __('Bio') }}
-							</div>
-							<TextEditor
-								:fixedMenu="true"
-								@change="(val) => (profile.bio = val)"
-								:content="profile.bio"
-								:rows="15"
-								editorClass="prose-sm py-2 px-2 min-h-[160px] sm:min-h-[280px] border-outline-gray-2 hover:border-outline-gray-3 rounded-b-md bg-surface-gray-3"
-							/>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -79,20 +70,19 @@ import {
 	createResource,
 	Dialog,
 	FormControl,
-	TextEditor,
 	toast,
 } from 'frappe-ui'
 import { ref, reactive, watch } from 'vue'
 import { sanitizeHTML } from '@/utils'
 import { usersStore } from '@/stores/user'
-import Link from '@/components/Controls/Link.vue'
+import FotoDePerfil from '@/components/Controls/FotoDePerfil.vue'
 
 const { userResource } = usersStore()
 
 const show = defineModel()
 const reloadProfile = defineModel('reloadProfile')
-const hasLanguageChanged = ref(false)
 const isDirty = ref(false)
+const bioTexto = ref('')
 
 const props = defineProps({
 	profile: {
@@ -104,10 +94,32 @@ const props = defineProps({
 const profile = reactive({
 	first_name: '',
 	last_name: '',
-	bio: '',
 	image: '',
 	instagram: '',
 })
+
+// La biografía se guarda en HTML porque el perfil y la ficha del curso la
+// pintan tal cual, pero se escribe como un texto normal: línea en blanco para
+// separar párrafos y punto.
+const bioAHtml = (texto) => {
+	const limpio = (texto || '').trim()
+	if (!limpio) return ''
+	const escapar = (t) =>
+		t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+	return limpio
+		.split(/\n{2,}/)
+		.map((parrafo) => `<p>${escapar(parrafo).replace(/\n/g, '<br>')}</p>`)
+		.join('')
+}
+
+const htmlABio = (html) => {
+	if (!html) return ''
+	const caja = document.createElement('div')
+	caja.innerHTML = String(html)
+		.replace(/<\/(p|div|h[1-6]|li)>/gi, '\n\n')
+		.replace(/<br\s*\/?>/gi, '\n')
+	return (caja.textContent || '').replace(/\n{3,}/g, '\n\n').trim()
+}
 
 const updateProfile = createResource({
 	url: 'frappe.client.set_value',
@@ -117,6 +129,7 @@ const updateProfile = createResource({
 			name: props.profile.data.name,
 			fieldname: {
 				user_image: profile.image || null,
+				bio: sanitizeHTML(bioAHtml(bioTexto.value)),
 				...profile,
 			},
 		}
@@ -145,7 +158,6 @@ const validateMandatoryFields = () => {
 const saveProfile = () => {
 	let missingMandatoryFields = validateMandatoryFields()
 	if (missingMandatoryFields) return
-	profile.bio = sanitizeHTML(profile.bio)
 	updateProfile.submit(
 		{},
 		{
@@ -155,10 +167,6 @@ const saveProfile = () => {
 				// El aviso de "completa tu perfil" del menú lateral mira estos
 				// mismos datos: sin releerlos seguiría ahí hasta recargar.
 				userResource.reload()
-				if (hasLanguageChanged.value) {
-					hasLanguageChanged.value = false
-					window.location.reload()
-				}
 			},
 			onError(err) {
 				toast.error(err.messages?.[0] || err)
@@ -168,18 +176,21 @@ const saveProfile = () => {
 }
 
 watch(
-	() => profile,
-	(newVal) => {
+	[profile, bioTexto],
+	() => {
 		if (!props.profile.data) return
-		let keys = Object.keys(newVal)
-		keys.splice(keys.indexOf('image'), 1)
-		for (let key of keys) {
-			if (newVal[key] !== props.profile.data[key]) {
+		for (let key of Object.keys(profile)) {
+			if (key === 'image') continue
+			if (profile[key] !== props.profile.data[key]) {
 				isDirty.value = true
 				return
 			}
 		}
 		if (profile.image !== props.profile.data.user_image) {
+			isDirty.value = true
+			return
+		}
+		if (bioAHtml(bioTexto.value) !== (props.profile.data.bio || '')) {
 			isDirty.value = true
 			return
 		}
@@ -194,20 +205,10 @@ watch(
 		if (newVal) {
 			profile.first_name = newVal.first_name
 			profile.last_name = newVal.last_name
-			profile.language = newVal.language
-			profile.bio = newVal.bio
 			profile.instagram = newVal.instagram
 			profile.image = newVal.user_image
+			bioTexto.value = htmlABio(newVal.bio)
 			isDirty.value = false
-		}
-	}
-)
-
-watch(
-	() => profile.language,
-	() => {
-		if (profile.language !== props.profile.data.language) {
-			hasLanguageChanged.value = true
 		}
 	}
 )

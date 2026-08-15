@@ -10409,3 +10409,23 @@ msgstr "No la recuerdo, envíame un enlace"
 
 msgid "We sent you a link to {0}. Check your inbox."
 msgstr "Te enviamos un enlace a {0}. Revisa tu correo."
+
+#: frontend/src/components/Modals/EditProfile.vue:59
+msgid "Tell us a bit about yourself."
+msgstr "Cuéntanos un poco sobre ti."
+
+#: frontend/src/components/Controls/FotoDePerfil.vue:26
+msgid "Adjust"
+msgstr "Ajustar"
+
+#: frontend/src/components/Modals/RecortarFoto.vue:3
+msgid "Adjust your photo"
+msgstr "Ajusta tu foto"
+
+#: frontend/src/components/Modals/RecortarFoto.vue:6
+msgid "Drag the photo to center it and use the slider to zoom."
+msgstr "Arrastra la foto para centrarla y usa la barra para acercarla."
+
+#: frontend/src/components/Modals/RecortarFoto.vue:52
+msgid "Use this photo"
+msgstr "Usar esta foto"
