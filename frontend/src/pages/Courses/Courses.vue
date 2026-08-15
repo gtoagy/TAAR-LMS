@@ -45,9 +45,10 @@
 			<div class="text-xl-semibold text-ink-gray-9">
 				{{ __('All Courses') }}
 			</div>
-			<div
-				class="flex flex-col space-y-4 lg:flex-row lg:items-center lg:gap-x-4 lg:space-y-0"
-			>
+			<!-- gap y no space-y: el selector de categoría viene envuelto en un
+			     display:contents, que se come el margen y lo dejaba pegado al
+			     buscador. -->
+			<div class="flex flex-col gap-4 lg:flex-row lg:items-center">
 				<TabButtons :buttons="courseTabs" v-model="currentTab" class="w-fit" />
 
 				<FormControl

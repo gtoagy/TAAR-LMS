@@ -384,7 +384,7 @@ msgstr "Todos los grupos"
 
 #: frontend/src/pages/Courses/Courses.vue:37 lms/lms/widgets/BreadCrumb.html:3
 msgid "All Courses"
-msgstr "Todos los Cursos"
+msgstr "Todos los cursos"
 
 #: frontend/src/pages/Programs/StudentPrograms.vue:5
 msgid "All Programs"

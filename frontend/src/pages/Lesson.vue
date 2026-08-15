@@ -371,6 +371,9 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Notes from '@/components/Notes/Notes.vue'
 import InlineLessonMenu from '@/components/Notes/InlineLessonMenu.vue'
 import { getLmsRoute } from '@/utils/basePath'
+import { useScreenSize } from '@/utils/composables'
+
+const { isMobile } = useScreenSize()
 
 const user = inject('$user')
 const socket = inject('$socket')
@@ -990,6 +993,9 @@ const showVideoStats = () => {
 }
 
 const canGoZen = () => {
+	// En el teléfono la pantalla completa no cambia nada: el navegador ya ocupa
+	// todo el alto, así que el botón solo ocupa sitio en una fila apretada.
+	if (isMobile.value) return false
 	if (
 		user.data?.is_moderator ||
 		user.data?.is_instructor ||
