@@ -22,13 +22,12 @@
 				/>
 			</div>
 
-			<!-- Mismo ancho que el círculo y centrada con él: suelta a todo lo
-			     ancho del diálogo se veía descolgada de la foto. -->
-			<div
-				class="mx-auto mt-5 flex items-center gap-3"
-				:style="{ width: `${LADO}px` }"
-			>
-				<span class="lucide-image size-4 shrink-0 text-ink-gray-5" />
+			<!-- Los dos iconos ocupan lo mismo aunque se dibujen a distinto
+			     tamaño; si no, la barra queda corrida hacia el pequeño. -->
+			<div class="mt-5 flex items-center gap-3">
+				<span class="grid w-6 shrink-0 place-items-center">
+					<span class="lucide-image size-4 text-ink-gray-5" />
+				</span>
 				<!-- Barra con tirador de verdad: el control del navegador se queda
 				     en 4 px de alto y con el dedo no hay quien lo agarre. -->
 				<input
@@ -39,7 +38,9 @@
 					step="0.01"
 					class="barra-zoom w-full cursor-pointer"
 				/>
-				<span class="lucide-image size-6 shrink-0 text-ink-gray-5" />
+				<span class="grid w-6 shrink-0 place-items-center">
+					<span class="lucide-image size-6 text-ink-gray-5" />
+				</span>
 			</div>
 		</template>
 
@@ -187,6 +188,11 @@ const recortar = () => {
 .barra-zoom {
 	-webkit-appearance: none;
 	appearance: none;
+	/* Los controles de rango traen un ancho propio del navegador que le gana a
+	   las utilidades; sin esto la barra se queda en 150 px y descentrada. */
+	flex: 1 1 auto;
+	width: 100%;
+	min-width: 0;
 	height: 20px;
 	background: transparent;
 }
