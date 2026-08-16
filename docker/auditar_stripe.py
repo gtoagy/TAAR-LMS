@@ -774,7 +774,11 @@ for fila in filas:
     # se le pide a quien entró con una promoción vieja de importe simbólico, ni
     # a quien acaba de comprar el catálogo nuevo (la campaña es para las de
     # siempre, que son las que tienen algo que contar).
-    if fila["_estado_stripe"] in ("active", "past_due") and persona["plan"] == PLAN_LEGACY:
+    # A quien paga por años no se le invita: el descuento dura tres meses y su
+    # próximo cobro es dentro de doce, así que dejaría la reseña y no vería nada.
+    if fila["periodo"] == "year":
+        pass
+    elif fila["_estado_stripe"] in ("active", "past_due") and persona["plan"] == PLAN_LEGACY:
         pesos = a_pesos(fila["_centavos"], fila["_moneda"])
         if pesos is None:
             anota(persona, f"no sé convertir {(fila['_moneda'] or '?').upper()} a pesos")
