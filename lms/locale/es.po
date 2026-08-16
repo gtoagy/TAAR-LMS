@@ -10435,3 +10435,109 @@ msgstr "Arrastra la foto para centrarla y usa la barra para acercarla."
 #: frontend/src/components/Modals/RecortarFoto.vue:52
 msgid "Use this photo"
 msgstr "Usar esta foto"
+
+#: frontend/src/components/BarraResena.vue
+msgid "Tell us your experience and get {0}% off"
+msgstr "Cuéntanos tu experiencia y llévate {0}% de descuento"
+
+#: frontend/src/components/BarraResena.vue
+msgid "Write my review"
+msgstr "Escribir mi reseña"
+
+#: frontend/src/pages/Opinion.vue
+msgid "Your experience"
+msgstr "Tu experiencia"
+
+#: frontend/src/pages/Opinion.vue
+msgid "Tell us your experience"
+msgstr "Cuéntanos tu experiencia"
+
+#: frontend/src/pages/Opinion.vue
+msgid ""
+"Tell us how the school has been for you and we apply {0}% off your "
+"subscription for {1} months."
+msgstr ""
+"Cuéntanos cómo te ha ido en la escuela y te aplicamos {0}% de descuento en tu "
+"suscripción durante {1} meses."
+
+#: frontend/src/pages/Opinion.vue
+msgid "How would you rate the school?"
+msgstr "¿Cómo calificarías la escuela?"
+
+#: frontend/src/pages/Opinion.vue
+msgid "Your review"
+msgstr "Tu reseña"
+
+#: frontend/src/pages/Opinion.vue
+msgid "What have you learned? What do you like the most about the classes?"
+msgstr "¿Qué has aprendido? ¿Qué es lo que más te gusta de las clases?"
+
+#: frontend/src/pages/Opinion.vue
+msgid "Photos of your work ({0} max, optional)"
+msgstr "Fotos de tus obras (hasta {0}, opcional)"
+
+#: frontend/src/pages/Opinion.vue
+msgid "Add photos"
+msgstr "Agregar fotos"
+
+#: frontend/src/pages/Opinion.vue
+msgid "Remove photo"
+msgstr "Quitar foto"
+
+#: frontend/src/pages/Opinion.vue
+msgid "You can attach up to {0} photos."
+msgstr "Puedes adjuntar hasta {0} fotos."
+
+#: frontend/src/pages/Opinion.vue
+msgid "Send my review"
+msgstr "Enviar mi reseña"
+
+#: frontend/src/pages/Opinion.vue
+msgid "Write us a few words."
+msgstr "Escríbenos unas palabras."
+
+#: frontend/src/pages/Opinion.vue
+msgid "One more word and you can send it."
+msgstr "Te falta 1 palabra para poder enviarla."
+
+#: frontend/src/pages/Opinion.vue
+msgid "{0} more words and you can send it."
+msgstr "Te faltan {0} palabras para poder enviarla."
+
+#: frontend/src/pages/Opinion.vue
+msgid "Only the stars are missing."
+msgstr "Solo faltan tus estrellas."
+
+#: frontend/src/pages/Opinion.vue
+msgid "Perfect, you can send it now."
+msgstr "¡Perfecto! Ya puedes enviarla."
+
+#: frontend/src/pages/Opinion.vue
+msgid "Your review could not be sent."
+msgstr "No pudimos enviar tu reseña. Inténtalo otra vez en un momento."
+
+#: frontend/src/pages/Opinion.vue
+msgid "Thank you for writing to us!"
+msgstr "¡Gracias por escribirnos!"
+
+#: frontend/src/pages/Opinion.vue
+msgid ""
+"Your {0}% discount is already applied. You will see it in your next {1} "
+"payments."
+msgstr ""
+"Tu descuento del {0}% ya está aplicado. Lo verás en tus próximos {1} pagos."
+
+#: frontend/src/pages/Opinion.vue
+msgid ""
+"Your {0}% discount for {1} months is on its way. You will see it very soon."
+msgstr ""
+"Tu descuento del {0}% durante {1} meses ya viene en camino. Lo verás muy "
+"pronto."
+
+#: frontend/src/pages/Opinion.vue
+msgid "You already sent us your review. Thank you!"
+msgstr "Ya nos enviaste tu reseña. ¡Gracias!"
+
+#: frontend/src/pages/Opinion.vue
+msgid "You do not have this invitation right now."
+msgstr "Ahora mismo no tienes esta invitación."

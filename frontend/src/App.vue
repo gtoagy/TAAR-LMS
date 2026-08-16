@@ -1,6 +1,10 @@
 <template>
 	<FrappeUIProvider>
 		<Layout class="isolate text-p-base">
+			<!-- Arriba del contenido y dentro del layout que toque: los tres
+			     layouts pintan aquí su <slot />, así que la invitación acompaña a
+			     la alumna por toda la escuela sin tocar ninguno de ellos. -->
+			<BarraResena />
 			<router-view />
 		</Layout>
 		<NotificationPanel />
@@ -19,6 +23,7 @@ import DesktopLayout from './components/Layouts/DesktopLayout.vue'
 import MobileLayout from './components/Layouts/MobileLayout.vue'
 import NoSidebarLayout from './components/Layouts/NoSidebarLayout.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
+import BarraResena from '@/components/BarraResena.vue'
 import NotificationPanel from '@/components/Notifications/NotificationPanel.vue'
 
 const { isMobile } = useScreenSize()
