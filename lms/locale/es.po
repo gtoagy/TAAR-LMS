@@ -10541,3 +10541,135 @@ msgstr "Ya nos enviaste tu reseña. ¡Gracias!"
 #: frontend/src/pages/Opinion.vue
 msgid "You do not have this invitation right now."
 msgstr "Ahora mismo no tienes esta invitación."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Student support"
+msgstr "Soporte a alumnas"
+
+#: frontend/src/pages/Soporte.vue
+msgid "This page is for the school team."
+msgstr "Esta página es solo para el equipo de la escuela."
+
+#: frontend/src/pages/Soporte.vue
+msgid ""
+"Look up a student to resend her access or move her account to another email."
+msgstr ""
+"Busca a una alumna para reenviarle su acceso o mover su cuenta a otro correo."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Name or email"
+msgstr "Nombre o correo"
+
+#: frontend/src/pages/Soporte.vue
+msgid "Write at least {0} letters to search."
+msgstr "Escribe al menos {0} letras para buscar."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Nobody matches that. Try her name, or part of her email."
+msgstr "No encontramos a nadie así. Prueba con su nombre, o con parte de su correo."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Already signed in"
+msgstr "Ya entró"
+
+#: frontend/src/pages/Soporte.vue
+msgid "Never signed in"
+msgstr "Nunca ha entrado"
+
+#: frontend/src/pages/Soporte.vue
+msgid "No membership."
+msgstr "Sin membresía."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Lifetime access."
+msgstr "Acceso de por vida."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Membership: {0}"
+msgstr "Membresía: {0}"
+
+#: frontend/src/pages/Soporte.vue
+msgid "until {0}"
+msgstr "hasta el {0}"
+
+#: frontend/src/pages/Soporte.vue
+msgid "bought separately"
+msgstr "comprado aparte"
+
+#: frontend/src/pages/Soporte.vue
+msgid "No courses yet."
+msgstr "Todavía no tiene cursos."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Resend her access"
+msgstr "Reenviarle su acceso"
+
+#: frontend/src/pages/Soporte.vue
+msgid "Change her email"
+msgstr "Cambiarle el correo"
+
+#: frontend/src/pages/Soporte.vue
+msgid "Yes, send it"
+msgstr "Sí, enviárselo"
+
+#: frontend/src/pages/Soporte.vue
+msgid ""
+"We will email {0} with her link to create her password. Her previous link "
+"stops working."
+msgstr ""
+"Le enviaremos un correo a {0} con su enlace para crear su contraseña. El "
+"enlace anterior deja de funcionar."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Access sent to {0}"
+msgstr "Su acceso salió hacia {0}"
+
+#: frontend/src/pages/Soporte.vue
+msgid "We could not send that email."
+msgstr "No pudimos enviarle el correo. Inténtalo otra vez en un momento."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Her account today: {0}"
+msgstr "Su cuenta hoy: {0}"
+
+#: frontend/src/pages/Soporte.vue
+msgid "New email"
+msgstr "Correo nuevo"
+
+#: frontend/src/pages/Soporte.vue
+msgid "The whole account moves: her membership, her courses and her progress."
+msgstr "Se mueve la cuenta entera: su membresía, sus cursos y su avance."
+
+#: frontend/src/pages/Soporte.vue
+msgid ""
+"It also gets fixed in Stripe, so her next receipt goes to the right inbox."
+msgstr ""
+"También se corrige en Stripe, para que su próximo recibo llegue al correo "
+"bueno."
+
+#: frontend/src/pages/Soporte.vue
+msgid ""
+"She does not get any email from this. Send her access afterwards if she "
+"needs it."
+msgstr ""
+"Esto no le manda ningún correo. Si le hace falta, reenvíale su acceso "
+"después."
+
+#: frontend/src/pages/Soporte.vue
+msgid "Move her account"
+msgstr "Mover su cuenta"
+
+#: frontend/src/pages/Soporte.vue
+msgid "Account moved to {0}"
+msgstr "Su cuenta ya está en {0}"
+
+#: frontend/src/pages/Soporte.vue
+msgid ""
+"Account moved, but Stripe kept the old address. Fix it there by hand."
+msgstr ""
+"La cuenta se movió, pero en Stripe quedó el correo viejo. Corrígelo ahí a "
+"mano."
+
+#: frontend/src/pages/Soporte.vue
+msgid "We could not change that email."
+msgstr "No pudimos cambiarle el correo. Inténtalo otra vez en un momento."
