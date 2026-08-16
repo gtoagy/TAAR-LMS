@@ -67,7 +67,10 @@ PALABRAS_A_MANO = ("gift", "regalo")
 DESCRIPCIONES_A_CURSO = (
     ("teoria del color", "teoria-del-color"),
     ("paint a pet", "curso-de-mascotas"),
-    ("paint a case", "resina-en-fundas"),
+    # Ojo: en producción el curso es «arte-en-fundas». El local se quedó con el
+    # identificador viejo, «resina-en-fundas», y por ahí se colaron cinco compras
+    # a un curso que allí no existe.
+    ("paint a case", "arte-en-fundas"),
     ("noche estrellada", "la-noche-estrellada"),
     ("valor de tu", "workshop-el-valor-de-tu-obra"),
     ("valor de sus obras", "workshop-el-valor-de-tu-obra"),
