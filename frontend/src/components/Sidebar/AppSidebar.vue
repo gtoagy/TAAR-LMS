@@ -168,6 +168,18 @@
 				appName="learning"
 			/>
 
+			<!-- Quien se atasca y no ve por dónde preguntar, no pregunta: se va.
+			     Por eso los dos WhatsApp viven abajo del todo, siempre a la vista,
+			     y no escondidos en una página de ayuda que nadie abre. -->
+			<nav v-if="enlacesDeAyuda.length" class="mt-3 space-y-1">
+				<SidebarLink
+					v-for="enlace in enlacesDeAyuda"
+					:key="enlace.to"
+					:link="enlace"
+					:isCollapsed="sidebarStore.isSidebarCollapsed"
+				/>
+			</nav>
+
 			<div
 				class="flex items-center mt-4"
 				:class="
@@ -212,12 +224,6 @@
 									minimize = !showHelpModal
 								}
 							"
-						/>
-					</Tooltip>
-					<Tooltip :text="__('Powered by Frappe Learning')">
-						<span
-							class="lucide-zap size-4 text-ink-gray-7 cursor-pointer"
-							@click="redirectToWebsite()"
 						/>
 					</Tooltip>
 				</div>
@@ -307,6 +313,7 @@ import {
 	useTelemetry,
 } from 'frappe-ui/frappe'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import UserDropdown from '@/components/Sidebar/UserDropdown.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import SidebarLink from '@/components/Sidebar/SidebarLink.vue'
@@ -383,6 +390,13 @@ const addKeyboardShortcut = () => {
 const toggleCommandPalette = () => {
 	settingsStore.isCommandPaletteOpen = !settingsStore.isCommandPaletteOpen
 }
+
+// Dos enlaces que no cambian nunca: se piden una vez y se quedan en caché.
+const ayudaTaar = createResource({
+	cache: 'Enlaces de ayuda TAAR',
+	url: 'taar_lms.api.enlaces_de_ayuda',
+	auto: true,
+})
 
 const unreadNotifications = createResource({
 	cache: 'Unread Notifications Count',
@@ -683,9 +697,25 @@ const updateSidebarLinks = () => {
 	updateUnreadCount()
 }
 
-const redirectToWebsite = () => {
-	window.open('https://frappe.io/learning', '_blank')
-}
+const enlacesDeAyuda = computed(() => {
+	const datos = ayudaTaar.data || {}
+	const enlaces = []
+	if (datos.soporte) {
+		enlaces.push({
+			label: 'Ayuda por WhatsApp',
+			icon: markRaw(WhatsAppIcon),
+			to: datos.soporte,
+		})
+	}
+	if (datos.comunidad) {
+		enlaces.push({
+			label: 'Comunidad',
+			icon: markRaw(WhatsAppIcon),
+			to: datos.comunidad,
+		})
+	}
+	return enlaces
+})
 
 const isStudent = computed(() => {
 	return userResource.data?.is_student

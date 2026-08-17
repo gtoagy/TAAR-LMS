@@ -23,7 +23,7 @@
 					@click="handleClick(link)"
 				>
 					<component
-						:is="icons[link.icon]"
+						:is="typeof link.icon === 'string' ? icons[link.icon] : link.icon"
 						class="h-4 w-4 stroke-1.5 text-ink-gray-5"
 					/>
 					<div>{{ __(link.label) }}</div>
@@ -77,10 +77,11 @@
 import { getSidebarLinks } from '@/utils'
 import { useRouter } from 'vue-router'
 import { call } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { markRaw, ref, watch } from 'vue'
 import { sessionStore } from '@/stores/session'
 import { useSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/user'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import * as icons from 'lucide-vue-next'
 import { toggleNotifications } from '@/stores/notifications'
 
@@ -132,14 +133,27 @@ const filterLinksToShow = (data) => {
 	})
 }
 
-const addOtherLinks = () => {
+const addOtherLinks = async () => {
 	if (user) {
 		addLink('Notifications', 'Bell', 'Notifications')
 		addLink('Profile', 'UserRound')
+		await addAyuda()
 		addLink('Log out', 'LogOut')
 	} else {
+		await addAyuda()
 		addLink('Log in', 'LogIn')
 	}
+}
+
+// Los dos WhatsApp. En el móvil no hay panel lateral donde dejarlos siempre a
+// la vista, así que van aquí: es el sitio donde se mira cuando algo no
+// funciona, justo antes de rendirse y cerrar la aplicación.
+const addAyuda = async () => {
+	const enlaces = await call('taar_lms.api.enlaces_de_ayuda')
+	if (enlaces?.soporte)
+		addLink('Ayuda por WhatsApp', markRaw(WhatsAppIcon), enlaces.soporte)
+	if (enlaces?.comunidad)
+		addLink('Comunidad', markRaw(WhatsAppIcon), enlaces.comunidad)
 }
 
 const addLink = (label, icon, to = '') => {
@@ -240,7 +254,10 @@ const handleClick = (tab) => {
 				username: userResource.data?.username,
 			},
 		})
-	else router.push({ name: tab.to })
+	else if (tab.to?.startsWith('http')) {
+		window.open(tab.to, '_blank')
+		toggleMenu()
+	} else router.push({ name: tab.to })
 }
 
 const isVisible = (tab) => {
