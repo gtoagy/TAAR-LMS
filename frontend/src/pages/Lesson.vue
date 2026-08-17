@@ -227,7 +227,13 @@
 							</div>
 						</div>
 
-						<div v-if="!zenModeEnabled" class="flex items-center mt-4 md:mt-2">
+						<!-- Fuera en el móvil: quien está dentro de una lección ya sabe
+					     de quién es el curso, y ahí cada línea que sobra empuja el
+					     vídeo hacia abajo. -->
+					<div
+						v-if="!zenModeEnabled"
+						class="hidden md:flex items-center mt-4 md:mt-2"
+					>
 							<span
 								class="h-6 me-1"
 								:class="{
