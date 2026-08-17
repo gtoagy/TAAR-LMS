@@ -28,8 +28,12 @@
 			<!-- Siempre a la vista en el móvil: el botón aparecía solo al pasar el
 			     ratón por encima, y en un teléfono no hay ratón, así que la
 			     portada no había forma de cambiarla desde ahí. -->
+			<!-- En el móvil se aparta a la esquina: sobre una portada de 130px, un
+			     botón con texto en mitad de la foto tapa justo lo que se está
+			     eligiendo. En el ordenador se queda centrado y sale al pasar el
+			     ratón, que ahí no estorba. -->
 			<div
-				class="absolute bottom-[30%] md:bottom-0 start-[50%] mb-4 flex -translate-x-1/2 gap-x-2 opacity-100 transition-opacity md:opacity-0 focus-within:opacity-100 md:group-hover:opacity-100"
+				class="absolute bottom-3 end-3 flex gap-x-2 opacity-100 transition-opacity md:bottom-0 md:end-auto md:start-1/2 md:mb-4 md:-translate-x-1/2 md:opacity-0 focus-within:opacity-100 md:group-hover:opacity-100"
 				v-if="isSessionUser()"
 			>
 				<!-- Directo al selector de archivos. Antes se abría un desplegable
@@ -44,6 +48,18 @@
 				>
 					<template v-slot="{ progress, uploading, openFileSelector }">
 						<Button
+							class="shadow-sm md:hidden"
+							variant="outline"
+							:loading="uploading"
+							:title="__('Change cover')"
+							@click="openFileSelector"
+						>
+							<template #icon>
+								<span class="lucide-image-up size-4 text-ink-gray-7" />
+							</template>
+						</Button>
+						<Button
+							class="hidden md:inline-flex"
 							variant="outline"
 							:loading="uploading"
 							@click="openFileSelector"
