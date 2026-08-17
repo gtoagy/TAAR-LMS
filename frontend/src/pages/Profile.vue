@@ -25,26 +25,36 @@
 				:class="{ 'bg-surface-gray-2': !profile.data.cover_image }"
 				class="h-[130px] w-full"
 			></div>
+			<!-- Siempre a la vista en el móvil: el botón aparecía solo al pasar el
+			     ratón por encima, y en un teléfono no hay ratón, así que la
+			     portada no había forma de cambiarla desde ahí. -->
 			<div
-				class="absolute bottom-[30%] md:bottom-0 start-[50%] mb-4 flex -translate-x-1/2 gap-x-2 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100"
+				class="absolute bottom-[30%] md:bottom-0 start-[50%] mb-4 flex -translate-x-1/2 gap-x-2 opacity-100 transition-opacity md:opacity-0 focus-within:opacity-100 md:group-hover:opacity-100"
 				v-if="isSessionUser()"
 			>
-				<EditCoverImage
-					@select="(imageUrl) => coverImage.submit({ url: imageUrl })"
+				<!-- Directo al selector de archivos. Antes se abría un desplegable
+				     donde había que elegir entre buscar una foto de archivo por
+				     palabra clave o subir la propia; en una escuela de arte, la
+				     foto siempre es una obra suya, así que el desvío sobraba. -->
+				<FileUploader
+					v-if="!readOnlyMode"
+					:fileTypes="['image/*']"
+					:validateFile="validarPortada"
+					@success="(file) => coverImage.submit({ url: file.file_url })"
 				>
-					<template v-slot="{ togglePopover }">
+					<template v-slot="{ progress, uploading, openFileSelector }">
 						<Button
-							v-if="!readOnlyMode"
 							variant="outline"
-							@click="togglePopover()"
+							:loading="uploading"
+							@click="openFileSelector"
 						>
 							<template #prefix>
-								<span class="lucide-edit size-4 text-ink-gray-7" />
+								<span class="lucide-image-up size-4 text-ink-gray-7" />
 							</template>
-							{{ __('Edit') }}
+							{{ uploading ? `${progress}%` : __('Change cover') }}
 						</Button>
 					</template>
-				</EditCoverImage>
+				</FileUploader>
 			</div>
 		</div>
 		<div class="mx-auto -mt-10 md:-mt-4 max-w-4xl translate-x-0 px-5">
@@ -135,6 +145,7 @@ import {
 	Button,
 	call,
 	createResource,
+	FileUploader,
 	TabButtons,
 	Tooltip,
 	toast,
@@ -148,7 +159,6 @@ import { convertToTitleCase } from '@/utils'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoPermission from '@/components/NoPermission.vue'
 import EditProfile from '@/components/Modals/EditProfile.vue'
-import EditCoverImage from '@/components/Modals/EditCoverImage.vue'
 
 const { user, brand } = sessionStore()
 const $user = inject('$user')
@@ -193,6 +203,13 @@ const coverImage = createResource({
 		profile.reload()
 	},
 })
+
+const validarPortada = (file) => {
+	const extension = file.name.split('.').pop().toLowerCase()
+	if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) {
+		return __('Only image file is allowed.')
+	}
+}
 
 const setActiveTab = () => {
 	let fragments = route.path.split('/')

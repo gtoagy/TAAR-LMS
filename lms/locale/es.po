@@ -10677,3 +10677,7 @@ msgstr "No pudimos cambiarle el correo. Inténtalo otra vez en un momento."
 #: frontend/src/pages/Lesson.vue
 msgid "Ask a question"
 msgstr "Escribir una pregunta"
+
+#: frontend/src/pages/Profile.vue
+msgid "Change cover"
+msgstr "Cambiar portada"
