@@ -6,8 +6,13 @@
 		tipo="curso"
 	/>
 	<div v-if="course.data" class="p-5">
+		<!-- `items-start` significa cosas distintas según cómo esté puesta la
+		     caja: en fila alinea arriba, que es lo que se quiere en pantalla
+		     ancha; en columna alinea a la izquierda y deja que cada bloque mida
+		     lo que mide su contenido. En el móvil eso hacía que la ficha fuera
+		     más ancha que la pantalla y se pudiera arrastrar de lado. -->
 		<div
-			class="flex flex-col md:flex-row items-start justify-between w-full gap-x-8 gap-y-8"
+			class="flex flex-col md:flex-row items-stretch md:items-start justify-between w-full gap-x-8 gap-y-8"
 		>
 			<div class="md:w-2/3 space-y-10 min-w-0">
 				<section class="space-y-4">

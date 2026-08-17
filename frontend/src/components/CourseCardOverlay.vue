@@ -1,5 +1,10 @@
 <template>
-	<div class="border-2 rounded-md min-w-80 max-w-sm">
+	<!-- El ancho mínimo de 320px es para la columna de la derecha en pantalla
+	     ancha, donde evita que la tarjeta se estruje. En el móvil esta tarjeta
+	     ocupa todo el ancho, y ese mínimo la hacía más ancha que el hueco: en un
+	     teléfono de 360px, descontando los márgenes de la ficha, quedan 320
+	     justos y la tarjeta se salía por la derecha arrastrando la página. -->
+	<div class="border-2 rounded-md md:min-w-80 max-w-sm">
 		<VideoPreview
 			:video-link="course.data?.video_link"
 			:fallback-image="course.data?.image"
