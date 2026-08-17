@@ -26,6 +26,19 @@
 					</nav>
 				</div>
 			</div>
+			<!-- Contacto y comunidad, al final de la navegación y no descolgados
+			     abajo: quien se atasca los busca donde están las demás cosas. -->
+			<div v-if="enlacesDeAyuda.length" class="mx-2 my-2.5">
+				<nav class="space-y-1">
+					<SidebarLink
+						v-for="enlace in enlacesDeAyuda"
+						:key="enlace.to"
+						:link="enlace"
+						:isCollapsed="sidebarStore.isSidebarCollapsed"
+					/>
+				</nav>
+			</div>
+
 			<div
 				v-if="sidebarSettings.data?.web_pages?.length || isModerator"
 				class="mt-4"
@@ -155,22 +168,10 @@
 				appName="learning"
 			/>
 
-			<!-- Quien se atasca y no ve por dónde preguntar, no pregunta: se va.
-			     Por eso los dos WhatsApp viven abajo del todo, siempre a la vista,
-			     y no escondidos en una página de ayuda que nadie abre. -->
-			<nav v-if="enlacesDeAyuda.length" class="mt-3 space-y-1">
-				<SidebarLink
-					v-for="enlace in enlacesDeAyuda"
-					:key="enlace.to"
-					:link="enlace"
-					:isCollapsed="sidebarStore.isSidebarCollapsed"
-				/>
-			</nav>
-
 			<!-- Quien ya es alumno y llega desde la web necesita ver por dónde se
-			     entra: escondido en el menú del logo no lo encontraba nadie. Va
-			     debajo de la ayuda y en el morado de la marca porque es lo único
-			     que tiene que hacer quien todavía está fuera. -->
+			     entra: escondido en el menú del logo no lo encontraba nadie. En el
+			     morado de la marca porque es lo único que tiene que hacer quien
+			     todavía está fuera. -->
 			<a v-if="!user" href="/login" class="block mt-1">
 				<Button
 					variant="solid"
@@ -705,7 +706,7 @@ const enlacesDeAyuda = computed(() => {
 	const enlaces = []
 	if (datos.soporte) {
 		enlaces.push({
-			label: 'Ayuda por WhatsApp',
+			label: 'Contacto',
 			icon: markRaw(WhatsAppIcon),
 			to: datos.soporte,
 		})
