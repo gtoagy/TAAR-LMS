@@ -1,12 +1,39 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 
+// Un teléfono girado sigue siendo un teléfono, pero `innerWidth` no lo sabe: en
+// horizontal un móvil mide unos 850px y cruzaba el umbral, así que la aplicación
+// cambiaba de layout a media sesión. Y cambiar de layout no es cosa de estilos:
+// Vue tira la vista entera y la vuelve a montar, con lo que el vídeo que se
+// estuviera viendo se recargaba desde el segundo cero y se salía de la pantalla
+// completa.
+//
+// El lado corto de la pantalla no cambia al girar: en un teléfono siempre queda
+// por debajo del umbral y en una tableta (768) siempre por encima. Se comprueba
+// una sola vez, porque el aparato no cambia a mitad de sesión.
+let esTelefonoCache = null
+const esTelefono = () => {
+	if (esTelefonoCache === null) {
+		const dedo = window.matchMedia?.('(pointer: coarse)')?.matches
+		const ladoCorto = Math.min(
+			window.screen?.width ?? Infinity,
+			window.screen?.height ?? Infinity
+		)
+		esTelefonoCache = Boolean(dedo) && ladoCorto < 640
+	}
+	return esTelefonoCache
+}
+
 export function useScreenSize() {
 	const size = reactive({
 		width: window.innerWidth,
 		height: window.innerHeight,
 	})
 
-	const isMobile = computed(() => size.width < 640)
+	const enTelefono = esTelefono()
+
+	// La ventana estrecha sigue contando, para que en el ordenador se pueda
+	// probar la vista móvil encogiendo el navegador.
+	const isMobile = computed(() => enTelefono || size.width < 640)
 
 	const onResize = () => {
 		size.width = window.innerWidth
