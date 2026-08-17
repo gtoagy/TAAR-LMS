@@ -31,9 +31,13 @@
 			<!-- En el móvil se aparta a la esquina: sobre una portada de 130px, un
 			     botón con texto en mitad de la foto tapa justo lo que se está
 			     eligiendo. En el ordenador se queda centrado y sale al pasar el
-			     ratón, que ahí no estorba. -->
+			     ratón, que ahí no estorba.
+
+			     El `z-10` no es adorno: el bloque de la ficha sube 40px sobre la
+			     portada con su margen negativo, así que sin él queda por encima
+			     de esta esquina y se traga el toque. -->
 			<div
-				class="absolute bottom-3 end-3 flex gap-x-2 opacity-100 transition-opacity md:bottom-0 md:end-auto md:start-1/2 md:mb-4 md:-translate-x-1/2 md:opacity-0 focus-within:opacity-100 md:group-hover:opacity-100"
+				class="absolute bottom-3 end-3 z-10 flex gap-x-2 opacity-100 transition-opacity md:bottom-0 md:end-auto md:start-1/2 md:mb-4 md:-translate-x-1/2 md:opacity-0 focus-within:opacity-100 md:group-hover:opacity-100"
 				v-if="isSessionUser()"
 			>
 				<!-- Directo al selector de archivos. Antes se abría un desplegable
