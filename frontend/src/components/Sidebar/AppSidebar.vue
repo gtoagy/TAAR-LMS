@@ -707,7 +707,10 @@ const enlacesDeAyuda = computed(() => {
 			to: datos.soporte,
 		})
 	}
-	if (datos.comunidad) {
+	// La comunidad solo para quien ya entró: el servidor tampoco la manda a un
+	// visitante. A quien no ha entrado le sirve el soporte, que es lo que
+	// necesita en ese momento.
+	if (user && datos.comunidad) {
 		enlaces.push({
 			label: 'Comunidad',
 			icon: markRaw(WhatsAppIcon),
