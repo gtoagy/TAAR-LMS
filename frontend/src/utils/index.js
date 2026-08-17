@@ -93,21 +93,17 @@ export function formatEnrollments(count) {
 }
 
 export function courseCardRoute(course) {
-	// Quien ya tiene el curso no necesita volver a leer la ficha de venta: la
-	// tarjeta lo devuelve directamente a la lección donde lo dejó. La ficha
-	// sigue a un clic, en el nombre del curso de las migas de pan.
-	if (!course.membership) {
-		return { name: 'CourseDetail', params: { courseName: course.name } }
-	}
-	// El catálogo y la ficha traen el índice en sitios distintos; el nombre
-	// crudo de la lección no sirve como ruta, así que nunca se usa.
-	const [chapterNumber, lessonNumber] = (
-		course.current_lesson || course.membership.current_lesson_index || '1-1'
-	).split('-')
-	return {
-		name: 'Lesson',
-		params: { courseName: course.name, chapterNumber, lessonNumber },
-	}
+	// Siempre a la ficha, tenga el curso o no.
+	//
+	// Antes, a quien ya lo tenía se le saltaba directo a la lección donde lo
+	// dejó, y la ficha quedaba escondida detrás del rastro de migas. Al quitar
+	// las migas se quedó sin ninguna puerta, y en la ficha están la descripción,
+	// el temario entero y el sitio para dejar una reseña.
+	//
+	// No se pierde el atajo: la ficha tiene arriba un botón para continuar por
+	// la lección pendiente. Es un toque más, a cambio de que la escuela deje de
+	// esconder la mitad de lo que ofrece.
+	return { name: 'CourseDetail', params: { courseName: course.name } }
 }
 
 export function convertToTitleCase(str) {
