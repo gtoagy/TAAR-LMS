@@ -3,7 +3,20 @@
 	<div class="flex flex-col sm:h-full">
 		<LayoutHeader :isLoading="!course.data">
 			<template #left-header>
-				<Breadcrumbs class="h-7" :items="breadcrumbs" />
+				<!-- La misma flecha que en la lección: allí sube a esta ficha y
+				     aquí al catálogo, así el gesto de volver es siempre el mismo
+				     y no hay que buscar dónde está el camino de vuelta. -->
+				<router-link
+					:to="{ name: 'Courses' }"
+					class="flex min-w-0 items-center gap-2 hover:opacity-70"
+				>
+					<span
+						class="lucide-arrow-left size-5 shrink-0 text-ink-gray-7 rtl:rotate-180"
+					/>
+					<span class="truncate text-p-base font-medium text-ink-gray-9">
+						{{ __('Courses') }}
+					</span>
+				</router-link>
 				<!-- "Publicado" es estado de edición: le sirve a quien administra
 				     el curso, al alumno solo le ensucia la ficha -->
 				<Badge v-if="course.data?.published && isAdmin" theme="green">
@@ -154,7 +167,6 @@ import { useRouter, useRoute } from 'vue-router'
 import type { RouteLocationNormalizedLoadedGeneric, Router } from 'vue-router'
 import {
 	Badge,
-	Breadcrumbs,
 	Button,
 	createResource,
 	Dropdown,
@@ -355,20 +367,6 @@ const isInstructor = (): boolean => {
 
 const isAdmin = computed<boolean>(() => {
 	return Boolean(user.data?.is_moderator) || isInstructor()
-})
-
-const breadcrumbs = computed(() => {
-	const crumbs: {
-		label: string
-		route: { name: string; params?: Record<string, string> }
-	}[] = [{ label: __('Courses'), route: { name: 'Courses' } }]
-	if (course.data) {
-		crumbs.push({
-			label: course.data.title,
-			route: { name: 'CourseDetail', params: { courseName: course.data.name } },
-		})
-	}
-	return crumbs
 })
 
 usePageMeta(() => {

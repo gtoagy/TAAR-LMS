@@ -4,12 +4,14 @@
 			v-if="!embedded"
 			class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
 		>
-			<!-- En el móvil, el rastro completo no cabe y se corta por la mitad.
-			     Una flecha que sube a la ficha del curso dice lo mismo en el
-			     espacio que hay, y el nombre del curso es lo que se perdía. -->
+			<!-- Una flecha en vez del rastro "Cursos / Curso / Lección": en el
+			     móvil no cabía y se partía por la mitad, y en cualquier tamaño
+			     dice lo mismo con menos ruido. Sube a la ficha del curso, que es
+			     el escalón de arriba, y enseña el nombre del curso, que es lo
+			     único que se perdía al quitar el rastro. -->
 			<router-link
 				:to="{ name: 'CourseDetail', params: { courseName: courseName } }"
-				class="flex min-w-0 items-center gap-2 md:hidden"
+				class="flex min-w-0 items-center gap-2 hover:opacity-70"
 			>
 				<span
 					class="lucide-arrow-left size-5 shrink-0 text-ink-gray-7 rtl:rotate-180"
@@ -18,7 +20,6 @@
 					{{ lesson.data.course_title }}
 				</span>
 			</router-link>
-			<Breadcrumbs class="h-7 hidden md:flex" :items="breadcrumbs" />
 			<div class="flex items-center gap-x-2">
 				<Tooltip v-if="canGoZen() && isAdmin" :text="__('Zen Mode')">
 					<Button @click="goFullScreen()">
@@ -359,7 +360,6 @@
 <script setup>
 import {
 	Badge,
-	Breadcrumbs,
 	Button,
 	call,
 	createListResource,
@@ -659,26 +659,6 @@ const notes = createListResource({
 			}, 500)
 		})
 	},
-})
-
-const breadcrumbs = computed(() => {
-	let crumbs = [{ label: __('Courses'), route: { name: 'Courses' } }]
-	crumbs.push({
-		label: lesson?.data?.course_title,
-		route: { name: 'CourseDetail', params: { courseName: props.courseName } },
-	})
-	crumbs.push({
-		label: lesson?.data?.title,
-		route: {
-			name: 'Lesson',
-			params: {
-				courseName: props.courseName,
-				chapterNumber: props.chapterNumber,
-				lessonNumber: props.lessonNumber,
-			},
-		},
-	})
-	return crumbs
 })
 
 const switchLesson = (direction) => {
