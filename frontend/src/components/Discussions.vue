@@ -8,7 +8,7 @@
 			<template #prefix>
 				<span class="lucide-plus size-4" />
 			</template>
-			{{ __('New {0}').format(singularize(title)) }}
+			{{ newLabel || __('New {0}').format(__(singularize(title))) }}
 		</Button>
 		<div class="text-3xl-semibold text-ink-gray-9">
 			{{ __(title) }}
@@ -92,7 +92,7 @@
 	</div>
 	<DiscussionModal
 		v-model="showTopicModal"
-		:title="__('New {0}').format(title)"
+		:title="newLabel || __('New {0}').format(__(title))"
 		:doctype="props.doctype"
 		:docname="props.docname"
 		v-model:reloadTopics="topics"
@@ -119,6 +119,13 @@ const props = defineProps({
 	title: {
 		type: String,
 		required: true,
+	},
+	// Cómo se llama el botón de escribir. Sin esto hay que componerlo con
+	// "New {0}", y en español eso obliga a elegir género antes de saber qué
+	// palabra va dentro: salían cosas como "Nuevo/a: Pregunta".
+	newLabel: {
+		type: String,
+		default: '',
 	},
 	doctype: {
 		type: String,
