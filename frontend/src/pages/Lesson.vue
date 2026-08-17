@@ -818,10 +818,10 @@ const getPlyrSource = async () => {
 					)
 				})
 				setTimeout(() => {
-					if (!readyFired && gen === fallbackGeneration) {
-						fallbackToDwellTimer('plyr-no-ready-15s')
-					}
-				}, 15000)
+					if (gen !== fallbackGeneration) return
+					if (videoYaCargado(player, readyFired)) return
+					fallbackToDwellTimer('plyr-sin-cargar-' + ESPERA_VIDEO / 1000 + 's')
+				}, ESPERA_VIDEO)
 			})
 		}
 	}
@@ -896,6 +896,25 @@ const updateVideoTime = (video) => {
 			}
 		})
 	}
+}
+
+// Cuánto se espera antes de dar un vídeo por perdido. Los vídeos de la escuela
+// están alojados en Vimeo, y con datos móviles el reproductor tarda: quince
+// segundos se quedaban cortos y el aviso saltaba con el vídeo ya en pantalla.
+const ESPERA_VIDEO = 30000
+
+/**
+ * Si el reproductor ya tiene el vídeo, mire por donde se mire.
+ *
+ * No basta con esperar el evento `ready`: Plyr no lo vuelve a emitir si el
+ * reproductor ya estaba listo cuando nos suscribimos, así que hay que
+ * preguntarle por su estado. Y si sabe cuánto dura el vídeo es que lo cargó
+ * —esa duración se la acaba de decir Vimeo—, que es la prueba definitiva.
+ */
+const videoYaCargado = (player, readyFired) => {
+	if (readyFired || player?.ready) return true
+	const duracion = Number(player?.duration)
+	return Number.isFinite(duracion) && duracion > 0
 }
 
 let videoFallbackArmed = false
