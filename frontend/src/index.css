@@ -89,3 +89,29 @@ label.block:not([data-slot='label']) {
 	height: 100vh;
 	height: 100dvh;
 }
+
+/*
+ * Pantalla completa del vídeo en el móvil.
+ *
+ * En el iPhone no existe la pantalla completa del sistema para un elemento
+ * cualquiera, así que Plyr cae en un modo de repuesto que es solo CSS. Ese modo
+ * se queda dentro del hueco que le dejan las barras de la escuela y el vídeo
+ * acaba a medias, con la barra de navegación de abajo tapando el final.
+ *
+ * Aquí se le dice que ocupe la ventana entera, por encima de todo, y que la
+ * barra de navegación se aparte mientras dure. `dvh` y no `vh`: en el móvil la
+ * barra del navegador aparece y desaparece, y `vh` no se entera.
+ */
+.plyr--fullscreen-fallback {
+	position: fixed !important;
+	inset: 0 !important;
+	width: 100vw !important;
+	height: 100vh !important;
+	height: 100dvh !important;
+	z-index: 2147483647 !important;
+	background: #000;
+}
+
+body:has(.plyr--fullscreen-fallback) .taar-barra-movil {
+	display: none;
+}

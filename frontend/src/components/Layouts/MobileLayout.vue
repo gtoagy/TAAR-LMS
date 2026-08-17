@@ -34,7 +34,7 @@
 			     termine físicamente arriba de él y nada quede oculto detrás -->
 			<div
 				v-if="sidebarSettings.data"
-				class="standalone:pb-[max(1rem,env(safe-area-inset-bottom))] z-10 flex w-full items-center justify-around border-t border-outline-gray-2 bg-surface-base"
+				class="taar-barra-movil standalone:pb-[max(1rem,env(safe-area-inset-bottom))] z-10 flex w-full items-center justify-around border-t border-outline-gray-2 bg-surface-base"
 			>
 				<!-- Con etiqueta: tres iconos sueltos no le dicen nada a quien
 				     entra por primera vez desde el móvil, que es la mayoría -->

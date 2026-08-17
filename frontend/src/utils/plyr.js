@@ -52,6 +52,11 @@ const setupPlyrForVideo = (video, players) => {
 	const player = new Plyr(video, {
 		youtube: { noCookie: true },
 		controls: controls,
+		// En el iPhone no existe la pantalla completa del sistema para
+		// cualquier elemento, solo para un vídeo. Sin `iosNative`, Plyr cae en
+		// su modo de repuesto, que es puro CSS y deja a la vista las barras del
+		// navegador: el vídeo se queda a medias.
+		fullscreen: { enabled: true, fallback: true, iosNative: true },
 		// Plyr trae sus etiquetas en inglés y no pasa por el catálogo del LMS:
 		// sin esto, una escuela en español muestra Play, Mute y Settings.
 		i18n: {
