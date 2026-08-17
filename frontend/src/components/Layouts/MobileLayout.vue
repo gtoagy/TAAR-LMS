@@ -152,9 +152,9 @@ const addAyuda = async () => {
 	const enlaces = await call('taar_lms.api.enlaces_de_ayuda')
 	if (enlaces?.soporte)
 		addLink('Contacto', markRaw(WhatsAppIcon), enlaces.soporte)
-	// La comunidad solo para quien ya entró: el servidor tampoco la manda a un
-	// visitante. A quien no ha entrado le sirve el soporte.
-	if (user && enlaces?.comunidad)
+	// Quién puede ver la comunidad lo decide el servidor, que solo manda el
+	// enlace a quien ha pagado. Aquí solo se pinta lo que llegue.
+	if (enlaces?.comunidad)
 		addLink('Comunidad', markRaw(WhatsAppIcon), enlaces.comunidad)
 }
 

@@ -1,6 +1,12 @@
 <template>
+	<!--
+		El viewBox va holgado a propósito. Los iconos de la librería dibujan su
+		trazo dentro de un margen y no llegan al borde; este glifo sí, así que al
+		mismo tamaño se veía más grande y más pesado que sus vecinos del panel.
+		Los 3 de aire por lado lo dejan a la misma escala óptica.
+	-->
 	<svg
-		viewBox="0 0 24 24"
+		viewBox="-3 -3 30 30"
 		fill="currentColor"
 		xmlns="http://www.w3.org/2000/svg"
 		aria-hidden="true"
