@@ -4,7 +4,21 @@
 			v-if="!embedded"
 			class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
 		>
-			<Breadcrumbs class="h-7" :items="breadcrumbs" />
+			<!-- En el móvil, el rastro completo no cabe y se corta por la mitad.
+			     Una flecha que sube a la ficha del curso dice lo mismo en el
+			     espacio que hay, y el nombre del curso es lo que se perdía. -->
+			<router-link
+				:to="{ name: 'CourseDetail', params: { courseName: courseName } }"
+				class="flex min-w-0 items-center gap-2 md:hidden"
+			>
+				<span
+					class="lucide-arrow-left size-5 shrink-0 text-ink-gray-7 rtl:rotate-180"
+				/>
+				<span class="truncate text-p-base font-medium text-ink-gray-9">
+					{{ lesson.data.course_title }}
+				</span>
+			</router-link>
+			<Breadcrumbs class="h-7 hidden md:flex" :items="breadcrumbs" />
 			<div class="flex items-center gap-x-2">
 				<Tooltip v-if="canGoZen() && isAdmin" :text="__('Zen Mode')">
 					<Button @click="goFullScreen()">
@@ -14,6 +28,16 @@
 					</Button>
 				</Tooltip>
 				<CertificationLinks :courseName="courseName" />
+				<!-- El temario, a un toque. En pantalla ancha vive en su columna. -->
+				<Button
+					class="md:hidden"
+					:label="__('Course content')"
+					@click="mostrarTemario = true"
+				>
+					<template #icon>
+						<span class="lucide-list size-4 text-ink-gray-7" />
+					</template>
+				</Button>
 			</div>
 		</header>
 		<div
@@ -282,6 +306,7 @@
 						<Discussions
 							v-else-if="allowDiscussions"
 							:title="'Questions'"
+							:newLabel="__('Ask a question')"
 							:doctype="'Course Lesson'"
 							:docname="lesson.data.name"
 							:key="lesson.data.name"
@@ -292,8 +317,10 @@
 					</div>
 				</div>
 			</div>
-			<!-- En móvil el temario fluye con su contenido; en md+ es columna fija -->
-			<div v-if="!embedded" class="md:sticky md:top-10 md:h-[94vh]">
+			<!-- Columna fija en pantalla ancha. En el móvil ya no cuelga del final
+			     de la página —donde había que pasar las notas y las preguntas para
+			     llegar a él—: ahora sale del botón de la barra. -->
+			<div v-if="!embedded" class="hidden md:sticky md:top-10 md:block md:h-[94vh]">
 				<StudentLessonSidebar
 					:courseName="courseName"
 					:courseTitle="lesson.data.course_title"
@@ -305,6 +332,16 @@
 			</div>
 		</div>
 	</div>
+	<PanelLateral v-if="lesson.data && !embedded" v-model="mostrarTemario">
+		<StudentLessonSidebar
+			:courseName="courseName"
+			:courseTitle="lesson.data.course_title"
+			:progress="lessonProgress"
+			:selectedLessonNumber="`${chapterNumber}-${lessonNumber}`"
+			:completedLesson="completedLesson"
+			:withProgress="lesson.data.membership ? true : false"
+		/>
+	</PanelLateral>
 	<InlineLessonMenu
 		v-if="lesson.data?.name"
 		v-model="showInlineMenu"
@@ -366,6 +403,7 @@ import CertificationLinks from '@/components/CertificationLinks.vue'
 import VideoStatistics from '@/components/Modals/VideoStatistics.vue'
 import { hasVideoContent } from '@/utils/video'
 import CourseOutline from '@/components/CourseOutline.vue'
+import PanelLateral from '@/components/PanelLateral.vue'
 import StudentLessonSidebar from '@/components/StudentLessonSidebar.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Notes from '@/components/Notes/Notes.vue'
@@ -393,6 +431,7 @@ const { brand } = sessionStore()
 const sidebarStore = useSidebar()
 const plyrSources = ref([])
 const showInlineMenu = ref(false)
+const mostrarTemario = ref(false)
 const currentTab = ref(null)
 const completedLesson = ref(null)
 const settingsStore = useSettings()
@@ -746,6 +785,9 @@ const cleanYouTubeUrl = (url) => {
 watch(
 	() => lesson.data,
 	async (data) => {
+		// Se elige una lección desde el panel y el panel se aparta solo: dejarlo
+		// abierto sobre la lección recién abierta obliga a cerrarlo a mano.
+		mostrarTemario.value = false
 		setupLesson(data)
 		// Settings drive dwell + enforcement; if they haven't resolved yet
 		// the timer reads undefined and falls back to 30s. Await the
@@ -1082,8 +1124,11 @@ watch(allowDiscussions, () => {
 	}
 	if (allowDiscussions.value) {
 		if (!tabs.value.find((tab) => tab.value === 'Community')) {
+			// "Comunidad" prometía otra cosa —un foro, gente— cuando lo que hay
+			// debajo son las dudas de esa lección. Y ahora hay una Comunidad de
+			// verdad en el panel lateral, que es el grupo de WhatsApp.
 			tabs.value.push({
-				label: __('Community'),
+				label: __('Questions'),
 				value: 'Community',
 			})
 		}
