@@ -367,7 +367,6 @@ import {
 	TabButtons,
 	Tooltip,
 	usePageMeta,
-	toast,
 } from 'frappe-ui'
 import {
 	computed,
@@ -830,32 +829,19 @@ const getPlyrSource = async () => {
 			plyrSources.value.forEach((player) => {
 				let readyFired = false
 				const gen = fallbackGeneration
-				// Los vídeos de la escuela viven dentro de un marco de Vimeo, y
-				// desde fuera no se puede saber con certeza qué pasa ahí dentro:
-				// cualquier tropiezo del reproductor en un teléfono llega aquí
-				// como si el vídeo no hubiera cargado. Con el vídeo en pantalla,
-				// ese aviso solo asusta, y no le sirve de nada a quien lo lee. La
-				// red de seguridad se activa igual, callada: si el vídeo de
-				// verdad falló, la lección se marca por tiempo y nadie se queda
-				// atascado.
-				const ajeno = player.provider && player.provider !== 'html5'
 				player.on('ready', () => {
 					readyFired = true
 				})
 				player.on('error', (event) => {
 					if (gen !== fallbackGeneration) return
 					fallbackToDwellTimer(
-						'plyr-error: ' + (event?.detail?.message || 'unknown'),
-						ajeno
+						'plyr-error: ' + (event?.detail?.message || 'unknown')
 					)
 				})
 				setTimeout(() => {
 					if (gen !== fallbackGeneration) return
 					if (videoYaCargado(player, readyFired)) return
-					fallbackToDwellTimer(
-						'plyr-sin-cargar-' + ESPERA_VIDEO / 1000 + 's',
-						ajeno
-					)
+					fallbackToDwellTimer('plyr-sin-cargar-' + ESPERA_VIDEO / 1000 + 's')
 				}, ESPERA_VIDEO)
 			})
 		}
@@ -954,21 +940,30 @@ const videoYaCargado = (player, readyFired) => {
 
 let videoFallbackArmed = false
 let fallbackGeneration = 0
-const fallbackToDwellTimer = (reason, callado = false) => {
-	// The dwell fallback only matters for an enrolled student tracking progress.
-	// Don't surface the "mark as viewed" toast in the course editor preview or to
-	// non-enrolled viewers (admins/instructors reviewing the lesson).
+
+/**
+ * Pasa a marcar la lección por tiempo. En silencio, a propósito.
+ *
+ * Antes esto avisaba con un "el vídeo no se pudo cargar". El aviso salía en el
+ * teléfono con el vídeo reproduciéndose delante, porque los vídeos viven dentro
+ * de un marco de Vimeo y desde fuera no hay forma fiable de saber qué pasa ahí
+ * dentro: cualquier tropiezo del reproductor llegaba aquí como un fallo.
+ *
+ * Y aunque fuera cierto, el aviso no le sirve a quien lo lee: no puede hacer
+ * nada con esa información. Lo que necesita es escribir, y para eso tiene el
+ * Contacto en el panel. Lo que de verdad la protege es esto de aquí abajo —que
+ * su lección se marque igual—, y eso sigue funcionando.
+ *
+ * `reason` se queda en la consola: si algún día hay que investigar de verdad
+ * por qué un vídeo no carga, ahí está el rastro.
+ */
+const fallbackToDwellTimer = (reason) => {
+	// Solo importa para una alumna inscrita cuyo progreso se está siguiendo: en
+	// la vista previa del editor no hay nada que marcar.
 	if (props.embedded || !lesson.data?.membership) return
 	if (videoFallbackArmed) return
 	videoFallbackArmed = true
 	console.warn('[Lesson] video fallback engaged:', reason)
-	if (!callado) {
-		toast.warning(
-			__(
-				'Video failed to load — this lesson will still be marked complete after you spend some time on it.'
-			)
-		)
-	}
 	clearInterval(timerInterval)
 	timer.value = 0
 	startTimer()
