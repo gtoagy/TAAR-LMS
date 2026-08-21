@@ -1,5 +1,8 @@
 <template>
-	<LayoutHeader>
+	<!-- En el móvil sobra: el rastro «Cursos» repite el nombre de la pestaña que
+	     ya está marcada en la barra de abajo, y se queda con una franja de
+	     pantalla que en un teléfono hace falta. De sm en adelante, igual. -->
+	<LayoutHeader class="hidden sm:flex">
 		<template #left-header>
 			<Breadcrumbs :items="breadcrumbs" />
 		</template>

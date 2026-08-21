@@ -1,8 +1,10 @@
 <template>
 	<NoPermission v-if="!$user.data" />
 	<div v-else-if="profile.data">
+		<!-- En el móvil sobra: la barra de abajo ya dice dónde está, y sin ella la
+		     portada empieza arriba del todo. -->
 		<header
-			class="sticky group top-0 z-10 flex flex-col md:flex-row md:items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
+			class="sticky group top-0 z-10 hidden flex-col md:flex-row md:items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:flex sm:px-5"
 		>
 			<Breadcrumbs class="h-7" :items="breadcrumbs" />
 			<Button v-if="isSessionUser()" class="invisible group-hover:visible">
