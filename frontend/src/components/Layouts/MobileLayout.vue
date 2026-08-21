@@ -37,35 +37,51 @@
 				class="taar-barra-movil standalone:pb-[max(1rem,env(safe-area-inset-bottom))] z-10 flex w-full items-center justify-around border-t border-outline-gray-2 bg-surface-base"
 			>
 				<!-- Con etiqueta: tres iconos sueltos no le dicen nada a quien
-				     entra por primera vez desde el móvil, que es la mayoría -->
+				     entra por primera vez desde el móvil, que es la mayoría.
+				     Iconos y letra un punto más pequeños desde que las
+				     notificaciones bajaron aquí: con una pestaña más, al tamaño
+				     anterior las palabras se tocaban en un teléfono estrecho. -->
 				<button
 					v-for="tab in sidebarLinks"
 					:key="tab.label"
+					:data-notifications-trigger="
+						tab.panel === 'notifications' ? '' : null
+					"
 					:class="isVisible(tab) ? 'flex' : 'hidden'"
-					class="flex-col items-center justify-center gap-1 py-2.5 transition active:scale-95"
+					class="flex-col items-center justify-center gap-1 px-1 py-2.5 transition active:scale-95"
 					@click="handleClick(tab)"
 				>
-					<component
-						:is="icons[tab.icon]"
-						class="h-6 w-6 stroke-1.5"
-						:class="[isActive(tab) ? 'text-ink-gray-9' : 'text-ink-gray-5']"
-					/>
+					<span class="relative">
+						<component
+							:is="icons[tab.icon]"
+							class="h-5 w-5 stroke-1.5"
+							:class="[isActive(tab) ? 'text-ink-gray-9' : 'text-ink-gray-5']"
+						/>
+						<!-- Las no leídas van encima del icono: al lado, como en el
+						     panel lateral del ordenador, aquí no caben. -->
+						<span
+							v-if="tab.panel === 'notifications' && unreadCount"
+							class="absolute -end-2 -top-1.5 grid h-4 min-w-[1rem] place-items-center rounded-full bg-surface-gray-7 px-1 text-[9px] leading-none text-white"
+						>
+							{{ unreadCount > 9 ? '9+' : unreadCount }}
+						</span>
+					</span>
 					<span
-						class="text-xs leading-none"
+						class="text-[10px] leading-none"
 						:class="[isActive(tab) ? 'text-ink-gray-9' : 'text-ink-gray-5']"
 					>
 						{{ __(tab.label) }}
 					</span>
 				</button>
 				<button
-					class="flex flex-col items-center justify-center gap-1 py-2.5 transition active:scale-95"
+					class="flex flex-col items-center justify-center gap-1 px-1 py-2.5 transition active:scale-95"
 					@click="toggleMenu"
 				>
 					<component
 						:is="icons['List']"
-						class="h-6 w-6 stroke-1.5 text-ink-gray-5"
+						class="h-5 w-5 stroke-1.5 text-ink-gray-5"
 					/>
-					<span class="text-xs leading-none text-ink-gray-5">
+					<span class="text-[10px] leading-none text-ink-gray-5">
 						{{ __('More') }}
 					</span>
 				</button>
@@ -76,14 +92,14 @@
 <script setup>
 import { getSidebarLinks } from '@/utils'
 import { useRouter } from 'vue-router'
-import { call } from 'frappe-ui'
-import { markRaw, ref, watch } from 'vue'
+import { call, createResource } from 'frappe-ui'
+import { inject, markRaw, onMounted, onUnmounted, ref, watch } from 'vue'
 import { sessionStore } from '@/stores/session'
 import { useSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/user'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import * as icons from 'lucide-vue-next'
-import { toggleNotifications } from '@/stores/notifications'
+import { panelVisible, toggleNotifications } from '@/stores/notifications'
 
 const { logout, user } = sessionStore()
 let { isLoggedIn } = sessionStore()
@@ -96,6 +112,39 @@ const showMenu = ref(false)
 const menu = ref(null)
 const isModerator = ref(false)
 const isInstructor = ref(false)
+const socket = inject('$socket')
+const unreadCount = ref(0)
+
+// El mismo recurso que usa el panel lateral del ordenador, con su misma clave
+// de caché: así, al marcar una notificación como leída, la insignia de la barra
+// se entera sin pedir nada más.
+const unreadNotifications = createResource({
+	cache: 'Unread Notifications Count',
+	url: 'frappe.client.get_count',
+	makeParams() {
+		return {
+			doctype: 'Notification Log',
+			filters: {
+				for_user: user,
+				read: 0,
+			},
+		}
+	},
+	onSuccess(data) {
+		unreadCount.value = data
+	},
+	auto: user ? true : false,
+})
+
+onMounted(() => {
+	socket.on('publish_lms_notifications', () => {
+		unreadNotifications.reload()
+	})
+})
+
+onUnmounted(() => {
+	socket.off('publish_lms_notifications')
+})
 
 const handleOutsideClick = (e) => {
 	if (menu.value && !menu.value.contains(e.target)) {
@@ -135,7 +184,6 @@ const filterLinksToShow = (data) => {
 
 const addOtherLinks = async () => {
 	if (user) {
-		addLink('Notifications', 'Bell', 'Notifications')
 		addLink('Profile', 'UserRound')
 		await addAyuda()
 		addLink('Log out', 'LogOut')
@@ -237,13 +285,16 @@ const checkIfCanAddProgram = async () => {
 }
 
 let isActive = (tab) => {
+	// Las notificaciones no son una página: están «activas» cuando su panel
+	// está abierto.
+	if (tab.panel === 'notifications') return panelVisible.value
 	return tab.activeFor?.includes(router.currentRoute.value.name)
 }
 
 const handleClick = (tab) => {
-	if (tab.label == 'Notifications') {
+	if (tab.panel === 'notifications') {
 		toggleNotifications()
-		toggleMenu()
+		if (showMenu.value) toggleMenu()
 	} else if (tab.label == 'Log in') window.location.href = '/login'
 	else if (tab.label == 'Log out')
 		logout.submit().then(() => {
