@@ -26,7 +26,7 @@
 					</nav>
 				</div>
 			</div>
-			<!-- Contacto y comunidad, al final de la navegación y no descolgados
+			<!-- Soporte y comunidad, al final de la navegación y no descolgados
 			     abajo: quien se atasca los busca donde están las demás cosas. -->
 			<div v-if="enlacesDeAyuda.length" class="mx-2 my-2.5">
 				<nav class="space-y-1">
@@ -706,7 +706,7 @@ const enlacesDeAyuda = computed(() => {
 	const enlaces = []
 	if (datos.soporte) {
 		enlaces.push({
-			label: 'Contacto',
+			label: 'Soporte',
 			icon: markRaw(WhatsAppIcon),
 			to: datos.soporte,
 		})

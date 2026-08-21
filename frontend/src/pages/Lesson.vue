@@ -957,7 +957,7 @@ let fallbackGeneration = 0
  *
  * Y aunque fuera cierto, el aviso no le sirve a quien lo lee: no puede hacer
  * nada con esa información. Lo que necesita es escribir, y para eso tiene el
- * Contacto en el panel. Lo que de verdad la protege es esto de aquí abajo —que
+ * Soporte en el panel. Lo que de verdad la protege es esto de aquí abajo —que
  * su lección se marque igual—, y eso sigue funcionando.
  *
  * `reason` se queda en la consola: si algún día hay que investigar de verdad
