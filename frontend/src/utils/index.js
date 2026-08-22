@@ -513,14 +513,6 @@ const getSidebarItems = (forMobile = false) => {
 						return !forMobile && userResource?.data
 					},
 				},
-				{
-					label: 'Notifications',
-					icon: 'Bell',
-					panel: 'notifications',
-					condition: () => {
-						return !forMobile && userResource?.data
-					},
-				},
 			],
 		},
 		{
@@ -554,6 +546,17 @@ const getSidebarItems = (forMobile = false) => {
 					icon: 'Crown',
 					to: 'Membresia',
 					activeFor: ['Membresia'],
+				},
+				// Detrás de Membresía y dentro de la navegación de siempre: colgando
+				// del menú «Más» no las encontraba nadie, y en el móvil son lo único
+				// que avisa de que ha pasado algo.
+				{
+					label: 'Notifications',
+					icon: 'Bell',
+					panel: 'notifications',
+					condition: () => {
+						return userResource?.data
+					},
 				},
 				{
 					label: 'Certifications',

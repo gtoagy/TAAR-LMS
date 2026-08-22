@@ -1,7 +1,8 @@
 <template>
 	<div class="h-full">
+		<!-- En el móvil sobra: la barra de abajo ya dice dónde está. -->
 		<header
-			class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
+			class="sticky top-0 z-10 hidden items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:flex sm:px-5"
 		>
 			<Breadcrumbs class="h-7" :items="breadcrumbs" />
 		</header>

@@ -10681,3 +10681,7 @@ msgstr "Escribir una pregunta"
 #: frontend/src/pages/Profile.vue
 msgid "Change cover"
 msgstr "Cambiar portada"
+
+#: frontend/src/components/CourseCard.vue
+msgid "Pre-launch"
+msgstr "Prelanzamiento"

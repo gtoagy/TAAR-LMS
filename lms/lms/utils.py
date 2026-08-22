@@ -783,7 +783,7 @@ def get_courses(filters: dict = None, start: int = 0) -> list:
 	if not filters:
 		filters = {}
 
-	filters, or_filters, show_featured = update_course_filters(filters)
+	filters, or_filters, show_featured, show_upcoming = update_course_filters(filters)
 	fields = get_course_fields()
 
 	courses = frappe.get_all(
@@ -797,6 +797,10 @@ def get_courses(filters: dict = None, start: int = 0) -> list:
 	)
 	if show_featured and start == 0:
 		courses = get_featured_courses(filters, or_filters, fields) + courses
+	# Por delante incluso de los destacados: un curso que se anuncia antes de
+	# existir solo cumple su papel el rato que está arriba del todo.
+	if show_upcoming and start == 0:
+		courses = get_upcoming_courses(filters, or_filters, fields) + courses
 
 	courses = get_enrollment_details(courses)
 	courses = get_course_card_details(courses)
@@ -853,6 +857,7 @@ def get_course_or_filters(filters: dict) -> dict:
 def update_course_filters(filters: dict) -> tuple:
 	or_filters = {}
 	show_featured = False
+	show_upcoming = False
 
 	if filters.get("title"):
 		or_filters = get_course_or_filters(filters)
@@ -871,8 +876,11 @@ def update_course_filters(filters: dict) -> tuple:
 		del filters["created"]
 
 	if filters.get("live"):
-		filters.update({"featured": 0})
+		# Destacados y prelanzamientos salen de la consulta principal y se
+		# vuelven a pegar arriba: así su sitio no depende de la paginación.
+		filters.update({"featured": 0, "upcoming": 0})
 		show_featured = True
+		show_upcoming = True
 		del filters["live"]
 
 	if filters.get("certification"):
@@ -880,7 +888,7 @@ def update_course_filters(filters: dict) -> tuple:
 		or_filters.update({"paid_certificate": 1})
 		del filters["certification"]
 
-	return filters, or_filters, show_featured
+	return filters, or_filters, show_featured, show_upcoming
 
 
 def get_enrollment_details(courses: list) -> list:
@@ -918,6 +926,34 @@ def get_featured_courses(filters: dict, or_filters: dict, fields: list) -> list:
 		order_by=get_course_order_by(),
 	)
 	return featured_courses
+
+
+def get_upcoming_courses(filters: dict, or_filters: dict, fields: list) -> list:
+	"""TanArtistic: los cursos anunciados antes de tener contenido, arriba del todo.
+
+	`upcoming` venía de fábrica para lo contrario: apartaba esos cursos a una
+	pestaña que solo mira quien lleva el catálogo. Aquí sirven de escaparate, que
+	es para lo que se anuncia algo que todavía no se puede abrir.
+
+	Se consultan aparte, y no ordenando la consulta principal, porque el catálogo
+	se pagina de treinta en treinta: dentro de una página el orden se respetaría,
+	pero el curso anunciado podría caer en la segunda y no verlo nadie.
+
+	Hereda los filtros de quien mira —entre ellos `published`—, así que un curso
+	en prelanzamiento sin publicar sigue siendo invisible para la alumna.
+	"""
+	upcoming_filters = filters.copy()
+	# Destacado o no, aquí entra igual: manda el prelanzamiento.
+	upcoming_filters.pop("featured", None)
+	upcoming_filters.update({"upcoming": 1})
+
+	return frappe.get_all(
+		"LMS Course",
+		filters=upcoming_filters,
+		fields=fields,
+		or_filters=or_filters,
+		order_by=get_course_order_by(),
+	)
 
 
 def get_course_order_by() -> str:
