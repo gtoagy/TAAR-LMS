@@ -97,12 +97,19 @@
 			v-else-if="courses.data?.length"
 			class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
 		>
-			<router-link
-				v-for="course in courses.data"
-				:to="courseCardRoute(course)"
-			>
-				<CourseCard :course="course" />
-			</router-link>
+			<template v-for="course in courses.data" :key="course.name">
+				<!-- Prelanzamiento: la tarjeta se ve, pero no se abre. Un <div> y
+				     no un enlace desactivado a propósito: así no sale el cursor de
+				     mano, no se llega con el tabulador y el lector de pantalla no
+				     lo canta como enlace. Prometer una puerta que da a una ficha
+				     vacía es peor que no ponerla. -->
+				<div v-if="esEscaparate(course)">
+					<CourseCard :course="course" />
+				</div>
+				<router-link v-else :to="courseCardRoute(course)">
+					<CourseCard :course="course" />
+				</router-link>
+			</template>
 		</div>
 		<div v-else-if="!courses.list.loading" class="flex-1">
 			<EmptyStateLayout name="Courses" icon="lucide-book-open" />
@@ -388,6 +395,15 @@ const courseMenu = computed(() => {
 		},
 	]
 })
+
+// Quien lleva el catálogo entra igual al curso en prelanzamiento: la tarjeta
+// apagada es para la alumna, y desde aquí es la única puerta para ir a montarlo.
+const gestionaCatalogo = computed(() =>
+	Boolean(user.data?.is_moderator || user.data?.is_instructor)
+)
+
+const esEscaparate = (course) =>
+	Boolean(course.upcoming) && !gestionaCatalogo.value
 
 const breadcrumbs = computed(() => [
 	{
