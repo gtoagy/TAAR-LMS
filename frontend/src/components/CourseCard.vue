@@ -5,7 +5,7 @@
 		style="min-height: 350px"
 	>
 		<div
-			class="w-[100%] h-[168px] bg-cover bg-center bg-no-repeat border-t border-x rounded-t-md"
+			class="relative w-[100%] h-[168px] bg-cover bg-center bg-no-repeat border-t border-x rounded-t-md"
 			:style="
 				course.image
 					? { backgroundImage: `url('${encodeURI(course.image)}')` }
@@ -15,6 +15,22 @@
 					  }
 			"
 		>
+			<!-- Un curso anunciado antes de tener contenido. Va encima de la
+			     portada porque es lo primero que hay que entender de la tarjeta, y
+			     con fondo propio para que se lea sobre cualquier foto.
+
+			     Una palabra y no la fecha: en el escritorio la tarjeta baja a un
+			     cuarto de pantalla, donde «Disponible a partir del 1 de
+			     septiembre» se parte en dos líneas sobre la imagen. La fecha va en
+			     la entradilla del curso, que se edita desde su ficha y no envejece
+			     dentro del código. -->
+			<span
+				v-if="course.upcoming"
+				class="absolute start-3 top-3 inline-flex items-center gap-x-1 rounded-md border border-outline-amber-1 bg-surface-amber-1 px-2 py-0.5 text-xs font-medium text-ink-amber-6"
+			>
+				<span class="lucide-clock size-3" />
+				{{ __('Pre-launch') }}
+			</span>
 			<!-- <div class="flex items-center flex-wrap relative top-4 px-2 w-fit">
 				<div
 					v-if="course.featured"
