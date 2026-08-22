@@ -278,8 +278,11 @@ const updateTabFilter = () => {
 		delete filters.value['enrolled']
 
 		if (currentTab.value == 'live') {
+			// Sin `upcoming = 0`: los prelanzamientos entran en el catálogo. Es
+			// el servidor quien los aparta de la consulta principal para volver a
+			// pegarlos arriba del todo, y así su sitio no depende de la página en
+			// la que caigan.
 			filters.value['published'] = 1
-			filters.value['upcoming'] = 0
 			filters.value['live'] = 1
 		} else if (currentTab.value == 'upcoming') {
 			filters.value['upcoming'] = 1
