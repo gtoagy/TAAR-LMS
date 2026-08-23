@@ -340,7 +340,12 @@ const pasoVisible = computed(() => {
 	const i = orden.indexOf(paso.value)
 	return pasoDeCuenta.value ? i + 1 : i
 })
-const puedeVolver = computed(() => paso.value !== 'comunidad' || !pasoDeCuenta.value)
+// En la comunidad solo se puede retroceder si antes hubo pantalla de contraseña.
+// A una alumna de siempre, la comunidad es su primera pantalla y un "volver
+// atrás" ahí no lleva a ninguna parte.
+const puedeVolver = computed(() =>
+	paso.value === 'comunidad' ? pasoDeCuenta.value : true
+)
 
 /* ── Carga ────────────────────────────────────────────────────────────────── */
 
@@ -449,16 +454,28 @@ const crearPassword = async () => {
 }
 
 const refrescarSesion = async () => {
+	// El servidor ya dejó la sesión abierta y puso la cookie, pero la escuela
+	// sigue creyéndose invitada hasta que la relee. Sin esto, el paso siguiente
+	// pediría el enlace de la comunidad sin saber quién lo pide, y el servidor
+	// —que solo se lo da a quien ha pagado— no lo entregaría.
 	try {
-		const { isLoggedIn } = sessionStore()
-		if (typeof isLoggedIn === 'object' && 'value' in isLoggedIn) isLoggedIn.value = true
+		const cookies = new URLSearchParams(document.cookie.split('; ').join('&'))
+		const quien = cookies.get('user_id')
+		if (!quien || quien === 'Guest') throw new Error('la sesión no llegó al navegador')
+
+		// Por propiedad y no desestructurando: así se escribe en el ref de dentro
+		// del store y todo lo que dependa de él se entera.
+		const session = sessionStore()
+		session.user = quien
+
 		const { userResource } = usersStore()
 		await userResource.reload()
 	} catch (e) {
-		// Plan B: si la escuela no consigue releer la sesión en caliente, se
-		// recarga la página entrando ya en el paso de la comunidad. Se pierde la
-		// continuidad de la animación, no el sitio donde estaba.
-		window.location.href = `${window.location.pathname}?paso=comunidad`
+		// Plan B: recargar. Al arrancar de nuevo, el servidor ya la reconoce y el
+		// asistente vuelve a abrirse solo, esta vez por el paso de la comunidad,
+		// porque el de la contraseña ya está hecho. Se pierde la continuidad de
+		// la animación, no el sitio donde estaba.
+		window.location.reload()
 	}
 }
 
@@ -568,7 +585,7 @@ const avisar = (err) => {
 .taar-progreso-rotulo {
 	font-size: 12.5px;
 	font-weight: 600;
-	color: theme('colors.ink.gray.5');
+	color: var(--ink-gray-5);
 }
 .taar-segmentos {
 	display: flex;
@@ -579,7 +596,7 @@ const avisar = (err) => {
 	width: 32px;
 	height: 3px;
 	border-radius: 2px;
-	background: theme('colors.gray.200');
+	background: var(--gray-200);
 }
 .taar-segmentos i.hecho {
 	background: var(--taar-primary, #807fec);
@@ -592,14 +609,14 @@ const avisar = (err) => {
 	font-weight: 600;
 	line-height: 1.15;
 	text-wrap: balance;
-	color: theme('colors.ink.gray.9');
+	color: var(--ink-gray-9);
 }
 .taar-apoyo {
 	margin: -12px auto 0;
 	max-width: 44ch;
 	text-align: center;
 	font-size: 14.5px;
-	color: theme('colors.ink.gray.6');
+	color: var(--ink-gray-6);
 }
 
 /* Campos */
@@ -616,7 +633,7 @@ const avisar = (err) => {
 .taar-caja-dato {
 	border-radius: 10px;
 	padding: 11px 13px;
-	background: theme('colors.surface.gray.2');
+	background: var(--surface-gray-2);
 	display: flex;
 	flex-direction: column;
 	gap: 3px;
@@ -624,7 +641,7 @@ const avisar = (err) => {
 .taar-caja-et {
 	font-size: 12px;
 	font-weight: 600;
-	color: theme('colors.ink.gray.6');
+	color: var(--ink-gray-6);
 }
 .taar-caja-val {
 	display: flex;
@@ -633,18 +650,18 @@ const avisar = (err) => {
 	flex-wrap: wrap;
 	font-weight: 600;
 	word-break: break-all;
-	color: theme('colors.ink.gray.9');
+	color: var(--ink-gray-9);
 }
 .taar-enlace {
 	font-size: 13px;
 	text-decoration: underline;
 	text-underline-offset: 3px;
-	color: theme('colors.ink.gray.6');
+	color: var(--ink-gray-6);
 }
 .taar-pista {
 	margin: 0;
 	font-size: 12.5px;
-	color: theme('colors.ink.gray.6');
+	color: var(--ink-gray-6);
 }
 
 /* Comunidad */
@@ -671,7 +688,7 @@ const avisar = (err) => {
 	flex-direction: column;
 	gap: 7px;
 	font-size: 14.5px;
-	color: theme('colors.ink.gray.8');
+	color: var(--ink-gray-8);
 }
 .taar-ventajas li {
 	display: flex;
@@ -685,7 +702,7 @@ const avisar = (err) => {
 
 /* Preguntas */
 .taar-pregunta {
-	background: theme('colors.surface.gray.2');
+	background: var(--surface-gray-2);
 	border-radius: 13px;
 	padding: 15px 17px;
 	display: flex;
@@ -703,7 +720,7 @@ const avisar = (err) => {
 	font-weight: 800;
 	letter-spacing: 0.11em;
 	text-transform: uppercase;
-	color: theme('colors.ink.gray.5');
+	color: var(--ink-gray-5);
 }
 .taar-pastilla {
 	font-size: 11px;
@@ -734,12 +751,12 @@ const avisar = (err) => {
 	margin: 3px 0 0;
 	font-size: 16.5px;
 	font-weight: 500;
-	color: theme('colors.ink.gray.9');
+	color: var(--ink-gray-9);
 }
 .taar-privacidad {
 	margin: -14px 0 0;
 	font-size: 12.5px;
-	color: theme('colors.ink.gray.6');
+	color: var(--ink-gray-6);
 }
 
 .taar-opciones {
@@ -756,9 +773,9 @@ const avisar = (err) => {
 	font-size: 15.5px;
 	padding: 15px 17px;
 	border-radius: 12px;
-	border: 1.5px solid theme('colors.gray.300');
-	background: theme('colors.surface.white');
-	color: theme('colors.ink.gray.9');
+	border: 1.5px solid var(--gray-300);
+	background: var(--surface-white);
+	color: var(--ink-gray-9);
 	transition: border-color 0.15s, background 0.15s;
 }
 .taar-opcion:hover {
@@ -773,8 +790,8 @@ const avisar = (err) => {
 	place-items: center;
 	font-size: 12.5px;
 	font-weight: 700;
-	background: theme('colors.surface.gray.3');
-	color: theme('colors.ink.gray.6');
+	background: var(--surface-gray-3);
+	color: var(--ink-gray-6);
 }
 .taar-opcion[aria-pressed='true'] {
 	border-color: var(--taar-primary, #807fec);
@@ -809,7 +826,7 @@ const avisar = (err) => {
 	padding: 13px 15px;
 	border-radius: 0 10px 10px 0;
 	font-size: 14.5px;
-	color: theme('colors.ink.gray.8');
+	color: var(--ink-gray-8);
 }
 
 /* Botones */
@@ -848,16 +865,16 @@ const avisar = (err) => {
 }
 .taar-boton-fantasma {
 	background: transparent;
-	border: 1.5px solid theme('colors.gray.300');
-	color: theme('colors.ink.gray.8');
+	border: 1.5px solid var(--gray-300);
+	color: var(--ink-gray-8);
 }
 .taar-boton-fantasma:hover {
-	background: theme('colors.surface.gray.2');
+	background: var(--surface-gray-2);
 }
 .taar-atras {
 	font-size: 14px;
 	font-weight: 600;
-	color: theme('colors.ink.gray.6');
+	color: var(--ink-gray-6);
 }
 .taar-atras:hover {
 	color: var(--taar-primary, #807fec);

@@ -52,10 +52,14 @@ const sessionIdPago = ref(recogerPagoPendiente())
 const mostrarAsistente = ref(false)
 
 const { userResource } = usersStore()
-const { isLoggedIn } = sessionStore()
+// El store entero y no `const { isLoggedIn } = ...`: al desestructurarlo, pinia
+// entrega el valor ya desenvuelto y no el computed, así que la variable se queda
+// congelada en lo que valiera al cargar la página. Leyéndolo como propiedad
+// dentro del computed sí sigue vivo.
+const session = sessionStore()
 
 const leFalta = computed(() => {
-	if (!isLoggedIn) return false
+	if (!session.isLoggedIn) return false
 	return !!userResource?.data?.taar_onboarding_pendiente
 })
 

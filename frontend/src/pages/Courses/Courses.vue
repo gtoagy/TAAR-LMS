@@ -104,8 +104,29 @@
 				</router-link>
 			</template>
 		</div>
+		<!-- Esta pantalla es lo primero que ve una alumna al terminar el asistente
+		     de bienvenida, así que tiene que estar escrita y no salir a medio
+		     traducir. Y "Mis cursos" vacío no significa lo mismo que el catálogo
+		     vacío: uno dice "todavía no tienes", el otro "todavía no hay". -->
 		<div v-else-if="!courses.list.loading" class="flex-1">
-			<EmptyStateLayout name="Courses" icon="lucide-book-open" />
+			<EmptyStateLayout
+				v-if="currentTab === 'enrolled'"
+				icon="lucide-book-open"
+				:title="__('You have no courses yet')"
+				:description="
+					__(
+						'As soon as your payment is confirmed they appear here. It usually takes a few seconds.'
+					)
+				"
+			/>
+			<EmptyStateLayout
+				v-else
+				icon="lucide-book-open"
+				:title="__('No courses found')"
+				:description="
+					__('There are no courses right now. New ones are on the way!')
+				"
+			/>
 		</div>
 		<div
 			v-if="!courses.list.loading && courses.hasNextPage"
