@@ -7,6 +7,15 @@
 			<BarraResena />
 			<router-view />
 		</Layout>
+		<!-- El asistente de bienvenida vive aquí arriba y no dentro del catálogo,
+		     que es donde estaba. Colgado del catálogo solo aparecía si la
+		     dirección traía la marca del pago recién hecho, así que las alumnas
+		     de siempre —que entran por el inicio de sesión— no lo veían nunca. -->
+		<BienvenidaPago
+			v-if="mostrarAsistente"
+			v-model="mostrarAsistente"
+			:session-id="sessionIdPago"
+		/>
 		<NotificationPanel />
 		<InstallPrompt v-if="isMobile && !settings.data?.disable_pwa" />
 		<Dialogs />
@@ -15,7 +24,7 @@
 <script setup>
 import { FrappeUIProvider } from 'frappe-ui'
 import { Dialogs } from '@/utils/dialogs'
-import { computed, onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { useScreenSize } from './utils/composables'
 import { useSettings } from '@/stores/settings'
 import { useRouter } from 'vue-router'
@@ -24,12 +33,48 @@ import MobileLayout from './components/Layouts/MobileLayout.vue'
 import NoSidebarLayout from './components/Layouts/NoSidebarLayout.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
 import BarraResena from '@/components/BarraResena.vue'
+import BienvenidaPago from '@/components/BienvenidaPago.vue'
 import NotificationPanel from '@/components/Notifications/NotificationPanel.vue'
+import { usersStore } from '@/stores/user'
+import { sessionStore } from '@/stores/session'
+import { recogerPagoPendiente, olvidarPagoPendiente } from '@/utils/pagoPendiente'
 
 const { isMobile } = useScreenSize()
 const router = useRouter()
 const noSidebar = ref(false)
 const { settings } = useSettings()
+
+/* ── El asistente de bienvenida ──────────────────────────────────────────────
+   Se abre por dos caminos que no se pisan: acaba de pagar (traemos el
+   identificador de la sesión de Stripe) o ya está dentro y todavía no ha pasado
+   por él. El segundo es el que alcanza a las alumnas que venían de antes. */
+const sessionIdPago = ref(recogerPagoPendiente())
+const mostrarAsistente = ref(false)
+
+const { userResource } = usersStore()
+const { isLoggedIn } = sessionStore()
+
+const leFalta = computed(() => {
+	if (!isLoggedIn) return false
+	return !!userResource?.data?.taar_onboarding_pendiente
+})
+
+watch(
+	[sessionIdPago, leFalta],
+	([pago, falta]) => {
+		if (pago || falta) mostrarAsistente.value = true
+	},
+	{ immediate: true }
+)
+
+watch(mostrarAsistente, (abierto) => {
+	// Al cerrarse se olvida el pago guardado: si volviera a abrirse con el mismo
+	// identificador, quien ya puso su contraseña vería la pantalla de nuevo.
+	if (!abierto && sessionIdPago.value) {
+		olvidarPagoPendiente()
+		sessionIdPago.value = null
+	}
+})
 
 router.beforeEach((to, from, next) => {
 	if (to.query.fromLesson || to.path === '/persona') {

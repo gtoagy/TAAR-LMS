@@ -490,6 +490,7 @@ const isCourseAdmin = () =>
 
 onMounted(() => {
 	startTimer()
+	marcarPrimeraLeccion()
 	// Keep the app sidebar open for admins/instructors so they can navigate
 	// while reviewing; only collapse it for students to maximise reading space.
 	if (!props.embedded && !isCourseAdmin()) {
@@ -504,6 +505,24 @@ onMounted(() => {
 		}
 	})
 })
+
+// Que una alumna llegue a abrir una lección es el último escalón del embudo, y
+// el que de verdad importa: es la diferencia entre haber pagado y haber
+// empezado. No sirve mirar el progreso del curso, porque ese registro solo nace
+// cuando la lección se termina —al acabarse el vídeo—, no al abrirla.
+//
+// La marca en el navegador evita llamar al servidor cada vez que abre una
+// lección durante meses: al servidor solo le interesa la primera.
+const marcarPrimeraLeccion = () => {
+	const CLAVE = 'taar-primera-leccion'
+	try {
+		if (localStorage.getItem(CLAVE)) return
+		localStorage.setItem(CLAVE, '1')
+	} catch (e) {
+		/* sin almacenamiento se llama igual: es idempotente en el servidor */
+	}
+	call('taar_lms.api.marcar_paso', { paso: 'leccion' }).catch(() => {})
+}
 
 const attachFullscreenEvent = () => {
 	if (document.fullscreenElement) {

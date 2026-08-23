@@ -1,10 +1,5 @@
 <template>
 	<SkeletonLoader v-if="!course.data" variant="course-page" />
-	<BienvenidaPago
-		v-model="showBienvenida"
-		:sessionId="bienvenidaSessionId"
-		tipo="curso"
-	/>
 	<div v-if="course.data" class="p-5">
 		<!-- `items-start` significa cosas distintas según cómo esté puesta la
 		     caja: en fila alinea arriba, que es lo que se quiere en pantalla
@@ -160,7 +155,7 @@ import { sanitizeRichHTML } from '@/utils/sanitizeRichHTML'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { createResource, Badge, toast } from 'frappe-ui'
-import BienvenidaPago from '@/components/BienvenidaPago.vue'
+import { recordarPagoPendiente } from '@/utils/pagoPendiente'
 import { formatAmount, formatEnrollments, formatRating } from '@/utils/'
 import type { SessionUser } from '@/types/api'
 import CourseCardOverlay from '@/components/CourseCardOverlay.vue'
@@ -180,18 +175,15 @@ const props = defineProps<{
 const user = inject<SessionUser>('$user')
 const route = useRoute()
 
-const showBienvenida = ref(false)
-const bienvenidaSessionId = ref<string | null>(null)
-
-// Al volver de Stripe tras comprar el curso: si la cuenta nació con el pago,
-// la ventana de bienvenida deja crear la contraseña ahí mismo; si ya hay
-// sesión, basta el aviso (el webhook activa el acceso en segundos).
+// Al volver de Stripe tras comprar el curso. El asistente de bienvenida se abre
+// desde App.vue: aquí solo se guarda el identificador del pago para que no se
+// pierda si recarga, y se recarga la ficha para que el curso aparezca ya suyo.
 onMounted(() => {
 	if (route.query.compra === 'exitosa') {
-		if (!user?.data && route.query.session_id) {
-			bienvenidaSessionId.value = String(route.query.session_id)
-			showBienvenida.value = true
-		} else {
+		if (route.query.session_id) {
+			recordarPagoPendiente(String(route.query.session_id), 'curso')
+		}
+		if (user?.data) {
 			toast.success(
 				__('Purchase successful! Your access will be ready in a few seconds.')
 			)
