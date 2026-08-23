@@ -31,9 +31,26 @@ export function recordarPagoPendiente(sessionId, tipo) {
 	return sessionId
 }
 
-/** El pago guardado, si aún vale. */
+/**
+ * El pago recién hecho: primero de la dirección, y si no, del navegador.
+ *
+ * Mirar la dirección aquí no es un atajo, es lo único que funciona. Quien abre
+ * el asistente es App.vue, que es el componente de más arriba y por tanto el
+ * primero en montarse; el catálogo, que es quien guardaba el identificador, se
+ * monta después. Cuando lo guardaba, App.vue ya había mirado y no había nada,
+ * así que al volver de pagar no salía el asistente y solo aparecía si la alumna
+ * recargaba por su cuenta. Leyendo la dirección aquí, quien pregunte primero lo
+ * encuentra, y de paso queda guardado para las siguientes cargas.
+ */
 export function recogerPagoPendiente() {
 	try {
+		const enLaUrl = new URLSearchParams(window.location.search).get('session_id')
+		if (enLaUrl && enLaUrl.startsWith('cs_')) {
+			const tipo = window.location.pathname.includes('/courses/') ? 'curso' : 'membresia'
+			recordarPagoPendiente(enLaUrl, tipo)
+			return enLaUrl
+		}
+
 		const crudo = localStorage.getItem(CLAVE)
 		if (!crudo) return null
 		const dato = JSON.parse(crudo)
