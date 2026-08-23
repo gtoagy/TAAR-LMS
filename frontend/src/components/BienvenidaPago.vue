@@ -203,8 +203,8 @@
 						</div>
 
 						<div class="taar-acciones">
-							<button class="taar-boton" @click="paso = 'preguntas'">
-								{{ __('Continue') }}
+							<button class="taar-boton" :disabled="yendo" @click="irAPreguntas()">
+								{{ yendo ? __('One moment…') : __('Continue') }}
 							</button>
 							<button v-if="puedeVolver" class="taar-atras" @click="volver()">
 								{{ __('Back to previous') }}
@@ -382,7 +382,12 @@ const cargar = async () => {
 			paso.value = 'comunidad'
 		}
 
-		if (estado.value === 'con_sesion' || estado.value === 'nueva') {
+		// Las preguntas y el enlace del grupo se piden con la sesión ya abierta, y
+		// quien acaba de pagar todavía es una invitada: su sesión nace al crear la
+		// contraseña, en el paso siguiente. Pedirlos antes devuelve "no tiene
+		// permiso para acceder a este recurso" y tumbaba el asistente entero justo
+		// cuando más falta hace, recién hecho el pago.
+		if (estado.value === 'con_sesion') {
 			await cargarAsistente()
 		}
 	} catch (err) {
@@ -445,7 +450,16 @@ const crearPassword = async () => {
 		// cree invitada: hay que releerla antes de seguir, o el paso siguiente
 		// pediría el enlace de la comunidad sin saber quién lo pide.
 		await refrescarSesion()
-		await cargarAsistente()
+
+		// Su contraseña ya está puesta y su sesión abierta: pase lo que pase con
+		// las preguntas o con el enlace del grupo, tiene que poder seguir. Dejarla
+		// en la pantalla de la contraseña, con la contraseña ya creada, sería
+		// pedirle que la ponga otra vez.
+		try {
+			await cargarAsistente()
+		} catch (e) {
+			asistente.value = null
+		}
 		paso.value = 'comunidad'
 	} catch (err) {
 		avisar(err)
@@ -480,6 +494,32 @@ const refrescarSesion = async () => {
 }
 
 /* ── Preguntas ────────────────────────────────────────────────────────────── */
+
+const yendo = ref(false)
+
+/**
+ * Del grupo a las preguntas, asegurándose de tenerlas.
+ *
+ * Si el asistente se cargó cuando todavía era una invitada, las preguntas no
+ * pudieron pedirse: se piden con la sesión abierta. Aquí ya la tiene, así que se
+ * intenta otra vez. Y si aun así no llegan, se pasa al final en vez de dejarla
+ * mirando una pantalla vacía: preguntarle es importante, pero menos que dejarla
+ * entrar a lo que ha pagado.
+ */
+const irAPreguntas = async () => {
+	if (preguntas.value.length) {
+		paso.value = 'preguntas'
+		return
+	}
+	yendo.value = true
+	try {
+		await cargarAsistente()
+	} catch (e) {
+		/* se decide abajo con lo que haya */
+	}
+	yendo.value = false
+	paso.value = preguntas.value.length ? 'preguntas' : 'listo'
+}
 
 const responder = (opcion) => {
 	if (!preguntaActual.value) return
