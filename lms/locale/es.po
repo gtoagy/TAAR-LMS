@@ -10685,3 +10685,163 @@ msgstr "Cambiar portada"
 #: frontend/src/components/CourseCard.vue
 msgid "Pre-launch"
 msgstr "Prelanzamiento"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Your payment is on its way"
+msgstr "Tu pago está en camino"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Payments with OXXO or bank transfer take a few hours to be confirmed."
+msgstr "Los pagos con OXXO o transferencia tardan unas horas en confirmarse."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "As soon as it arrives we will write to {0} with your access."
+msgstr "En cuanto llegue te escribimos a {0} con tu acceso."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "You do not need to do anything else."
+msgstr "No necesitas hacer nada más."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Write to us if you have questions"
+msgstr "Escríbenos si tienes dudas"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "You already have an account with us"
+msgstr "Ya tienes cuenta con nosotras"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Step {0} of {1}"
+msgstr "Paso {0} de {1}"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "You are part of TanArtistic now"
+msgstr "Ya eres parte de TanArtistic"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "We received your payment. Create your password and we are in."
+msgstr "Recibimos tu pago. Crea tu contraseña y entramos."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Mobile number"
+msgstr "Celular"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "We take it from your payment. This is how we let you know about live classes."
+msgstr "Lo tomamos de tu pago. Por ahí te avisamos de las clases en vivo."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "One moment…"
+msgstr "Un momento…"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Create my password"
+msgstr "Crear mi contraseña"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "You are not painting alone"
+msgstr "No pintas sola"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "You have a WhatsApp group with the other students and with me."
+msgstr "Tienes un grupo de WhatsApp con las demás alumnas y conmigo."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Show what you paint and get real feedback."
+msgstr "Enseña lo que pintas y recibe comentarios de verdad."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Live classes are announced there first."
+msgstr "Ahí avisamos de las clases en vivo antes que en ningún lado."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "If you get stuck on a step, just ask."
+msgstr "Si te atoras con un paso, pregunta sin pena."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Join the WhatsApp group"
+msgstr "Entrar al grupo de WhatsApp"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Continue"
+msgstr "Continuar"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Back to previous"
+msgstr "Volver atrás"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Tell us more about you"
+msgstr "Cuéntanos más de ti"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Two quick questions so we know what to record next."
+msgstr "Dos preguntas rápidas para saber qué grabar después."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Question {0} of {1}"
+msgstr "Pregunta {0} de {1}"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Required"
+msgstr "Obligatoria"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Only we see this."
+msgstr "Esto solo lo vemos nosotras."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Choose an option to continue."
+msgstr "Elige una opción para continuar."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "You are all set, artist!"
+msgstr "¡Ya estás list@ artista!"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Your course is waiting for you. See you inside."
+msgstr "Tu curso te está esperando. Nos vemos dentro."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Start painting"
+msgstr "Empieza a pintar"
+
+#: frontend/src/pages/Courses/Courses.vue
+msgid "You have no courses yet"
+msgstr "Todavía no tienes cursos"
+
+#: frontend/src/pages/Courses/Courses.vue
+msgid "As soon as your payment is confirmed they appear here. It usually takes a few seconds."
+msgstr "En cuanto se confirme tu pago aparecen aquí. Suele tardar unos segundos."
+
+#: frontend/src/pages/Courses/Courses.vue
+msgid "No courses found"
+msgstr "No encontramos cursos"
+
+#: frontend/src/pages/Courses/Courses.vue
+msgid "There are no courses right now. New ones are on the way!"
+msgstr "Ahora mismo no hay cursos. ¡Vienen nuevos en camino!"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Tell us who you are"
+msgstr "Cuéntanos quién eres"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "So we can greet you by your name and let you know about live classes."
+msgstr "Para saludarte por tu nombre y avisarte de las clases en vivo."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "This is how we let you know about live classes on WhatsApp."
+msgstr "Por aquí te avisamos de las clases en vivo por WhatsApp."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Leave us your mobile number so we can reach you."
+msgstr "Déjanos tu celular para poder avisarte."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Choose your country"
+msgstr "Elige tu país"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "e.g. +52 998 123 4567"
+msgstr "ej. +52 998 123 4567"

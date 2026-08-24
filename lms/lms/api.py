@@ -74,6 +74,17 @@ def get_user_info():
 			{"user": user.name, "status": ("in", ("Activa", "En mora"))},
 			"plan",
 		)
+	# TanArtistic: si todavía le falta pasar por el asistente de bienvenida. El
+	# try/except no es exceso de celo: la escuela y la app de TanArtistic se
+	# despliegan por separado, y esta función carga TODO el sitio. Un servidor
+	# con la app vieja no puede dejar a nadie mirando una pantalla en blanco.
+	user.taar_onboarding_pendiente = 0
+	try:
+		from taar_lms.onboarding import onboarding_pendiente
+
+		user.taar_onboarding_pendiente = 1 if onboarding_pendiente(user.name) else 0
+	except Exception:
+		pass
 	user.sitename = frappe.local.site
 	user.developer_mode = frappe.conf.developer_mode
 	if user.is_fc_site and user.is_system_manager:

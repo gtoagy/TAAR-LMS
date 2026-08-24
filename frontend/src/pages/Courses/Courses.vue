@@ -33,13 +33,6 @@
 		</template>
 	</LayoutHeader>
 
-	<!-- Bienvenida tras pagar la membresía en Stripe (con creación de
-	     contraseña si la cuenta nació con el pago) -->
-	<BienvenidaPago
-		v-model="showBienvenida"
-		:sessionId="bienvenidaSessionId"
-		tipo="membresia"
-	/>
 	<!-- En móvil la página crece con su contenido; solo en sm+ llena la altura -->
 	<div class="flex flex-col p-5 pb-10 sm:min-h-0 sm:flex-1">
 		<div
@@ -111,8 +104,29 @@
 				</router-link>
 			</template>
 		</div>
+		<!-- Esta pantalla es lo primero que ve una alumna al terminar el asistente
+		     de bienvenida, así que tiene que estar escrita y no salir a medio
+		     traducir. Y "Mis cursos" vacío no significa lo mismo que el catálogo
+		     vacío: uno dice "todavía no tienes", el otro "todavía no hay". -->
 		<div v-else-if="!courses.list.loading" class="flex-1">
-			<EmptyStateLayout name="Courses" icon="lucide-book-open" />
+			<EmptyStateLayout
+				v-if="currentTab === 'enrolled'"
+				icon="lucide-book-open"
+				:title="__('You have no courses yet')"
+				:description="
+					__(
+						'As soon as your payment is confirmed they appear here. It usually takes a few seconds.'
+					)
+				"
+			/>
+			<EmptyStateLayout
+				v-else
+				icon="lucide-book-open"
+				:title="__('No courses found')"
+				:description="
+					__('There are no courses right now. New ones are on the way!')
+				"
+			/>
 		</div>
 		<div
 			v-if="!courses.list.loading && courses.hasNextPage"
@@ -146,7 +160,7 @@ import {
 	Tooltip,
 	usePageMeta,
 } from 'frappe-ui'
-import BienvenidaPago from '@/components/BienvenidaPago.vue'
+import { recordarPagoPendiente } from '@/utils/pagoPendiente'
 import ClearableCombobox from '@/components/Controls/ClearableCombobox.vue'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { sessionStore } from '@/stores/session'
@@ -175,21 +189,21 @@ const courseCount = ref(0)
 const router = useRouter()
 const showCourseModal = ref(false)
 const showCourseImportModal = ref(false)
-const showBienvenida = ref(false)
-const bienvenidaSessionId = ref(null)
 
 onMounted(() => {
 	setFiltersFromQuery()
 	updateCourses()
 	getCourseCount()
 
-	// Al volver de Stripe con la membresía recién pagada: darle la bienvenida
-	// y, si la cuenta nació con el pago, dejarle crear su contraseña ahí mismo.
+	// Al volver de Stripe con la membresía recién pagada, el identificador de la
+	// sesión se guarda en el navegador y el asistente lo recoge desde App.vue.
+	// Antes se abría aquí y la dirección se limpiaba a renglón seguido: quien
+	// cerraba la ventana sin querer o recargaba se quedaba sin ninguna forma de
+	// volver a ella, habiendo pagado ya.
 	const queries = new URLSearchParams(location.search)
 	if (queries.get('membresia') === 'activada') {
-		bienvenidaSessionId.value = queries.get('session_id') || null
-		showBienvenida.value = true
-		router.replace({ query: {} })
+		recordarPagoPendiente(queries.get('session_id'), 'membresia')
+		router.replace({ query: { tab: queries.get('tab') || undefined } })
 	}
 })
 
