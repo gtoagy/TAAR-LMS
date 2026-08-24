@@ -94,7 +94,8 @@
 						</div>
 					</div>
 
-					<!-- Paso: la cuenta -->
+					<!-- Paso: la cuenta. Solo dos cosas, que es lo justo para alguien
+					     que acaba de pagar: cuál es su cuenta y con qué entra. -->
 					<template v-if="paso === 'cuenta'">
 						<h2 class="taar-titulo">{{ __('You are part of TanArtistic now') }} 🎨</h2>
 						<p class="taar-apoyo">
@@ -102,16 +103,12 @@
 						</p>
 
 						<div class="taar-campos">
-							<div class="taar-fila">
-								<FormControl v-model="nombre" :label="__('First Name')" />
-								<FormControl v-model="apellido" :label="__('Last Name')" />
-							</div>
-
 							<!-- El correo se enseña como un dato y no como un campo: es
 							     el que usó para pagar. Pero se puede corregir, porque
 							     escribirlo mal en el checkout es de lo más común y con
 							     la cuenta atada a un correo equivocado se queda fuera de
-							     algo que ya pagó. -->
+							     algo que ya pagó. Va aquí y no en el paso siguiente
+							     porque decide QUÉ cuenta recibe esta contraseña. -->
 							<div v-if="datos?.email" class="taar-caja-dato">
 								<div class="taar-caja-et">{{ __('Your account') }}</div>
 								<div v-if="!editandoCorreo" class="taar-caja-val">
@@ -128,37 +125,70 @@
 								</template>
 							</div>
 
-							<div class="taar-fila">
-								<FormControl v-model="celular" :label="__('Mobile number')" />
-								<FormControl
-									v-model="pais"
-									type="select"
-									:label="__('Country')"
-									:options="opcionesPais"
-								/>
-							</div>
-							<p class="taar-pista">
-								{{ __('We take it from your payment. This is how we let you know about live classes.') }}
-							</p>
-
-							<div class="taar-fila">
-								<FormControl
-									v-model="password"
-									type="password"
-									:label="__('Password')"
-									:placeholder="__('At least 8 characters')"
-								/>
-								<FormControl
-									v-model="password2"
-									type="password"
-									:label="__('Confirm password')"
-								/>
-							</div>
+							<FormControl
+								v-model="password"
+								type="password"
+								:label="__('Password')"
+								:placeholder="__('At least 8 characters')"
+							/>
+							<FormControl
+								v-model="password2"
+								type="password"
+								:label="__('Confirm password')"
+							/>
 						</div>
 
 						<div class="taar-acciones">
 							<button class="taar-boton" :disabled="creando" @click="crearPassword()">
 								{{ creando ? __('One moment…') : __('Create my password') }}
+							</button>
+						</div>
+					</template>
+
+					<!-- Paso: sus datos.
+
+					     Solo aparece si falta algo. Cuando se importen el nombre, el
+					     celular y el país de la plataforma anterior, quien ya los tenga
+					     no vera esta pantalla. -->
+					<template v-else-if="paso === 'datos'">
+						<h2 class="taar-titulo">{{ __('Tell us who you are') }} ✍️</h2>
+						<p class="taar-apoyo">
+							{{ __('So we can greet you by your name and let you know about live classes.') }}
+						</p>
+
+						<div class="taar-campos">
+							<div class="taar-fila">
+								<FormControl v-model="nombre" :label="__('First Name')" />
+								<FormControl v-model="apellido" :label="__('Last Name')" />
+							</div>
+							<div class="taar-fila">
+								<FormControl
+									v-model="celular"
+									:label="__('Mobile number')"
+									:placeholder="__('e.g. +52 998 123 4567')"
+								/>
+								<!-- Sin placeholder propio, frappe-ui pone "Select option"
+								     en inglés y se cuela en una pantalla que por lo demás
+								     está entera en español. -->
+								<FormControl
+									v-model="pais"
+									type="select"
+									:label="__('Country')"
+									:options="opcionesPais"
+									:placeholder="__('Choose your country')"
+								/>
+							</div>
+							<p class="taar-pista">
+								{{ __('This is how we let you know about live classes on WhatsApp.') }}
+							</p>
+						</div>
+
+						<div class="taar-acciones">
+							<button class="taar-boton" :disabled="guardandoDatos" @click="guardarDatos()">
+								{{ guardandoDatos ? __('One moment…') : __('Continue') }}
+							</button>
+							<button v-if="pasoDeCuenta" class="taar-atras" @click="paso = 'cuenta'">
+								{{ __('Back to previous') }}
 							</button>
 						</div>
 					</template>
@@ -317,6 +347,7 @@ const editandoCorreo = ref(false)
 
 const creando = ref(false)
 const guardando = ref(false)
+const guardandoDatos = ref(false)
 const enviandoEnlace = ref(false)
 const enlaceEnviado = ref(false)
 
@@ -330,22 +361,66 @@ const opcionesPais = computed(() =>
 	(datos.value?.paises || []).map((p) => ({ label: p, value: p }))
 )
 
-// El contador se ajusta a lo que le toca a cada una: quien ya tenía cuenta y solo
-// compró otro curso no pasa por el paso de la contraseña, y decirle "paso 2 de 4"
-// cuando su primera pantalla es la 2 sería mentirle.
+/*
+ * Cada alumna recorre solo los pasos que le faltan, y el contador cuenta esos.
+ *
+ * Quien ya tenía cuenta no pasa por la contraseña; quien ya nos dio su nombre y
+ * su celular no pasa por los datos; quien ya nos contó de ella no pasa por las
+ * preguntas. Decirle "paso 2 de 5" a quien solo va a ver tres pantallas sería
+ * mentirle, y eso, en la pantalla de después de pagar, se nota.
+ *
+ * De aquí sale gratis lo de importar los datos de la plataforma anterior: quien
+ * los tenga se salta esas pantallas sin que haya que tocar nada.
+ */
 const pasoDeCuenta = computed(() => estado.value === 'nueva')
-const totalPasos = computed(() => (pasoDeCuenta.value ? 4 : 3))
-const pasoVisible = computed(() => {
-	const orden = ['cuenta', 'comunidad', 'preguntas', 'listo']
-	const i = orden.indexOf(paso.value)
-	return pasoDeCuenta.value ? i + 1 : i
-})
-// En la comunidad solo se puede retroceder si antes hubo pantalla de contraseña.
-// A una alumna de siempre, la comunidad es su primera pantalla y un "volver
-// atrás" ahí no lleva a ninguna parte.
-const puedeVolver = computed(() =>
-	paso.value === 'comunidad' ? pasoDeCuenta.value : true
+const pasoDeDatos = computed(() => asistente.value?.faltan_datos !== false)
+const pasoDePreguntas = computed(
+	() => asistente.value?.faltan_respuestas !== false && preguntas.value.length > 0
 )
+
+/*
+ * El recorrido se decide UNA VEZ y no se recalcula por el camino.
+ *
+ * Si se recalculara, al rellenar sus datos ese paso desaparecería del recorrido
+ * y el contador saltaría de "paso 1 de 4" a "paso 1 de 3": después de escribir
+ * su nombre y su celular, parecería que no ha avanzado nada. Lo que le falta se
+ * mira al abrir el asistente; lo que haga después ya no cambia el mapa.
+ */
+const recorridoFijo = ref(null)
+
+const suRecorrido = computed(() => {
+	if (recorridoFijo.value) return recorridoFijo.value
+	const pasos = []
+	if (pasoDeCuenta.value) pasos.push('cuenta')
+	if (pasoDeDatos.value) pasos.push('datos')
+	pasos.push('comunidad')
+	if (pasoDePreguntas.value) pasos.push('preguntas')
+	pasos.push('listo')
+	return pasos
+})
+
+/** Congela el recorrido en cuanto sabemos qué le falta. */
+const fijarRecorrido = () => {
+	if (!recorridoFijo.value && asistente.value) {
+		recorridoFijo.value = suRecorrido.value
+	}
+}
+
+const totalPasos = computed(() => suRecorrido.value.length)
+const pasoVisible = computed(() => suRecorrido.value.indexOf(paso.value) + 1)
+const puedeVolver = computed(() => suRecorrido.value.indexOf(paso.value) > 0)
+
+/** El siguiente de SU recorrido, saltándose lo que no le toca. */
+const siguienteDe = (desde) => {
+	const i = suRecorrido.value.indexOf(desde)
+	return suRecorrido.value[i + 1] || 'listo'
+}
+
+/** El anterior de su recorrido. */
+const anteriorDe = (desde) => {
+	const i = suRecorrido.value.indexOf(desde)
+	return i > 0 ? suRecorrido.value[i - 1] : desde
+}
 
 /* ── Carga ────────────────────────────────────────────────────────────────── */
 
@@ -375,11 +450,9 @@ const cargar = async () => {
 		}
 
 		// El paso de la contraseña solo existe para una cuenta que nace de este
-		// pago. En cualquier otro caso el asistente empieza por la comunidad.
+		// pago; el resto empieza por lo primero que le falte.
 		if (estado.value === 'nueva') {
 			paso.value = 'cuenta'
-		} else if (estado.value === 'con_sesion') {
-			paso.value = 'comunidad'
 		}
 
 		// Las preguntas y el enlace del grupo se piden con la sesión ya abierta, y
@@ -404,7 +477,30 @@ const cargarAsistente = async () => {
 	const a = await estadoAsistente.fetch()
 	asistente.value = a
 	if (a?.respuestas) respuestas.value = { ...a.respuestas }
-	if (!a?.pendiente && estado.value === 'con_sesion') show.value = false
+
+	// Lo que ya sabemos de ella se propone en el paso de datos, para que solo
+	// tenga que confirmarlo. A quien acaba de pagar, el celular ya le llegó de
+	// Stripe y no hay que pisarlo con lo que hubiera en la cuenta.
+	if (a?.datos) {
+		if (!nombre.value) nombre.value = a.datos.nombre || ''
+		if (!apellido.value) apellido.value = a.datos.apellido || ''
+		if (!celular.value) celular.value = a.datos.celular || ''
+		if (!pais.value) pais.value = a.datos.pais || ''
+	}
+	if (a?.paises?.length && !datos.value?.paises) {
+		datos.value = { ...(datos.value || {}), paises: a.paises }
+	}
+
+	if (!a?.pendiente) {
+		show.value = false
+		return
+	}
+
+	fijarRecorrido()
+
+	// Si venía sin pago (una alumna de siempre entrando), su primera pantalla es
+	// la primera que le falte.
+	if (!props.sessionId) paso.value = suRecorrido.value[0]
 }
 
 watch(
@@ -418,7 +514,6 @@ watch(
 /* ── Paso 1 ───────────────────────────────────────────────────────────────── */
 
 const crearPassword = async () => {
-	if (!nombre.value.trim()) return toast.warning(__('Tell us your name.'))
 	if (password.value.length < 8)
 		return toast.warning(__('The password must have at least 8 characters.'))
 	if (password.value !== password2.value)
@@ -426,14 +521,13 @@ const crearPassword = async () => {
 
 	creando.value = true
 	try {
+		// Aquí solo van el correo y la contraseña. El nombre y el celular se
+		// piden en el paso siguiente, ya con la sesión abierta: seis campos justo
+		// después de pagar era demasiado para una sola pantalla.
 		const r = await call('taar_lms.api.completar_registro', {
 			session_id: props.sessionId,
 			password: password.value,
 			correo: correo.value || undefined,
-			nombre: nombre.value,
-			apellido: apellido.value,
-			celular: celular.value || undefined,
-			pais: pais.value || undefined,
 		})
 
 		// El servidor puede negarse a poner la contraseña aquí si esa cuenta ya
@@ -460,7 +554,7 @@ const crearPassword = async () => {
 		} catch (e) {
 			asistente.value = null
 		}
-		paso.value = 'comunidad'
+		paso.value = siguienteDe('cuenta')
 	} catch (err) {
 		avisar(err)
 	}
@@ -507,8 +601,9 @@ const yendo = ref(false)
  * entrar a lo que ha pagado.
  */
 const irAPreguntas = async () => {
-	if (preguntas.value.length) {
-		paso.value = 'preguntas'
+	const siguiente = siguienteDe('comunidad')
+	if (siguiente !== 'preguntas' || preguntas.value.length) {
+		paso.value = siguiente
 		return
 	}
 	yendo.value = true
@@ -519,6 +614,33 @@ const irAPreguntas = async () => {
 	}
 	yendo.value = false
 	paso.value = preguntas.value.length ? 'preguntas' : 'listo'
+}
+
+/** Guarda sus datos y sigue. Nombre y celular son obligatorios. */
+const guardarDatos = async () => {
+	if (!nombre.value.trim()) return toast.warning(__('Tell us your name.'))
+	if (!celular.value.trim())
+		return toast.warning(__('Leave us your mobile number so we can reach you.'))
+
+	guardandoDatos.value = true
+	try {
+		await call('taar_lms.api.guardar_datos', {
+			nombre: nombre.value,
+			apellido: apellido.value || undefined,
+			celular: celular.value,
+			pais: pais.value || undefined,
+		})
+		// Se recarga el estado para que el recorrido deje de contar este paso.
+		try {
+			await cargarAsistente()
+		} catch (e) {
+			/* con lo que ya hay se puede seguir */
+		}
+		paso.value = 'comunidad'
+	} catch (err) {
+		avisar(err)
+	}
+	guardandoDatos.value = false
 }
 
 const responder = (opcion) => {
@@ -563,13 +685,13 @@ const siguientePregunta = async () => {
 }
 
 const volver = () => {
+	// Dentro de las preguntas, "atrás" es la pregunta anterior antes que la
+	// pantalla anterior: es lo que espera quien acaba de contestar mal.
 	if (paso.value === 'preguntas' && indicePregunta.value > 0) {
 		indicePregunta.value -= 1
 		return
 	}
-	if (paso.value === 'preguntas') return (paso.value = 'comunidad')
-	if (paso.value === 'comunidad' && pasoDeCuenta.value) return (paso.value = 'cuenta')
-	if (paso.value === 'listo') return (paso.value = 'preguntas')
+	paso.value = anteriorDe(paso.value)
 }
 
 /* ── Cierre y auxiliares ──────────────────────────────────────────────────── */
