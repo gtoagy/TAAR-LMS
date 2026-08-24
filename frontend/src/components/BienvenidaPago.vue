@@ -630,12 +630,11 @@ const guardarDatos = async () => {
 			celular: celular.value,
 			pais: pais.value || undefined,
 		})
-		// Se recarga el estado para que el recorrido deje de contar este paso.
-		try {
-			await cargarAsistente()
-		} catch (e) {
-			/* con lo que ya hay se puede seguir */
-		}
+		// Aquí NO se recarga el estado. El recorrido ya está congelado, así que no
+		// hay nada que refrescar, y en cambio `cargarAsistente` cierra el modal
+		// cuando el servidor responde que ya no le falta nada: justo lo que acaba
+		// de pasar al guardar sus datos. Se le cerraba en la cara y se quedaba sin
+		// el grupo de WhatsApp ni la pantalla de cierre.
 		paso.value = 'comunidad'
 	} catch (err) {
 		avisar(err)
