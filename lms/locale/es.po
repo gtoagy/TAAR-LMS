@@ -10839,6 +10839,10 @@ msgid "Leave us your mobile number so we can reach you."
 msgstr "Déjanos tu celular para poder avisarte."
 
 #: frontend/src/components/BienvenidaPago.vue
+msgid "Tell us which country you are painting from."
+msgstr "Dinos desde qué país pintas."
+
+#: frontend/src/components/BienvenidaPago.vue
 msgid "Choose your country"
 msgstr "Elige tu país"
 

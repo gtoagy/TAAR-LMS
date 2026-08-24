@@ -621,6 +621,12 @@ const guardarDatos = async () => {
 	if (!nombre.value.trim()) return toast.warning(__('Tell us your name.'))
 	if (!celular.value.trim())
 		return toast.warning(__('Leave us your mobile number so we can reach you.'))
+	// El país también, y no por capricho: `le_faltan_datos` lo exige, así que
+	// dejarlo en blanco haría que este mismo paso le volviera a salir la próxima
+	// vez. Casi siempre llega ya elegido —deducido del prefijo de su celular—,
+	// pero si su prefijo no está en la lista se queda vacío y hay que pedirlo.
+	if (!pais.value)
+		return toast.warning(__('Tell us which country you are painting from.'))
 
 	guardandoDatos.value = true
 	try {
