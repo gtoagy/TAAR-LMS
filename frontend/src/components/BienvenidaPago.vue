@@ -97,9 +97,9 @@
 					<!-- Paso: la cuenta. Solo dos cosas, que es lo justo para alguien
 					     que acaba de pagar: cuál es su cuenta y con qué entra. -->
 					<template v-if="paso === 'cuenta'">
-						<h2 class="taar-titulo">{{ __('You are part of TanArtistic now') }} 🎨</h2>
+						<h2 class="taar-titulo">{{ __('Welcome to TanArtistic') }} 🎨</h2>
 						<p class="taar-apoyo">
-							{{ __('We received your payment. Create your password and we are in.') }}
+							{{ __('Create your password to get in!') }}
 						</p>
 
 						<div class="taar-campos">
@@ -151,9 +151,9 @@
 					     celular y el país de la plataforma anterior, quien ya los tenga
 					     no vera esta pantalla. -->
 					<template v-else-if="paso === 'datos'">
-						<h2 class="taar-titulo">{{ __('Tell us who you are') }} ✍️</h2>
+						<h2 class="taar-titulo">{{ __('Complete your details') }} ✍️</h2>
 						<p class="taar-apoyo">
-							{{ __('So we can greet you by your name and let you know about live classes.') }}
+							{{ __('This helps us reach you about anything related to your account.') }}
 						</p>
 
 						<div class="taar-campos">
@@ -223,9 +223,9 @@
 					     luego se le pide. El enlace lo sirve el servidor y solo a
 					     quien ha pagado. -->
 					<template v-else-if="paso === 'comunidad'">
-						<h2 class="taar-titulo">{{ __('You are not painting alone') }} 💛</h2>
+						<h2 class="taar-titulo">{{ __('Be part of the community') }} 💛</h2>
 						<p class="taar-apoyo">
-							{{ __('You have a WhatsApp group with the other students and with me.') }}
+							{{ __('Ask questions, share your work and keep up with the latest from TanArtistic.') }}
 						</p>
 
 						<div class="taar-comunidad">
@@ -269,9 +269,6 @@
 					<!-- Paso: las preguntas, una por pantalla -->
 					<template v-else-if="paso === 'preguntas'">
 						<h2 class="taar-titulo">{{ __('Tell us more about you') }} 🤩</h2>
-						<p class="taar-apoyo">
-							{{ __('Two quick questions so we know what to record next.') }}
-						</p>
 
 						<!-- El contador de preguntas y el enunciado, sin nada más.
 						     Tenía un número morado repitiendo el "1 de 2" de al lado,
@@ -298,10 +295,6 @@
 							</button>
 						</div>
 
-						<!-- Debajo de las opciones y no encima: es una nota al pie, no
-						     algo que haya que leer antes de contestar. -->
-						<p class="taar-privacidad">🔒 {{ __('Only we see this.') }}</p>
-
 						<div class="taar-acciones">
 							<button class="taar-boton" :disabled="guardando" @click="siguientePregunta()">
 								{{ guardando ? __('One moment…') : __('Continue') }}
@@ -321,7 +314,7 @@
 						<div class="taar-palomita" aria-hidden="true">✓</div>
 						<h2 class="taar-titulo">{{ __('You are all set, artist!') }} 👩‍🎨</h2>
 						<p class="taar-apoyo">
-							{{ __('Your course is waiting for you. See you inside.') }}
+							{{ __('We hope you love it. Thank you for being here.') }}
 						</p>
 						<div class="taar-acciones">
 							<button class="taar-boton" @click="entrar()">
@@ -329,6 +322,15 @@
 							</button>
 						</div>
 					</template>
+
+					<!-- El pie, en todos los pasos.
+					     Va en todos y no solo al final a propósito: el momento en que
+					     más falta hace un teléfono al que escribir es justo cuando algo
+					     se tuerce a mitad de camino, no cuando ya se ha terminado. -->
+					<p v-if="soporteNumero" class="taar-pie">
+						{{ __('Save our support number in case you need anything:') }}
+						<a :href="soporte" target="_blank" rel="noopener">{{ soporteNumero }}</a>
+					</p>
 				</template>
 			</div>
 		</template>
@@ -384,6 +386,16 @@ const preguntaActual = computed(() => preguntas.value[indicePregunta.value])
  * `paisTexto` es solo lo que ella ve escrito mientras busca. Se separan a
  * propósito: si fueran lo mismo, teclear media palabra guardaría media palabra.
  */
+/* El soporte y los prefijos llegan por dos caminos según el paso: en los
+ * primeros todavía es invitada y vienen con los datos del pago; después vienen
+ * con el estado del asistente. Se mira en los dos sitios para no tener que
+ * saber en cuál está. */
+const soporte = computed(() => asistente.value?.soporte || datos.value?.soporte || '')
+const soporteNumero = computed(
+	() => asistente.value?.soporte_numero || datos.value?.soporte_numero || ''
+)
+const prefijos = computed(() => asistente.value?.prefijos || datos.value?.prefijos || {})
+
 const idPais = `taar-pais-${Math.random().toString(36).slice(2, 8)}`
 const paisTexto = ref('')
 const paisAbierto = ref(false)
@@ -430,12 +442,11 @@ watch(celular, (numero) => {
 	if (pais.value) return
 	const limpio = (numero || '').replace(/[^\d+]/g, '')
 	if (!limpio.startsWith('+')) return
-	const prefijos = asistente.value?.prefijos || {}
 	// De más largo a más corto: +593 antes que +59, o Ecuador nunca aparecería.
-	const encontrado = Object.keys(prefijos)
+	const encontrado = Object.keys(prefijos.value)
 		.sort((a, b) => b.length - a.length)
 		.find((p) => limpio.startsWith(p))
-	if (encontrado) elegirPais(prefijos[encontrado])
+	if (encontrado) elegirPais(prefijos.value[encontrado])
 })
 
 /*
@@ -1056,12 +1067,6 @@ const avisar = (err) => {
 	text-wrap: balance;
 	color: var(--ink-gray-9);
 }
-.taar-privacidad {
-	margin: -14px 0 0;
-	font-size: 12.5px;
-	text-align: center;
-	color: var(--ink-gray-6);
-}
 
 .taar-opciones {
 	display: flex;
@@ -1112,6 +1117,20 @@ const avisar = (err) => {
 	height: 7px;
 	border-radius: 50%;
 	background: #fff;
+}
+
+/* El pie */
+.taar-pie {
+	margin: 2px 0 0;
+	text-align: center;
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: var(--ink-gray-5);
+}
+.taar-pie a {
+	color: var(--taar-primary, #807fec);
+	font-weight: 600;
+	white-space: nowrap;
 }
 
 /* Cierre */

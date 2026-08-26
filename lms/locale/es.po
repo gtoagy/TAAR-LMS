@@ -10847,6 +10847,38 @@ msgid "Start typing…"
 msgstr "Empieza a escribir…"
 
 #: frontend/src/components/BienvenidaPago.vue
+msgid "Welcome to TanArtistic"
+msgstr "Bienvenida a TanArtistic"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Create your password to get in!"
+msgstr "¡Crea tu contraseña para entrar!"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Complete your details"
+msgstr "Completa tus datos"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "This helps us reach you about anything related to your account."
+msgstr "Esto nos ayuda a contactarte por cualquier cosa relacionada con tu cuenta."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Be part of the community"
+msgstr "Sé parte de la comunidad"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Ask questions, share your work and keep up with the latest from TanArtistic."
+msgstr "Haz preguntas, comparte tus obras y mantente al tanto de los últimos anuncios de TanArtistic."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "We hope you love it. Thank you for being here."
+msgstr "Esperamos que te encante. Gracias por estar aquí."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Save our support number in case you need anything:"
+msgstr "Guarda nuestro número de soporte por si necesitas cualquier cosa:"
+
+#: frontend/src/components/BienvenidaPago.vue
 msgid "Choose your country"
 msgstr "Elige tu país"
 
