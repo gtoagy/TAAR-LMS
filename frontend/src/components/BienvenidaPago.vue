@@ -167,16 +167,40 @@
 									:label="__('Mobile number')"
 									:placeholder="__('e.g. +52 998 123 4567')"
 								/>
-								<!-- Sin placeholder propio, frappe-ui pone "Select option"
-								     en inglés y se cuela en una pantalla que por lo demás
-								     está entera en español. -->
-								<FormControl
-									v-model="pais"
-									type="select"
-									:label="__('Country')"
-									:options="opcionesPais"
-									:placeholder="__('Choose your country')"
-								/>
+								<!-- El país se escribe y se elige, no se busca en un
+								     desplegable. Antes eran diecinueve países —los que
+								     sabemos deducir por el prefijo— y quien no estuviera
+								     en ellos no tenía dónde ponerse. -->
+								<div class="taar-buscador">
+									<label class="taar-buscador-et" :for="idPais">
+										{{ __('Country') }}
+									</label>
+									<input
+										:id="idPais"
+										v-model="paisTexto"
+										class="taar-buscador-campo"
+										type="text"
+										autocomplete="off"
+										:placeholder="__('Start typing…')"
+										@focus="paisAbierto = true"
+										@input="paisAbierto = true"
+										@blur="cerrarPais()"
+									/>
+									<ul v-if="paisAbierto && paisesFiltrados.length" class="taar-buscador-lista">
+										<!-- mousedown y no click: el blur del campo llega
+										     antes que el click y se cerraría la lista sin
+										     haber elegido nada. -->
+										<li v-for="p in paisesFiltrados" :key="p">
+											<button
+												type="button"
+												:class="{ elegido: p === pais }"
+												@mousedown.prevent="elegirPais(p)"
+											>
+												{{ p }}
+											</button>
+										</li>
+									</ul>
+								</div>
 							</div>
 							<p class="taar-pista">
 								{{ __('This is how we let you know about live classes on WhatsApp.') }}
@@ -249,36 +273,34 @@
 							{{ __('Two quick questions so we know what to record next.') }}
 						</p>
 
+						<!-- El contador de preguntas y el enunciado, sin nada más.
+						     Tenía un número morado repitiendo el "1 de 2" de al lado,
+						     una pastilla que decía "Obligatoria" cuando todo lo es, y
+						     letras A/B/C en las opciones: tres cosas que pedían
+						     atención sin contar nada. -->
 						<div class="taar-pregunta">
-							<div class="taar-pregunta-meta">
-								<span class="taar-cuenta">
-									{{ __('Question {0} of {1}').format(indicePregunta + 1, preguntas.length) }}
-								</span>
-								<span class="taar-pastilla">{{ __('Required') }}</span>
-							</div>
-							<div class="taar-enunciado">
-								<span class="taar-indice">{{ indicePregunta + 1 }}</span>
-								<p>{{ preguntaActual?.titulo }}</p>
-							</div>
+							<span class="taar-cuenta">
+								{{ __('Question {0} of {1}').format(indicePregunta + 1, preguntas.length) }}
+							</span>
+							<p class="taar-enunciado">{{ preguntaActual?.titulo }}</p>
 						</div>
-						<p class="taar-privacidad">🔒 {{ __('Only we see this.') }}</p>
 
 						<div class="taar-opciones">
 							<button
-								v-for="(opcion, i) in preguntaActual?.opciones || []"
+								v-for="opcion in preguntaActual?.opciones || []"
 								:key="opcion"
 								class="taar-opcion"
 								:aria-pressed="respuestas[preguntaActual.campo] === opcion"
 								@click="responder(opcion)"
 							>
-								<span class="taar-marca">
-									<span v-if="respuestas[preguntaActual.campo] !== opcion">
-										{{ letras[i] }}
-									</span>
-								</span>
+								<span class="taar-marca"></span>
 								<span>{{ opcion }}</span>
 							</button>
 						</div>
+
+						<!-- Debajo de las opciones y no encima: es una nota al pie, no
+						     algo que haya que leer antes de contestar. -->
+						<p class="taar-privacidad">🔒 {{ __('Only we see this.') }}</p>
 
 						<div class="taar-acciones">
 							<button class="taar-boton" :disabled="guardando" @click="siguientePregunta()">
@@ -315,7 +337,7 @@
 
 <script setup>
 import { call, createResource, Dialog, FormControl, LoadingIndicator, toast } from 'frappe-ui'
-import { computed, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/user'
 
@@ -328,7 +350,6 @@ const props = defineProps({
 	tipo: { type: String, default: 'membresia' },
 })
 
-const letras = ['A', 'B', 'C', 'D', 'E', 'F']
 
 const paso = ref('cuenta')
 const estado = ref(null)
@@ -357,9 +378,65 @@ const respuestas = ref({})
 const preguntas = computed(() => asistente.value?.preguntas || [])
 const preguntaActual = computed(() => preguntas.value[indicePregunta.value])
 
-const opcionesPais = computed(() =>
-	(datos.value?.paises || []).map((p) => ({ label: p, value: p }))
-)
+/* El buscador de país.
+ *
+ * `pais` es lo que se guarda y tiene que ser un país del doctype Country;
+ * `paisTexto` es solo lo que ella ve escrito mientras busca. Se separan a
+ * propósito: si fueran lo mismo, teclear media palabra guardaría media palabra.
+ */
+const idPais = `taar-pais-${Math.random().toString(36).slice(2, 8)}`
+const paisTexto = ref('')
+const paisAbierto = ref(false)
+
+const paisesFiltrados = computed(() => {
+	const lista = datos.value?.paises || []
+	const busca = paisTexto.value.trim().toLowerCase()
+	// Sin nada escrito se ven los de siempre, que ya vienen ordenados del
+	// servidor con México primero. No los doscientos de golpe.
+	if (!busca || busca === (pais.value || '').toLowerCase()) return lista.slice(0, 8)
+	return lista.filter((p) => p.toLowerCase().includes(busca)).slice(0, 8)
+})
+
+const elegirPais = (p) => {
+	pais.value = p
+	paisTexto.value = p
+	paisAbierto.value = false
+}
+
+const cerrarPais = () => {
+	// Con un respiro, para que el mousedown de la lista llegue primero.
+	setTimeout(() => {
+		paisAbierto.value = false
+		// Texto suelto que no es ningún país no vale de nada: se guarda contra el
+		// doctype Country. Se vuelve a lo último bueno en vez de dejarla creer
+		// que puso algo.
+		if (paisTexto.value !== pais.value) paisTexto.value = pais.value || ''
+	}, 140)
+}
+
+// Si el país llega ya sabido —importado, o de la dirección de Stripe—, el
+// campo tiene que enseñarlo escrito.
+watch(pais, (v) => {
+	if (v && paisTexto.value !== v) paisTexto.value = v
+})
+
+/* El país sale del prefijo del celular mientras lo escribe.
+ *
+ * El servidor ya lo deduce al guardar, pero eso ella no lo ve: se encontraba el
+ * campo del país vacío después de haber escrito un número que empieza por +52.
+ * El mapa viene del servidor para no tener dos listas de prefijos.
+ */
+watch(celular, (numero) => {
+	if (pais.value) return
+	const limpio = (numero || '').replace(/[^\d+]/g, '')
+	if (!limpio.startsWith('+')) return
+	const prefijos = asistente.value?.prefijos || {}
+	// De más largo a más corto: +593 antes que +59, o Ecuador nunca aparecería.
+	const encontrado = Object.keys(prefijos)
+		.sort((a, b) => b.length - a.length)
+		.find((p) => limpio.startsWith(p))
+	if (encontrado) elegirPais(prefijos[encontrado])
+})
 
 /*
  * Cada alumna recorre solo los pasos que le faltan, y el contador cuenta esos.
@@ -510,6 +587,26 @@ watch(
 	},
 	{ immediate: true }
 )
+
+/* Mientras el asistente está abierto, lo de detrás no se mueve.
+ *
+ * Se podía desplazar el catálogo por debajo del modal, y en el móvil eso hace
+ * que el asistente parezca despegado de la pantalla y que el dedo mueva cosas
+ * que no debería estar tocando todavía.
+ */
+watch(
+	show,
+	(abierto) => {
+		document.body.style.overflow = abierto ? 'hidden' : ''
+	},
+	{ immediate: true }
+)
+
+// Y si el componente se va sin cerrarse —al navegar—, se devuelve el scroll.
+// Sin esto la escuela entera se queda sin poder desplazarse.
+onUnmounted(() => {
+	document.body.style.overflow = ''
+})
 
 /* ── Paso 1 ───────────────────────────────────────────────────────────────── */
 
@@ -797,6 +894,74 @@ const avisar = (err) => {
 	grid-template-columns: 1fr 1fr;
 	gap: 12px;
 }
+
+/* Safari en iPhone hace zoom al enfocar un campo cuya letra mide menos de 16px,
+   y deja la página corrida donde no estaba. No es un capricho del navegador: es
+   su forma de hacer legible lo que no lo es. La cura es que midan 16 de verdad,
+   no prohibir el zoom con `maximum-scale`, que se lo quitaría también a quien
+   lo necesita para leer. */
+.taar-asistente :is(input, select, textarea) {
+	font-size: 16px;
+}
+
+/* El buscador de país */
+.taar-buscador {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+.taar-buscador-et {
+	font-size: 12px;
+	color: var(--ink-gray-5);
+}
+.taar-buscador-campo {
+	width: 100%;
+	padding: 5px 10px;
+	border-radius: 8px;
+	border: 1px solid var(--gray-400);
+	background: var(--surface-gray-2);
+	color: var(--ink-gray-8);
+	line-height: 1.5;
+}
+.taar-buscador-campo:focus {
+	outline: none;
+	border-color: var(--taar-primary, #807fec);
+	background: var(--surface-white);
+}
+.taar-buscador-lista {
+	position: absolute;
+	z-index: 20;
+	top: calc(100% + 4px);
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 4px;
+	list-style: none;
+	max-height: 214px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	border-radius: 10px;
+	border: 1px solid var(--gray-300);
+	background: var(--surface-white);
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.13);
+}
+.taar-buscador-lista button {
+	width: 100%;
+	text-align: left;
+	padding: 8px 10px;
+	border-radius: 7px;
+	font-size: 15px;
+	color: var(--ink-gray-8);
+}
+.taar-buscador-lista button:hover,
+.taar-buscador-lista button.elegido {
+	background: var(--surface-gray-2);
+}
+.taar-buscador-lista button.elegido {
+	color: var(--taar-primary, #807fec);
+	font-weight: 600;
+}
 .taar-caja-dato {
 	border-radius: 10px;
 	padding: 11px 13px;
@@ -871,16 +1036,10 @@ const avisar = (err) => {
 .taar-pregunta {
 	background: var(--surface-gray-2);
 	border-radius: 13px;
-	padding: 15px 17px;
+	padding: 14px 16px;
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
-}
-.taar-pregunta-meta {
-	display: flex;
-	align-items: center;
-	gap: 9px;
-	flex-wrap: wrap;
+	gap: 7px;
 }
 .taar-cuenta {
 	font-size: 10.5px;
@@ -889,40 +1048,18 @@ const avisar = (err) => {
 	text-transform: uppercase;
 	color: var(--ink-gray-5);
 }
-.taar-pastilla {
-	font-size: 11px;
-	font-weight: 700;
-	padding: 3px 9px;
-	border-radius: 999px;
-	background: #fffa75;
-	color: #07181f;
-}
 .taar-enunciado {
-	display: flex;
-	align-items: flex-start;
-	gap: 12px;
-}
-.taar-indice {
-	flex: none;
-	width: 30px;
-	height: 30px;
-	border-radius: 8px;
-	background: var(--taar-primary, #807fec);
-	color: #fff;
-	display: grid;
-	place-items: center;
-	font-weight: 700;
-	font-size: 15px;
-}
-.taar-enunciado p {
-	margin: 3px 0 0;
-	font-size: 16.5px;
+	margin: 0;
+	font-size: 15.5px;
 	font-weight: 500;
+	line-height: 1.35;
+	text-wrap: balance;
 	color: var(--ink-gray-9);
 }
 .taar-privacidad {
 	margin: -14px 0 0;
 	font-size: 12.5px;
+	text-align: center;
 	color: var(--ink-gray-6);
 }
 
@@ -934,11 +1071,12 @@ const avisar = (err) => {
 .taar-opcion {
 	display: flex;
 	align-items: center;
-	gap: 13px;
+	gap: 12px;
 	width: 100%;
 	text-align: left;
-	font-size: 15.5px;
-	padding: 15px 17px;
+	font-size: 15px;
+	line-height: 1.35;
+	padding: 13px 16px;
 	border-radius: 12px;
 	border: 1.5px solid var(--gray-300);
 	background: var(--surface-white);
@@ -948,29 +1086,32 @@ const avisar = (err) => {
 .taar-opcion:hover {
 	border-color: rgba(128, 127, 236, 0.6);
 }
+/* Un circulo vacio, como el de toda la vida. Las letras A/B/C de Disco no
+   servian para nada aqui: nadie dice "la B", se toca la opcion. */
 .taar-marca {
 	flex: none;
-	width: 26px;
-	height: 26px;
+	width: 21px;
+	height: 21px;
 	border-radius: 50%;
 	display: grid;
 	place-items: center;
-	font-size: 12.5px;
-	font-weight: 700;
-	background: var(--surface-gray-3);
-	color: var(--ink-gray-6);
+	border: 1.5px solid var(--gray-400);
+	background: var(--surface-white);
 }
 .taar-opcion[aria-pressed='true'] {
 	border-color: var(--taar-primary, #807fec);
 	background: rgba(128, 127, 236, 0.1);
 }
 .taar-opcion[aria-pressed='true'] .taar-marca {
+	border-color: var(--taar-primary, #807fec);
 	background: var(--taar-primary, #807fec);
-	color: #fff;
 }
 .taar-opcion[aria-pressed='true'] .taar-marca::after {
-	content: '●';
-	font-size: 11px;
+	content: '';
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: #fff;
 }
 
 /* Cierre */
