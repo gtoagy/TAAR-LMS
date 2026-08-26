@@ -203,7 +203,7 @@
 								</div>
 							</div>
 							<p class="taar-pista">
-								{{ __('This is how we let you know about live classes on WhatsApp.') }}
+								{{ __('With your country code. This is the WhatsApp where we write to you.') }}
 							</p>
 						</div>
 
@@ -427,6 +427,25 @@ const cerrarPais = () => {
 // campo tiene que enseñarlo escrito.
 watch(pais, (v) => {
 	if (v && paisTexto.value !== v) paisTexto.value = v
+})
+
+/* Y al revés: al elegir país, su lada se escribe sola en el celular.
+ *
+ * Sin lada el número no sirve para WhatsApp, que es la única razón por la que
+ * se lo pedimos. Ponerla nosotras es más fiable que explicarle que la ponga, y
+ * mucho más que adivinarla después: a una alumna de Colombia que escriba
+ * 3001234567 se le guardaba un +52 delante y su número dejaba de existir.
+ *
+ * No hay bucle con el watcher de abajo: este solo actúa si el campo no tiene ya
+ * un "+", y aquel solo si el país está vacío.
+ */
+watch(pais, (nombre) => {
+	if (!nombre) return
+	if ((celular.value || '').includes('+')) return
+	const lada = Object.entries(prefijos.value).find(([, p]) => p === nombre)?.[0]
+	if (!lada) return
+	const resto = (celular.value || '').replace(/[^\d]/g, '')
+	celular.value = resto ? `${lada} ${resto}` : `${lada} `
 })
 
 /* El país sale del prefijo del celular mientras lo escribe.
@@ -726,6 +745,12 @@ const guardarDatos = async () => {
 	if (!nombre.value.trim()) return toast.warning(__('Tell us your name.'))
 	if (!celular.value.trim())
 		return toast.warning(__('Leave us your mobile number so we can reach you.'))
+	// Con lada o no hay WhatsApp. El servidor lo vuelve a comprobar; esto es
+	// para que se entere aquí y no después de pulsar.
+	if (!celular.value.trim().startsWith('+') || celular.value.replace(/\D/g, '').length < 8)
+		return toast.warning(
+			__('Write your mobile number with your country code, for example +52 998 123 4567.')
+		)
 	// El país también, y no por capricho: `le_faltan_datos` lo exige, así que
 	// dejarlo en blanco haría que este mismo paso le volviera a salir la próxima
 	// vez. Casi siempre llega ya elegido —deducido del prefijo de su celular—,
@@ -839,12 +864,62 @@ const avisar = (err) => {
 }
 </script>
 
+<style>
+/* ─────────────────────────────────────────────────────────────────────────────
+   Este bloque NO es scoped a propósito: hay que llegar al contenedor que pinta
+   frappe-ui por fuera del modal, que no lleva nuestro atributo de ámbito.
+
+   Todo cuelga de `:has(.taar-asistente)`, así que solo toca a este modal y
+   ningún otro diálogo de la escuela se entera.
+
+   El porqué: frappe-ui monta el diálogo como un overlay `fixed inset-0
+   overflow-y-auto`, con dentro un `min-h-screen` y una tarjeta con `my-8`. En
+   un iPhone `100vh` NO descuenta la barra del navegador, así que el contenido
+   siempre mide más que lo que se ve —y encima 64 px de márgenes—: sobran unos
+   150 px de scroll aunque la tarjeta quepa de sobra. De ahí que la carta se
+   moviera al arrastrar.
+
+   La cura es centrarla con grid sobre la altura real (`100dvh`) y que, cuando
+   de verdad no quepa, lo que se desplace sea el contenido de dentro y no la
+   tarjeta entera.
+   ───────────────────────────────────────────────────────────────────────────── */
+.dialog-overlay:has(.taar-asistente) {
+	display: grid;
+	place-items: center;
+	height: 100dvh;
+	padding: 10px;
+	overflow: hidden;
+	overscroll-behavior: contain;
+}
+.dialog-overlay:has(.taar-asistente) > div {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	min-height: 0;
+	max-height: 100%;
+	padding: 0;
+}
+.dialog-overlay:has(.taar-asistente) .dialog-content {
+	margin: 0;
+	max-height: 100%;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+</style>
+
 <style scoped>
 .taar-asistente {
 	display: flex;
 	flex-direction: column;
 	gap: 18px;
 	padding: 28px 26px 26px;
+	/* Si el paso no cabe —pantalla corta, teclado abierto— se desplaza esto y no
+	   la tarjeta. `contain` impide además que el gesto se contagie a la página
+	   de detrás al llegar al final. */
+	min-height: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 /* Progreso */
