@@ -1010,10 +1010,17 @@ const avisar = (err) => {
 	color: var(--ink-gray-8);
 	line-height: 1.5;
 }
+/* OJO: `--surface-white` NO existe. `bg-surface-white` es una clase de Tailwind,
+   pero como variable CSS no está definida en ningún sitio, así que
+   `background: var(--surface-white)` es una declaración **inválida** y el fondo
+   queda transparente. Se vio en un iPhone: la lista de países dejaba pasar el
+   texto y el botón de debajo. Las que sí existen son `--surface-elevation-1`
+   (#fff en claro, #1f1f1f en oscuro) y `--surface-elevation-2`, que es la que
+   usa el propio diálogo de frappe-ui. */
 .taar-buscador-campo:focus {
 	outline: none;
 	border-color: var(--taar-primary, #807fec);
-	background: var(--surface-white);
+	background: var(--surface-elevation-1);
 }
 .taar-buscador-lista {
 	position: absolute;
@@ -1024,12 +1031,14 @@ const avisar = (err) => {
 	margin: 0;
 	padding: 4px;
 	list-style: none;
-	max-height: 214px;
+	/* Cabe dentro de la tarjeta, que desde el arreglo del scroll es quien
+	   recorta. Con más alto, los últimos países se quedaban fuera. */
+	max-height: 168px;
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	border-radius: 10px;
 	border: 1px solid var(--gray-300);
-	background: var(--surface-white);
+	background: var(--surface-elevation-2);
 	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.13);
 }
 .taar-buscador-lista button {
@@ -1163,7 +1172,7 @@ const avisar = (err) => {
 	padding: 12px 15px;
 	border-radius: 12px;
 	border: 1.5px solid var(--gray-300);
-	background: var(--surface-white);
+	background: var(--surface-elevation-1);
 	color: var(--ink-gray-9);
 	transition: border-color 0.15s, background 0.15s;
 }
@@ -1180,7 +1189,7 @@ const avisar = (err) => {
 	display: grid;
 	place-items: center;
 	border: 1.5px solid var(--gray-400);
-	background: var(--surface-white);
+	background: var(--surface-elevation-1);
 }
 .taar-opcion[aria-pressed='true'] {
 	border-color: var(--taar-primary, #807fec);
