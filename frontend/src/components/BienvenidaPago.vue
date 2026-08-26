@@ -843,8 +843,8 @@ const avisar = (err) => {
 .taar-asistente {
 	display: flex;
 	flex-direction: column;
-	gap: 22px;
-	padding: 34px 30px 30px;
+	gap: 18px;
+	padding: 28px 26px 26px;
 }
 
 /* Progreso */
@@ -855,7 +855,7 @@ const avisar = (err) => {
 	gap: 8px;
 }
 .taar-progreso-rotulo {
-	font-size: 12.5px;
+	font-size: 12px;
 	font-weight: 600;
 	color: var(--ink-gray-5);
 }
@@ -877,17 +877,18 @@ const avisar = (err) => {
 .taar-titulo {
 	margin: 0;
 	text-align: center;
-	font-size: 26px;
+	font-size: 22px;
 	font-weight: 600;
-	line-height: 1.15;
+	line-height: 1.18;
 	text-wrap: balance;
 	color: var(--ink-gray-9);
 }
 .taar-apoyo {
 	margin: -12px auto 0;
-	max-width: 44ch;
+	max-width: 46ch;
 	text-align: center;
-	font-size: 14.5px;
+	font-size: 13.5px;
+	line-height: 1.5;
 	color: var(--ink-gray-6);
 }
 
@@ -911,6 +912,8 @@ const avisar = (err) => {
 .taar-asistente :is(input, select, textarea) {
 	font-size: 16px;
 }
+/* Ojo al bajar tamaños por aquí: los 16px de arriba son los únicos que no
+   pueden bajar. Son el umbral exacto de Safari, no una decisión de diseño. */
 
 /* El buscador de país */
 .taar-buscador {
@@ -1019,7 +1022,7 @@ const avisar = (err) => {
 	text-align: center;
 }
 .taar-comunidad-icono {
-	font-size: 30px;
+	font-size: 26px;
 	line-height: 1;
 }
 .taar-ventajas {
@@ -1030,7 +1033,8 @@ const avisar = (err) => {
 	display: flex;
 	flex-direction: column;
 	gap: 7px;
-	font-size: 14.5px;
+	font-size: 13.5px;
+	line-height: 1.45;
 	color: var(--ink-gray-8);
 }
 .taar-ventajas li {
@@ -1061,9 +1065,9 @@ const avisar = (err) => {
 }
 .taar-enunciado {
 	margin: 0;
-	font-size: 15.5px;
+	font-size: 14.5px;
 	font-weight: 500;
-	line-height: 1.35;
+	line-height: 1.4;
 	text-wrap: balance;
 	color: var(--ink-gray-9);
 }
@@ -1079,9 +1083,9 @@ const avisar = (err) => {
 	gap: 12px;
 	width: 100%;
 	text-align: left;
-	font-size: 15px;
-	line-height: 1.35;
-	padding: 13px 16px;
+	font-size: 14.5px;
+	line-height: 1.4;
+	padding: 12px 15px;
 	border-radius: 12px;
 	border: 1.5px solid var(--gray-300);
 	background: var(--surface-white);
@@ -1123,7 +1127,7 @@ const avisar = (err) => {
 .taar-pie {
 	margin: 2px 0 0;
 	text-align: center;
-	font-size: 12.5px;
+	font-size: 12px;
 	line-height: 1.5;
 	color: var(--ink-gray-5);
 }
@@ -1135,15 +1139,15 @@ const avisar = (err) => {
 
 /* Cierre */
 .taar-palomita {
-	width: 58px;
-	height: 58px;
+	width: 50px;
+	height: 50px;
 	margin: 0 auto;
 	border-radius: 50%;
 	display: grid;
 	place-items: center;
 	background: rgba(31, 169, 122, 0.14);
 	color: #1fa97a;
-	font-size: 29px;
+	font-size: 25px;
 	font-weight: 700;
 }
 
@@ -1152,7 +1156,7 @@ const avisar = (err) => {
 	background: rgba(128, 127, 236, 0.09);
 	padding: 13px 15px;
 	border-radius: 0 10px 10px 0;
-	font-size: 14.5px;
+	font-size: 13.5px;
 	color: var(--ink-gray-8);
 }
 
@@ -1169,9 +1173,9 @@ const avisar = (err) => {
 	justify-content: center;
 	gap: 8px;
 	width: 100%;
-	font-size: 15.5px;
+	font-size: 14.5px;
 	font-weight: 600;
-	padding: 13px 26px;
+	padding: 12px 24px;
 	border-radius: 58px;
 	background: var(--taar-primary, #807fec);
 	color: #fff;
@@ -1199,7 +1203,7 @@ const avisar = (err) => {
 	background: var(--surface-gray-2);
 }
 .taar-atras {
-	font-size: 14px;
+	font-size: 13px;
 	font-weight: 600;
 	color: var(--ink-gray-6);
 }
@@ -1211,14 +1215,14 @@ const avisar = (err) => {
    de otro: dos columnas de 190 px con el teclado abierto no se pueden usar. */
 @media (max-width: 640px) {
 	.taar-asistente {
-		padding: 26px 18px 24px;
-		gap: 18px;
+		padding: 22px 16px 20px;
+		gap: 15px;
 	}
 	.taar-fila {
 		grid-template-columns: 1fr;
 	}
 	.taar-titulo {
-		font-size: 22px;
+		font-size: 19px;
 	}
 	.taar-segmentos i {
 		width: 24px;
