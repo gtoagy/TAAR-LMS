@@ -10848,7 +10848,19 @@ msgstr "Empieza a escribir…"
 
 #: frontend/src/components/BienvenidaPago.vue
 msgid "Welcome to TanArtistic"
-msgstr "Bienvenida a TanArtistic"
+msgstr "Bienvenid@ a TanArtistic"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Ask questions"
+msgstr "Haz preguntas"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Share your work and your process"
+msgstr "Comparte tus obras y tu proceso"
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Keep up with the news from TanArtistic"
+msgstr "Mantente al tanto de las noticias de TanArtistic"
 
 #: frontend/src/components/BienvenidaPago.vue
 msgid "Create your password to get in!"

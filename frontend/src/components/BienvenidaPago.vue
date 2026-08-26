@@ -224,24 +224,21 @@
 					     quien ha pagado. -->
 					<template v-else-if="paso === 'comunidad'">
 						<h2 class="taar-titulo">{{ __('Be part of the community') }} 💛</h2>
-						<p class="taar-apoyo">
-							{{ __('Ask questions, share your work and keep up with the latest from TanArtistic.') }}
-						</p>
 
 						<div class="taar-comunidad">
 							<div class="taar-comunidad-icono" aria-hidden="true">🎨</div>
 							<ul class="taar-ventajas">
 								<li>
 									<span aria-hidden="true">›</span>
-									<span>{{ __('Show what you paint and get real feedback.') }}</span>
+									<span>{{ __('Ask questions') }}</span>
 								</li>
 								<li>
 									<span aria-hidden="true">›</span>
-									<span>{{ __('Live classes are announced there first.') }}</span>
+									<span>{{ __('Share your work and your process') }}</span>
 								</li>
 								<li>
 									<span aria-hidden="true">›</span>
-									<span>{{ __('If you get stuck on a step, just ask.') }}</span>
+									<span>{{ __('Keep up with the news from TanArtistic') }}</span>
 								</li>
 							</ul>
 							<a
@@ -986,13 +983,16 @@ const avisar = (err) => {
 	font-weight: 600;
 	color: var(--ink-gray-6);
 }
+/* El correo ocupa su propia linea y el "¿No es tu correo?" va debajo.
+   En la misma fila, un correo normal ya empujaba al enlace y se partía en dos
+   renglones dentro de una caja que mide media pantalla en el móvil. */
 .taar-caja-val {
 	display: flex;
-	align-items: center;
-	gap: 10px;
-	flex-wrap: wrap;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 5px;
 	font-weight: 600;
-	word-break: break-all;
+	overflow-wrap: anywhere;
 	color: var(--ink-gray-9);
 }
 .taar-enlace {
