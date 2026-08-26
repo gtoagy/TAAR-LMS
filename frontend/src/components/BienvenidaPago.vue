@@ -161,16 +161,15 @@
 								<FormControl v-model="nombre" :label="__('First Name')" />
 								<FormControl v-model="apellido" :label="__('Last Name')" />
 							</div>
+							<!-- El país va DELANTE del celular, como en Stripe, y por la
+							     misma razón: de él sale la lada, así que preguntarlo
+							     después obligaba a rehacer un número ya escrito.
+
+							     El país se escribe y se elige, no se busca en un
+							     desplegable. Antes eran diecinueve —los que sabemos
+							     deducir por el prefijo— y quien no estuviera en ellos
+							     no tenía dónde ponerse. -->
 							<div class="taar-fila">
-								<FormControl
-									v-model="celular"
-									:label="__('Mobile number')"
-									:placeholder="__('e.g. +52 998 123 4567')"
-								/>
-								<!-- El país se escribe y se elige, no se busca en un
-								     desplegable. Antes eran diecinueve países —los que
-								     sabemos deducir por el prefijo— y quien no estuviera
-								     en ellos no tenía dónde ponerse. -->
 								<div class="taar-buscador">
 									<label class="taar-buscador-et" :for="idPais">
 										{{ __('Country') }}
@@ -201,9 +200,45 @@
 										</li>
 									</ul>
 								</div>
+
+								<!-- La lada no se escribe ni se borra: sale del país y se
+								     queda. Cuando era texto dentro del campo, cualquier
+								     borrado de más dejaba el número inservible para
+								     WhatsApp sin que ella se enterara. -->
+								<div class="taar-tel-campo">
+									<label class="taar-buscador-et" :for="idTel">
+										{{ __('Mobile number') }}
+									</label>
+									<div class="taar-tel" :class="{ enfocado: telEnfocado }">
+										<span v-if="lada" class="taar-tel-lada">{{ lada }}</span>
+										<!-- Y si su país no está en nuestra lista de prefijos,
+										     la escribe ella. Preferible a bloquearla. -->
+										<input
+											v-else
+											v-model="ladaEscrita"
+											class="taar-tel-lada taar-tel-lada-libre"
+											type="tel"
+											inputmode="tel"
+											placeholder="+00"
+											@focus="telEnfocado = true"
+											@blur="telEnfocado = false"
+										/>
+										<input
+											:id="idTel"
+											v-model="celularLocal"
+											class="taar-tel-num"
+											type="tel"
+											inputmode="tel"
+											autocomplete="tel-national"
+											:placeholder="__('998 123 4567')"
+											@focus="telEnfocado = true"
+											@blur="telEnfocado = false"
+										/>
+									</div>
+								</div>
 							</div>
 							<p class="taar-pista">
-								{{ __('With your country code. This is the WhatsApp where we write to you.') }}
+								{{ __('This is the WhatsApp where we write to you.') }}
 							</p>
 						</div>
 
@@ -320,11 +355,12 @@
 						</div>
 					</template>
 
-					<!-- El pie, en todos los pasos.
-					     Va en todos y no solo al final a propósito: el momento en que
-					     más falta hace un teléfono al que escribir es justo cuando algo
-					     se tuerce a mitad de camino, no cuando ya se ha terminado. -->
-					<p v-if="soporteNumero" class="taar-pie">
+					<!-- El pie, en todos los pasos menos el último.
+					     Va en casi todos porque el momento en que más falta hace un
+					     teléfono al que escribir es cuando algo se tuerce a mitad de
+					     camino. Pero en la pantalla de cierre sobra: ahí ya no se le
+					     pide nada y lo único que se quiere es que pulse y entre. -->
+					<p v-if="soporteNumero && paso !== 'listo'" class="taar-pie">
 						{{ __('Save our support number in case you need anything:') }}
 						<a :href="soporte" target="_blank" rel="noopener">{{ soporteNumero }}</a>
 					</p>
@@ -359,7 +395,16 @@ const cargando = ref(true)
 const nombre = ref('')
 const apellido = ref('')
 const correo = ref('')
-const celular = ref('')
+/* El celular se guarda partido: la lada por un lado y el número por otro.
+ *
+ * Junto en un solo campo, cualquier borrado de más se llevaba la lada por
+ * delante y el número quedaba inservible para WhatsApp sin que ella lo notara.
+ * Así la lada sale del país y no se puede tocar, que es como lo hace Stripe.
+ */
+const celularLocal = ref('')
+const ladaEscrita = ref('')
+const telEnfocado = ref(false)
+const idTel = `taar-tel-${Math.random().toString(36).slice(2, 8)}`
 const pais = ref('')
 const password = ref('')
 const password2 = ref('')
@@ -429,41 +474,56 @@ watch(pais, (v) => {
 	if (v && paisTexto.value !== v) paisTexto.value = v
 })
 
-/* Y al revés: al elegir país, su lada se escribe sola en el celular.
+/* La lada sale del país elegido, y de ningún otro sitio.
  *
- * Sin lada el número no sirve para WhatsApp, que es la única razón por la que
- * se lo pedimos. Ponerla nosotras es más fiable que explicarle que la ponga, y
- * mucho más que adivinarla después: a una alumna de Colombia que escriba
- * 3001234567 se le guardaba un +52 delante y su número dejaba de existir.
- *
- * No hay bucle con el watcher de abajo: este solo actúa si el campo no tiene ya
- * un "+", y aquel solo si el país está vacío.
+ * Antes se deducía el país del número y el número se prefijaba con el país, los
+ * dos a la vez. Funcionaba, pero era adivinar en las dos direcciones. Ahora
+ * manda el país y ya está: uno decide, el otro obedece.
  */
-watch(pais, (nombre) => {
-	if (!nombre) return
-	if ((celular.value || '').includes('+')) return
-	const lada = Object.entries(prefijos.value).find(([, p]) => p === nombre)?.[0]
-	if (!lada) return
-	const resto = (celular.value || '').replace(/[^\d]/g, '')
-	celular.value = resto ? `${lada} ${resto}` : `${lada} `
+const ladaDe = (nombre) =>
+	Object.entries(prefijos.value).find(([, p]) => p === nombre)?.[0] || ''
+
+const lada = computed(() => ladaDe(pais.value))
+
+/** El número completo, que es lo único que viaja al servidor. */
+const celular = computed(() => {
+	const l = (lada.value || ladaEscrita.value || '').replace(/[^\d+]/g, '')
+	const n = (celularLocal.value || '').replace(/\D/g, '')
+	if (!l || !n) return ''
+	return `${l.startsWith('+') ? l : `+${l}`}${n}`
 })
 
-/* El país sale del prefijo del celular mientras lo escribe.
+/* Al revés solo una vez: al cargar.
  *
- * El servidor ya lo deduce al guardar, pero eso ella no lo ve: se encontraba el
- * campo del país vacío después de haber escrito un número que empieza por +52.
- * El mapa viene del servidor para no tener dos listas de prefijos.
+ * Lo que llega de Stripe o de la importación viene entero y en formato
+ * internacional, así que hay que partirlo para poder enseñarlo en dos casillas.
+ * Y el país se toma de esa lada, no de la dirección de facturación: el número
+ * es lo que se va a usar para escribirle, y tiene que mandar él.
  */
-watch(celular, (numero) => {
-	if (pais.value) return
-	const limpio = (numero || '').replace(/[^\d+]/g, '')
-	if (!limpio.startsWith('+')) return
-	// De más largo a más corto: +593 antes que +59, o Ecuador nunca aparecería.
-	const encontrado = Object.keys(prefijos.value)
+const ponerCelular = (valor) => {
+	const texto = (valor || '').trim()
+	if (!texto) return
+	const digitos = texto.replace(/[^\d+]/g, '')
+	if (!digitos.startsWith('+')) {
+		celularLocal.value = digitos
+		return
+	}
+	// De más larga a más corta: +593 antes que +59, o Ecuador nunca aparecería.
+	const l = Object.keys(prefijos.value)
 		.sort((a, b) => b.length - a.length)
-		.find((p) => limpio.startsWith(p))
-	if (encontrado) elegirPais(prefijos.value[encontrado])
-})
+		.find((p) => digitos.startsWith(p))
+	if (l) {
+		celularLocal.value = digitos.slice(l.length)
+		elegirPais(prefijos.value[l])
+		return
+	}
+	// Una lada que no conocemos: se toma "+" y dos dígitos, que es lo que miden
+	// casi todas. Las de tres que le importan a esta escuela (+593, +351, +502…)
+	// están todas en el mapa, así que aquí solo caen casos raros —y de todos
+	// modos la casilla queda escribible para que lo corrija.
+	ladaEscrita.value = digitos.slice(0, 3)
+	celularLocal.value = digitos.slice(3)
+}
 
 /*
  * Cada alumna recorre solo los pasos que le faltan, y el contador cuenta esos.
@@ -547,7 +607,7 @@ const cargar = async () => {
 			correo.value = d?.email || ''
 			nombre.value = d?.nombre || ''
 			apellido.value = d?.apellido || ''
-			celular.value = d?.celular || ''
+			ponerCelular(d?.celular)
 			pais.value = d?.pais || ''
 		} else {
 			estado.value = 'con_sesion'
@@ -588,7 +648,7 @@ const cargarAsistente = async () => {
 	if (a?.datos) {
 		if (!nombre.value) nombre.value = a.datos.nombre || ''
 		if (!apellido.value) apellido.value = a.datos.apellido || ''
-		if (!celular.value) celular.value = a.datos.celular || ''
+		if (!celularLocal.value) ponerCelular(a.datos.celular)
 		if (!pais.value) pais.value = a.datos.pais || ''
 	}
 	if (a?.paises?.length && !datos.value?.paises) {
@@ -742,21 +802,14 @@ const irAPreguntas = async () => {
 
 /** Guarda sus datos y sigue. Nombre y celular son obligatorios. */
 const guardarDatos = async () => {
+	// En el orden en que los ve, que es el orden en que los rellena.
 	if (!nombre.value.trim()) return toast.warning(__('Tell us your name.'))
-	if (!celular.value.trim())
-		return toast.warning(__('Leave us your mobile number so we can reach you.'))
-	// Con lada o no hay WhatsApp. El servidor lo vuelve a comprobar; esto es
-	// para que se entere aquí y no después de pulsar.
-	if (!celular.value.trim().startsWith('+') || celular.value.replace(/\D/g, '').length < 8)
-		return toast.warning(
-			__('Write your mobile number with your country code, for example +52 998 123 4567.')
-		)
-	// El país también, y no por capricho: `le_faltan_datos` lo exige, así que
-	// dejarlo en blanco haría que este mismo paso le volviera a salir la próxima
-	// vez. Casi siempre llega ya elegido —deducido del prefijo de su celular—,
-	// pero si su prefijo no está en la lista se queda vacío y hay que pedirlo.
 	if (!pais.value)
 		return toast.warning(__('Tell us which country you are painting from.'))
+	if (!celularLocal.value.trim())
+		return toast.warning(__('Leave us your mobile number so we can reach you.'))
+	if (!celular.value || celular.value.replace(/\D/g, '').length < 8)
+		return toast.warning(__('That mobile number does not look complete.'))
 
 	guardandoDatos.value = true
 	try {
@@ -989,6 +1042,56 @@ const avisar = (err) => {
 }
 /* Ojo al bajar tamaños por aquí: los 16px de arriba son los únicos que no
    pueden bajar. Son el umbral exacto de Safari, no una decisión de diseño. */
+
+/* El celular: la lada y el número en una sola caja, pero en dos casillas.
+   La de la lada no se puede escribir —sale del país— y se ve distinta a
+   propósito, para que no invite a intentarlo. */
+.taar-tel-campo {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+.taar-tel {
+	display: flex;
+	align-items: stretch;
+	border-radius: 8px;
+	border: 1px solid var(--gray-400);
+	background: var(--surface-gray-2);
+	overflow: hidden;
+	transition: border-color 0.15s, background 0.15s;
+}
+.taar-tel.enfocado {
+	border-color: var(--taar-primary, #807fec);
+	background: var(--surface-elevation-1);
+}
+.taar-tel-lada {
+	display: flex;
+	align-items: center;
+	padding: 5px 10px;
+	font-weight: 600;
+	color: var(--ink-gray-6);
+	background: var(--surface-gray-3);
+	border-right: 1px solid var(--gray-300);
+	white-space: nowrap;
+	user-select: none;
+}
+.taar-tel-lada-libre {
+	width: 4.4em;
+	border: 0;
+	border-right: 1px solid var(--gray-300);
+	outline: none;
+	user-select: auto;
+}
+.taar-tel-num {
+	flex: 1;
+	min-width: 0;
+	padding: 5px 10px;
+	border: 0;
+	outline: none;
+	background: transparent;
+	color: var(--ink-gray-8);
+	line-height: 1.5;
+}
 
 /* El buscador de país */
 .taar-buscador {
