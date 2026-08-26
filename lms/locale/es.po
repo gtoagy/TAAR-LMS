@@ -10855,6 +10855,14 @@ msgid "Ask questions"
 msgstr "Haz preguntas"
 
 #: frontend/src/components/BienvenidaPago.vue
+msgid "With your country code. This is the WhatsApp where we write to you."
+msgstr "Con la lada de tu país. Es el WhatsApp por el que te escribimos."
+
+#: frontend/src/components/BienvenidaPago.vue
+msgid "Write your mobile number with your country code, for example +52 998 123 4567."
+msgstr "Escribe tu celular con la lada de tu país, por ejemplo +52 998 123 4567."
+
+#: frontend/src/components/BienvenidaPago.vue
 msgid "Share your work and your process"
 msgstr "Comparte tus obras y tu proceso"
 
