@@ -37,6 +37,7 @@
 		"enforce_assignment_completion",
 		"column_break_cprg",
 		"lesson_dwell_time",
+		"video_completion_percent",
 		"signup_settings_tab",
 		"signup_settings_section",
 		"column_break_9",
@@ -523,6 +524,14 @@
 			"fieldname": "lesson_dwell_time",
 			"fieldtype": "Int",
 			"label": "Lesson Dwell Time (seconds)",
+			"non_negative": 1
+		},
+		{
+			"default": "90",
+			"description": "Percentage of a video that counts as watched.",
+			"fieldname": "video_completion_percent",
+			"fieldtype": "Int",
+			"label": "Video Completion Percent",
 			"non_negative": 1
 		},
 		{

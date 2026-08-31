@@ -293,6 +293,15 @@ const tabsStructure = computed(() => {
 											description:
 												'Seconds a learner must stay on a lesson before it auto-marks complete.',
 										},
+										{
+											label: 'Video completion percent',
+											name: 'video_completion_percent',
+											type: 'number',
+											min: 1,
+											max: 100,
+											description:
+												'How much of a video counts as watched. At this point the lesson marks itself complete.',
+										},
 									],
 								},
 							],

@@ -13,10 +13,15 @@ class LMSSettings(Document):
 		self.validate_signup()
 		self.validate_contact_us_details()
 		self.validate_lesson_dwell_time()
+		self.validate_video_completion_percent()
 
 	def validate_lesson_dwell_time(self):
 		if cint(self.lesson_dwell_time) < 1:
 			frappe.throw(_("Lesson Dwell Time must be at least 1 second."))
+
+	def validate_video_completion_percent(self):
+		if not 1 <= cint(self.video_completion_percent) <= 100:
+			frappe.throw(_("Video Completion Percent must be between 1 and 100."))
 
 	def validate_google_settings(self):
 		if self.send_calendar_invite_for_evaluations:
