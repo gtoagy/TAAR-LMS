@@ -135,7 +135,7 @@
 
 							<div
 								v-if="!zenModeEnabled"
-								class="flex items-center gap-x-2 mt-2 md:mt-0"
+								class="flex flex-wrap items-center gap-2 mt-2 md:mt-0"
 							>
 								<router-link
 									v-if="isAdmin && !embedded"
@@ -163,6 +163,14 @@
 										</template>
 									</Button>
 								</Tooltip>
+								<BotonLeccionCompleta
+									v-if="lesson.data.membership"
+									:lesson="lesson.data.name"
+									:course="courseName"
+									:completada="leccionCompletada"
+									@marcada="alMarcarAMano"
+									@desmarcada="alDesmarcar"
+								/>
 								<Button v-if="lesson.data.prev" @click="switchLesson('prev')">
 									<template #prefix>
 										<span class="lucide-chevron-left size-4" />
@@ -182,19 +190,29 @@
 										params: { courseName: courseName },
 									}"
 								>
-									<Button>{{ __('Back to Course') }}</Button>
+									<Button @click="markProgress()">
+										{{ __('Back to Course') }}
+									</Button>
 								</router-link>
 							</div>
 
 							<div
 								v-if="zenModeEnabled"
-								class="flex items-center gap-x-2 mt-2 md:mt-0"
+								class="flex flex-wrap items-center gap-2 mt-2 md:mt-0"
 							>
 								<Button @click="showDiscussionsInZenMode()">
 									<template #icon>
 										<span class="lucide-message-circle-question size-4" />
 									</template>
 								</Button>
+								<BotonLeccionCompleta
+									v-if="lesson.data.membership"
+									:lesson="lesson.data.name"
+									:course="courseName"
+									:completada="leccionCompletada"
+									@marcada="alMarcarAMano"
+									@desmarcada="alDesmarcar"
+								/>
 								<Button v-if="lesson.data.prev" @click="switchLesson('prev')">
 									<template #prefix>
 										<span class="lucide-chevron-left size-4" />
@@ -220,7 +238,7 @@
 										params: { courseName: courseName },
 									}"
 								>
-									<Button>
+									<Button @click="markProgress()">
 										{{ __('Back to Course') }}
 									</Button>
 								</router-link>
@@ -334,6 +352,7 @@
 					:progress="lessonProgress"
 					:selectedLessonNumber="`${chapterNumber}-${lessonNumber}`"
 					:completedLesson="completedLesson"
+					:uncompletedLesson="uncompletedLesson"
 					:withProgress="lesson.data.membership ? true : false"
 				/>
 			</div>
@@ -346,6 +365,7 @@
 			:progress="lessonProgress"
 			:selectedLessonNumber="`${chapterNumber}-${lessonNumber}`"
 			:completedLesson="completedLesson"
+			:uncompletedLesson="uncompletedLesson"
 			:withProgress="lesson.data.membership ? true : false"
 		/>
 	</PanelLateral>
@@ -395,10 +415,12 @@ import { useSidebar } from '@/stores/sidebar'
 import { useSettings } from '@/stores/settings'
 import {
 	resolveDwellSeconds,
+	resolveVideoPercent,
 	isVideoComplete,
 	shouldStartDwellTimer,
 	shouldAttachVideoFallback,
 } from '@/utils/lessonProgress'
+import BotonLeccionCompleta from '@/components/BotonLeccionCompleta.vue'
 import EditorJS from '@editorjs/editorjs'
 import LessonContent from '@/components/LessonContent.vue'
 import CourseInstructors from '@/components/CourseInstructors.vue'
@@ -439,6 +461,14 @@ const showInlineMenu = ref(false)
 const mostrarTemario = ref(false)
 const currentTab = ref(null)
 const completedLesson = ref(null)
+// La otra cara de `completedLesson`: la lección que se acaba de desmarcar, para
+// que el panel pueda apagar su palomita sin recargar el temario entero.
+const uncompletedLesson = ref(null)
+// Estado de la lección en pantalla. Vive aparte de `lesson.data.progress`
+// porque ese valor lo trae el servidor al cargar y no se mueve después: sin
+// esto, el `timeupdate` del vídeo —que salta cuatro veces por segundo— lanzaría
+// una ráfaga de peticiones sobre una lección ya marcada.
+const leccionCompletada = ref(false)
 const settingsStore = useSettings()
 let timerInterval = null
 
@@ -620,6 +650,10 @@ const renderEditor = (holder, content) => {
 // again. Without an in-flight guard the two save_progress requests race
 // and the second one fails with TimestampMismatchError on LMS Enrollment.
 let progressSubmitting = false
+// Qué lección se está guardando ahora mismo. Hace falta porque "Siguiente"
+// marca y navega en el mismo gesto: cuando el servidor contesta, `lesson.data`
+// ya es la lección de al lado, y sin esto la palomita caería sobre ella.
+let leccionEnVuelo = null
 const markProgress = () => {
 	if (progressSubmitting) return
 	// Only enrolled students record progress; a moderator previewing has no
@@ -630,10 +664,11 @@ const markProgress = () => {
 		!user.data ||
 		!lesson.data ||
 		!lesson.data.membership ||
-		lesson.data.progress
+		leccionCompletada.value
 	)
 		return
 	progressSubmitting = true
+	leccionEnVuelo = lesson.data.name
 	progress.submit(
 		{},
 		{
@@ -658,7 +693,11 @@ const progress = createResource({
 	},
 	onSuccess(data) {
 		lessonProgress.value = data
-		const name = lesson.data?.name
+		const name = leccionEnVuelo
+		// El porcentaje es del curso entero y vale siempre; lo demás solo si
+		// seguimos en la lección que se marcó.
+		if (name === lesson.data?.name) leccionCompletada.value = true
+		uncompletedLesson.value = null
 		completedLesson.value = name
 		// Tell the parent (CourseEditor preview) so it can flip the
 		// sidebar's green tick and update the percentage without waiting
@@ -667,6 +706,26 @@ const progress = createResource({
 		emit('progress-updated', data)
 	},
 })
+
+// El botón manual habla con el servidor por su cuenta y vuelve con el
+// porcentaje ya recalculado; aquí solo hay que repartirlo por la pantalla.
+const alMarcarAMano = (data) => {
+	const name = lesson.data?.name
+	lessonProgress.value = data.progress
+	leccionCompletada.value = true
+	uncompletedLesson.value = null
+	completedLesson.value = name
+	if (name) emit('lesson-completed', name)
+	emit('progress-updated', data.progress)
+}
+
+const alDesmarcar = (data) => {
+	lessonProgress.value = data.progress
+	leccionCompletada.value = false
+	completedLesson.value = null
+	uncompletedLesson.value = lesson.data?.name
+	emit('progress-updated', data.progress)
+}
 
 const notes = createListResource({
 	doctype: 'LMS Lesson Note',
@@ -687,6 +746,9 @@ const notes = createListResource({
 
 const switchLesson = (direction) => {
 	trackVideoWatchDuration()
+	// Pasar de lección cuenta como haberla terminado. Hacia atrás no: volver
+	// sobre lo anterior no es haber avanzado.
+	if (direction === 'next') markProgress()
 	let lessonIndex =
 		direction === 'prev'
 			? lesson.data.prev.split('.')
@@ -739,6 +801,10 @@ const resetLessonState = (newChapterNumber, newLessonNumber) => {
 	fallbackGeneration++
 	clearInterval(timerInterval)
 	timer.value = 0
+	// El estado de la lección anterior no vale para la que entra; el watch de
+	// `lesson.data` lo repone en cuanto el servidor contesta.
+	leccionCompletada.value = false
+	uncompletedLesson.value = null
 }
 
 const trackVideoWatchDuration = () => {
@@ -751,12 +817,20 @@ const trackVideoWatchDuration = () => {
 	})
 }
 
+// Cuánto hay que ver de un vídeo para darlo por visto. Configurable en Ajustes
+// porque el final de un vídeo casi nunca es contenido: son la despedida y los
+// créditos, y exigir el último segundo dejaba lecciones sin cerrar.
+const umbralVideo = computed(() =>
+	resolveVideoPercent(settingsStore.settings?.data?.video_completion_percent)
+)
+
 const getVideoDetails = () => {
 	let details = []
 	const videos = document.querySelectorAll('video')
 	if (videos.length > 0) {
 		videos.forEach((video) => {
-			if (isVideoComplete(video.currentTime, video.duration)) markProgress()
+			if (isVideoComplete(video.currentTime, video.duration, umbralVideo.value))
+				markProgress()
 			details.push({
 				source: video.src,
 				watch_time: video.currentTime,
@@ -769,7 +843,8 @@ const getVideoDetails = () => {
 const getPlyrSourceDetails = () => {
 	let details = []
 	plyrSources.value.forEach((source) => {
-		if (isVideoComplete(source.currentTime, source.duration)) markProgress()
+		if (isVideoComplete(source.currentTime, source.duration, umbralVideo.value))
+			markProgress()
 		let src = cleanYouTubeUrl(source.source)
 		details.push({
 			source: src,
@@ -792,6 +867,7 @@ watch(
 		// Se elige una lección desde el panel y el panel se aparta solo: dejarlo
 		// abierto sobre la lección recién abierta obliga a cerrarlo a mano.
 		mostrarTemario.value = false
+		leccionCompletada.value = Boolean(data?.progress)
 		setupLesson(data)
 		// Settings drive dwell + enforcement; if they haven't resolved yet
 		// the timer reads undefined and falls back to 30s. Await the
@@ -893,9 +969,20 @@ const attachVideoEndedListeners = () => {
 		trackVideoWatchDuration()
 	}
 
+	// El umbral se mira mientras el vídeo corre, no solo al terminarlo: si se
+	// comprobara únicamente al salir de la lección, quien ve el noventa por
+	// ciento y se queda ahí no vería nunca aparecer su palomita. `markProgress`
+	// ya se protege sola de repetirse, que es lo que hace esto viable con un
+	// evento que salta cuatro veces por segundo.
+	const onTimeUpdate = (player) => {
+		if (isVideoComplete(player.currentTime, player.duration, umbralVideo.value))
+			markProgress()
+	}
+
 	document.querySelectorAll('video').forEach((video) => {
 		if (!video._lmsEndedAttached) {
 			video.addEventListener('ended', onVideoEnded)
+			video.addEventListener('timeupdate', () => onTimeUpdate(video))
 			video._lmsEndedAttached = true
 		}
 	})
@@ -903,6 +990,7 @@ const attachVideoEndedListeners = () => {
 	plyrSources.value.forEach((plyrSource) => {
 		if (!plyrSource._lmsEndedAttached) {
 			plyrSource.on('ended', onVideoEnded)
+			plyrSource.on('timeupdate', () => onTimeUpdate(plyrSource))
 			plyrSource.on('statechange', (event) => {
 				if (event.detail?.code === 0) onVideoEnded()
 			})

@@ -210,6 +210,26 @@ def apply_enforcement_flags(quiz_done: bool, assignment_done: bool, settings: di
 	)
 
 
+def get_enforcement_settings() -> dict:
+	"""Enforcement toggles, tolerating a site that has not migrated yet.
+
+	Pre-migrate sites won't have these columns. Falling back to an empty dict
+	makes apply_enforcement_flags treat both as enforced (legacy behavior).
+	"""
+	try:
+		return (
+			frappe.get_cached_value(
+				"LMS Settings",
+				None,
+				["enforce_quiz_completion", "enforce_assignment_completion"],
+				as_dict=True,
+			)
+			or {}
+		)
+	except Exception:
+		return {}
+
+
 @frappe.whitelist()
 def save_progress(lesson: str, course: str, scorm_details: dict = None):
 	"""
@@ -228,24 +248,10 @@ def save_progress(lesson: str, course: str, scorm_details: dict = None):
 		{"lesson": lesson, "member": frappe.session.user, "status": "Complete"},
 	)
 
-	try:
-		settings = (
-			frappe.get_cached_value(
-				"LMS Settings",
-				None,
-				["enforce_quiz_completion", "enforce_assignment_completion"],
-				as_dict=True,
-			)
-			or {}
-		)
-	except Exception:
-		# Pre-migrate sites won't have these columns yet. Fall back to {} so
-		# apply_enforcement_flags treats both as enforced (legacy behavior).
-		settings = {}
 	quiz_completed, assignment_completed = apply_enforcement_flags(
 		quiz_done=get_quiz_progress(lesson),
 		assignment_done=get_assignment_progress(lesson),
-		settings=settings,
+		settings=get_enforcement_settings(),
 	)
 
 	if scorm_details:
@@ -324,6 +330,74 @@ def save_progress(lesson: str, course: str, scorm_details: dict = None):
 	)
 
 	return progress
+
+
+@frappe.whitelist()
+def mark_lesson_complete(lesson: str, course: str):
+	"""Close a lesson on the student's own say-so, from the lesson page.
+
+	Wraps save_progress rather than writing progress itself, so the quiz and
+	assignment rules keep living in a single place. save_progress returns only
+	the course percentage, which cannot tell "marked" apart from "refused
+	because a quiz is pending", and its return value is already consumed by
+	three callers — so this reports the outcome the lesson page needs in order
+	to explain a refusal instead of looking broken.
+	"""
+	progress = save_progress(lesson, course)
+	completed = bool(
+		frappe.db.exists(
+			"LMS Course Progress",
+			{"lesson": lesson, "member": frappe.session.user, "status": "Complete"},
+		)
+	)
+
+	return {
+		"progress": progress,
+		"completed": completed,
+		"blocked_by": None if completed else get_completion_blocker(lesson),
+	}
+
+
+@frappe.whitelist()
+def unmark_lesson_complete(lesson: str, course: str):
+	"""Undo a completion, for a lesson marked by mistake.
+
+	Always filtered by the session user: the row is the student's own or it is
+	not found. Deleting is enough to keep every percentage in sync — the
+	after_delete hook on LMS Course Progress recalculates the enrollment and
+	the program rollup.
+	"""
+	membership = frappe.db.exists("LMS Enrollment", {"course": course, "member": frappe.session.user})
+	if not membership:
+		return {"progress": 0, "completed": False}
+
+	name = frappe.db.exists("LMS Course Progress", {"lesson": lesson, "member": frappe.session.user})
+	if name:
+		frappe.delete_doc("LMS Course Progress", name, ignore_permissions=True)
+
+	progress = get_course_progress(course)
+	frappe.publish_realtime(
+		event="update_lesson_progress",
+		room=get_website_room(),
+		message={"course": course, "lesson": lesson, "progress": progress},
+		after_commit=True,
+	)
+
+	return {"progress": progress, "completed": False}
+
+
+def get_completion_blocker(lesson: str):
+	"""Which enforced requirement is holding a lesson open, if any."""
+	quiz_completed, assignment_completed = apply_enforcement_flags(
+		quiz_done=get_quiz_progress(lesson),
+		assignment_done=get_assignment_progress(lesson),
+		settings=get_enforcement_settings(),
+	)
+	if not quiz_completed:
+		return "quiz"
+	if not assignment_completed:
+		return "assignment"
+	return None
 
 
 def get_next_lesson(course: str, lesson: str):

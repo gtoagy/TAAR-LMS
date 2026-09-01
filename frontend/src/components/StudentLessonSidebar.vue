@@ -116,6 +116,7 @@ const props = defineProps({
 	progress: { type: Number, default: 0 },
 	selectedLessonNumber: { type: String, default: '' },
 	completedLesson: { type: String, default: null },
+	uncompletedLesson: { type: String, default: null },
 	inlineSelect: { type: Boolean, default: false },
 	withProgress: { type: Boolean, default: true },
 })
@@ -153,6 +154,22 @@ watchEffect(() => {
 		const found = chapter.lessons?.find((l) => l.name === lessonName)
 		if (found) {
 			found.is_complete = true
+			return
+		}
+	}
+})
+
+// El camino de vuelta, para cuando se desmarca una lección a mano. Va por su
+// propia prop porque el padre solo mantiene una de las dos con valor: si la
+// misma lección estuviera en ambas, el orden de los efectos decidiría, y la
+// palomita se encendería o apagaría por azar.
+watchEffect(() => {
+	const lessonName = props.uncompletedLesson
+	if (!lessonName || !outline.data) return
+	for (const chapter of outline.data) {
+		const found = chapter.lessons?.find((l) => l.name === lessonName)
+		if (found) {
+			found.is_complete = false
 			return
 		}
 	}

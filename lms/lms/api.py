@@ -1473,6 +1473,7 @@ def get_lms_settings():
 		"allow_job_posting",
 		"demo_data_present",
 		"lesson_dwell_time",
+		"video_completion_percent",
 		"enforce_video_completion",
 		"enforce_quiz_completion",
 		"enforce_assignment_completion",
