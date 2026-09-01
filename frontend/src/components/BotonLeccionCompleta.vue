@@ -22,6 +22,13 @@
 				/>
 				<Circle v-else class="size-4 stroke-1.5 text-ink-gray-5" />
 			</template>
+			<!--
+				En el móvil no hay tooltip que valga —no hay puntero que se pose—,
+				así que el botón tiene que decir lo que es por sí mismo. Se acorta
+				en vez de callarse: sin texto, el círculo se pierde entre los demás
+				botones del encabezado y nadie lo pulsa.
+			-->
+			<span class="md:hidden">{{ etiquetaCorta }}</span>
 			<span class="hidden md:inline">{{ etiqueta }}</span>
 		</Button>
 	</Tooltip>
@@ -53,6 +60,13 @@ const enviando = ref(false)
 
 const etiqueta = computed(() =>
 	props.completada ? __('Mark as Incomplete') : __('Mark as Complete')
+)
+
+// La del móvil, donde el encabezado ya va lleno. Nombra el estado en vez de la
+// acción: junto a la palomita se lee de un vistazo, y "Marcar como pendiente"
+// no cabe al lado de Anterior y Siguiente.
+const etiquetaCorta = computed(() =>
+	props.completada ? __('Lesson completed') : __('Complete lesson')
 )
 
 // Lo que falta por hacer, dicho en términos de la alumna. El servidor solo

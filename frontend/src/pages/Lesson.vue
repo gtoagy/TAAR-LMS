@@ -135,7 +135,7 @@
 
 							<div
 								v-if="!zenModeEnabled"
-								class="flex items-center gap-x-2 mt-2 md:mt-0"
+								class="flex flex-wrap items-center gap-2 mt-2 md:mt-0"
 							>
 								<router-link
 									v-if="isAdmin && !embedded"
@@ -198,7 +198,7 @@
 
 							<div
 								v-if="zenModeEnabled"
-								class="flex items-center gap-x-2 mt-2 md:mt-0"
+								class="flex flex-wrap items-center gap-2 mt-2 md:mt-0"
 							>
 								<Button @click="showDiscussionsInZenMode()">
 									<template #icon>
