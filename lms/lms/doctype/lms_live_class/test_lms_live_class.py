@@ -270,3 +270,41 @@ class TestLMSLiveClass(BaseTestUtils):
 		with self.assertRaises(frappe.exceptions.ValidationError):
 			self.batch.save()
 		self.batch.reload()
+
+	# --- TanArtistic: la sesión de Zoom no depende de Google Calendar ---
+
+	def test_zoom_live_class_without_calendar_is_saved(self):
+		"""Sin Google Calendar la sesión de Zoom debe guardarse igual.
+
+		La reunión de Zoom ya existe cuando se llega a `after_insert`, así que
+		fallar aquí no evitaba nada: dejaba la reunión creada en Zoom y la clase
+		sin guardar en la escuela.
+		"""
+		# Se apagan los calendarios del usuario en vez de dar por hecho que no hay
+		# ninguno: el sitio de desarrollo puede traer los suyos y entonces el test
+		# pasaría por el motivo equivocado.
+		habilitados = frappe.get_all(
+			"Google Calendar", {"user": frappe.session.user, "enable": 1}, pluck="name"
+		)
+		for nombre in habilitados:
+			frappe.db.set_value("Google Calendar", nombre, "enable", 0)
+
+		try:
+			live_class = self._create_live_class(provider="Zoom", join_url="https://zoom.us/j/123456789")
+			live_class.reload()
+
+			self.assertTrue(frappe.db.exists("LMS Live Class", live_class.name))
+			self.assertFalse(live_class.event)
+		finally:
+			for nombre in habilitados:
+				frappe.db.set_value("Google Calendar", nombre, "enable", 1)
+
+	def test_zoom_live_class_without_batch_is_saved(self):
+		"""Una sesión de la escuela entera, sin grupo, también debe guardarse."""
+		live_class = self._create_live_class(
+			provider="Zoom", batch_name=None, join_url="https://zoom.us/j/987654321"
+		)
+		live_class.reload()
+
+		self.assertFalse(live_class.batch_name)
+		self.assertEqual(live_class.get_participants(), [frappe.session.user])
