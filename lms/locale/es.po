@@ -10977,3 +10977,35 @@ msgstr "Sesiones anteriores"
 #: frontend/src/pages/EnVivo.vue
 msgid "Watch"
 msgstr "Ver"
+
+#: frontend/src/pages/EnVivo.vue
+msgid "Schedule a live session"
+msgstr "Programar una sesión en vivo"
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Schedule session"
+msgstr "Programar sesión"
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Title, date and time are required."
+msgstr "Faltan el título, la fecha o la hora."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Session scheduled."
+msgstr "Sesión programada."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "The session was not created."
+msgstr "No se pudo crear la sesión."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "The Zoom meeting is created when you schedule this. Students see the link 15 minutes before it starts."
+msgstr "Al programarla se crea la reunión en Zoom. El botón para entrar les aparece quince minutos antes."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Select date"
+msgstr "Elige la fecha"
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Select time"
+msgstr "Elige la hora"

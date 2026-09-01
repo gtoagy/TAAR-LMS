@@ -32,6 +32,20 @@
 							)
 						}}
 					</p>
+
+					<!-- Va aquí y no en la cabecera porque la cabecera se esconde en
+					     el móvil, y programar una sesión desde el teléfono tiene que
+					     poder hacerse igual. -->
+					<Button
+						v-if="esModerador"
+						class="mt-4"
+						@click="mostrarProgramar = true"
+					>
+						<template #prefix>
+							<Plus class="size-4" />
+						</template>
+						{{ __('Schedule a live session') }}
+					</Button>
 				</div>
 
 				<ProximaSesion
@@ -87,14 +101,24 @@
 			</div>
 		</div>
 	</div>
+
+	<ProgramarSesionModal v-if="mostrarProgramar" v-model="mostrarProgramar" />
 </template>
 
 <script setup>
-import { Breadcrumbs, LoadingIndicator } from 'frappe-ui'
-import { Play, Video } from 'lucide-vue-next'
-import { computed, onMounted } from 'vue'
+import { Breadcrumbs, Button, LoadingIndicator } from 'frappe-ui'
+import { Play, Plus, Video } from 'lucide-vue-next'
+import { computed, inject, onMounted, ref } from 'vue'
+import ProgramarSesionModal from '@/components/ProgramarSesionModal.vue'
 import ProximaSesion from '@/components/ProximaSesion.vue'
 import { fechaCorta, pedirSesiones, sesionesEnVivo } from '@/utils/envivo'
+
+const user = inject('$user')
+const mostrarProgramar = ref(false)
+
+// Esconder el botón no es la protección: `crear_sesion()` vuelve a comprobarlo
+// en el servidor. Aquí solo se evita enseñar algo que no lleva a ninguna parte.
+const esModerador = computed(() => !!user.data?.is_moderator)
 
 onMounted(() => pedirSesiones())
 

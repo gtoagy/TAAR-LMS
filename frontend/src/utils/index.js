@@ -551,12 +551,16 @@ const getSidebarItems = (forMobile = false) => {
 				// Solo si hay algo que enseñar. Una sección vacía que dice «aún no
 				// hay sesiones» se mira dos veces y ya no se vuelve a mirar, y
 				// entonces tampoco se mira el día que sí la hay.
+				//
+				// Para quien las programa es al revés: si la entrada solo apareciera
+				// habiendo sesiones, no habría por dónde crear la primera.
 				{
 					label: 'Live sessions',
 					icon: 'Video',
 					to: 'EnVivo',
 					activeFor: ['EnVivo'],
-					condition: () => haySesiones.value,
+					condition: () =>
+						haySesiones.value || !!userResource?.data?.is_moderator,
 				},
 				// Detrás de Membresía y dentro de la navegación de siempre: colgando
 				// del menú «Más» no las encontraba nadie, y en el móvil son lo único
