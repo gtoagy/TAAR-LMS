@@ -378,10 +378,64 @@ def construir():
     doc.save(ignore_permissions=True)
     frappe.db.commit()
 
-    enlazadas = frappe.db.count("Lesson Reference", {"parenttype": "Course Chapter"})
     propias = frappe.db.count("Course Lesson", {"course": CURSO})
+    # Solo las de este curso: el fallo que se busca es la leccion que existe sin
+    # colgar de ningun capitulo, y ahi no puede verla nadie. Contar las de todo
+    # el sitio no dice nada.
+    enlazadas = frappe.db.count(
+        "Lesson Reference", {"parenttype": "Course Chapter", "parent": ["in", capitulos]}
+    )
     print(f"\nListo. {propias} lecciones del curso, {len(capitulos)} capítulos.")
-    print(f"(referencias de lección en todo el sitio: {enlazadas})")
+    print(f"Enlazadas desde un capítulo: {enlazadas}", end="")
+    print("  (todas)" if enlazadas == propias else "  ¡FALTAN, hay lecciones invisibles!")
+
+
+def ensayo():
+    """Dice lo que va a pasar, sin escribir nada.
+
+    Antes de tocar produccion importan tres cosas y ninguna se ve desde aqui:
+    que el curso este donde creemos, que no vayamos a pisar lecciones que ya
+    tengan progreso de alumnas, y que el servidor pueda bajarse las imagenes de
+    la CDN de Vimeo — si esa maquina no sale a internet, el guion se planta a
+    mitad y deja el curso en obras.
+    """
+    if not frappe.db.exists("LMS Course", CURSO):
+        print(f"✗ El curso {CURSO} NO existe. El guion no lo crea: se pararia aqui.")
+        return
+
+    curso = frappe.get_doc("LMS Course", CURSO)
+    print(f"Curso: {curso.title}  (publicado={curso.published})")
+    print(f"Ahora mismo tiene {len(curso.chapters)} capítulos y ", end="")
+    print(f"{frappe.db.count('Course Lesson', {'course': CURSO})} lecciones.\n")
+
+    for m_idx, (titulo_modulo, lecciones) in enumerate(MODULOS, start=1):
+        cap_name = f"{CURSO}-m{m_idx}"
+        estado = "actualiza" if frappe.db.exists("Course Chapter", cap_name) else "CREA"
+        print(f"  {estado:<9} {cap_name:<18} {titulo_modulo}")
+        for l_idx, definicion in enumerate(lecciones, start=1):
+            lec_name = f"{CURSO}-{m_idx}-{l_idx}"
+            existe = frappe.db.exists("Course Lesson", lec_name)
+            estado = "actualiza" if existe else "CREA"
+            aviso = ""
+            if existe:
+                # Si alguien ya la vio, reescribirla no es gratis: se avisa.
+                vistas = frappe.db.count("LMS Course Progress", {"lesson": lec_name})
+                if vistas == 1:
+                    aviso = "  ← ojo: 1 alumna ya la tiene vista"
+                elif vistas:
+                    aviso = f"  ← ojo: {vistas} alumnas ya la tienen vista"
+            print(f"    {estado:<9} {lec_name:<18} {definicion['titulo']}{aviso}")
+
+    print("\n¿El servidor alcanza las imágenes de Vimeo?")
+    for clave, url in CAPTURAS.items():
+        try:
+            peticion = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "taar-lms"})
+            with urllib.request.urlopen(peticion, timeout=30) as r:
+                print(f"  ✓ {clave:<12} {r.status}  {r.headers.get('Content-Length', '?')} bytes")
+        except Exception as e:  # noqa: BLE001 — cualquier fallo aquí importa igual
+            print(f"  ✗ {clave:<12} {e}")
+
+    print("\nEnsayo. No se ha escrito nada.")
 
 
 if __name__ == "__main__":
@@ -392,4 +446,10 @@ if __name__ == "__main__":
         frappe.init(site=os.environ.get("SITIO", "lms.localhost"))
         frappe.connect()
     frappe.set_user("Administrator")
-    construir()
+
+    import sys
+
+    if "--ensayo" in sys.argv or os.environ.get("ENSAYO") == "1":
+        ensayo()
+    else:
+        construir()
