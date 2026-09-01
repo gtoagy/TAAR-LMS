@@ -278,6 +278,7 @@
 
 <script setup>
 import { getSidebarLinks } from '@/utils'
+import { haySesiones, pedirSesiones } from '@/utils/envivo'
 import { usersStore } from '@/stores/user'
 import { sessionStore } from '@/stores/session'
 import { useSidebar } from '@/stores/sidebar'
@@ -692,6 +693,14 @@ watch(userResource, async () => {
 })
 
 watch(settingsStore.settings, () => {
+	updateSidebarLinks()
+})
+
+// Las sesiones en vivo llegan después de pintar el menú, así que hay que volver
+// a montarlo cuando se sepa si hay alguna: si no, la entrada no aparece hasta
+// que algo más obligue a redibujar.
+pedirSesiones()
+watch(haySesiones, () => {
 	updateSidebarLinks()
 })
 

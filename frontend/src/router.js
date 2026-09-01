@@ -66,6 +66,11 @@ const routes = [
 		component: () => import('@/pages/Membresia.vue'),
 	},
 	{
+		path: '/en-vivo',
+		name: 'EnVivo',
+		component: () => import('@/pages/EnVivo.vue'),
+	},
+	{
 		path: '/opinion',
 		name: 'Opinion',
 		component: () => import('@/pages/Opinion.vue'),
