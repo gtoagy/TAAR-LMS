@@ -35,10 +35,20 @@ class LMSLiveClass(Document):
 			frappe.delete_doc("Event", self.event, force=True)
 
 	def get_participants(self):
-		participants = frappe.get_all("LMS Batch Enrollment", {"batch": self.batch_name}, pluck="member")
-		instructors = frappe.get_all(
-			"Course Instructor", {"parenttype": "LMS Batch", "parent": self.batch_name}, pluck="instructor"
-		)
+		# TanArtistic: la sesión puede no colgar de ningún grupo — `batch_name` no
+		# es obligatorio —, y entonces no hay a quién inscribir. Sin este corte la
+		# consulta pregunta por un grupo vacío y se lleva lo que no toca.
+		participants = []
+		instructors = []
+		if self.batch_name:
+			participants = frappe.get_all(
+				"LMS Batch Enrollment", {"batch": self.batch_name}, pluck="member"
+			)
+			instructors = frappe.get_all(
+				"Course Instructor",
+				{"parenttype": "LMS Batch", "parent": self.batch_name},
+				pluck="instructor",
+			)
 		participants.append(frappe.session.user)
 		participants.extend(instructors)
 		return list(set(participants))
@@ -73,11 +83,18 @@ class LMSLiveClass(Document):
 			)
 
 		if not calendar:
-			frappe.throw(
-				_(
-					"No calendar is configured for the conferencing provider. Please set up a calendar to create events."
+			# TanArtistic: sin calendario solo se cae Google Meet, porque ahí la
+			# reunión la crea el propio evento de Google y sin él no hay nada a lo
+			# que entrar. Con Zoom la reunión ya está creada antes de llegar aquí:
+			# lanzar el error dejaba la clase sin guardar y la reunión huérfana en
+			# Zoom, es decir, rompía justo lo que ya había salido bien.
+			if self.conferencing_provider == "Google Meet":
+				frappe.throw(
+					_(
+						"No calendar is configured for the conferencing provider. Please set up a calendar to create events."
+					)
 				)
-			)
+			return
 
 		if calendar:
 			event = self.create_event()
@@ -230,14 +247,35 @@ def get_attendance(live_class):
 
 
 def create_attendance(live_class, data):
+	# TanArtistic: `member` es un enlace a User y el correo lo pone Zoom, no
+	# nosotros. Quien entra sin cuenta de Zoom, o con la del trabajo en vez de la
+	# de la escuela, llega con un correo que aquí no existe — o sin correo
+	# ninguno. Insertarlo tal cual reventaba con un error de enlace, y como esto
+	# corre dentro de un bucle sobre todas las clases pendientes, una sola
+	# desconocida dejaba sin asistencia también a las demás.
+	desconocidos = []
+
 	for participant in data:
+		correo = participant.get("user_email")
+		if not correo or not frappe.db.exists("User", correo):
+			desconocidos.append(correo or participant.get("name") or "?")
+			continue
+
 		doc = frappe.new_doc("LMS Live Class Participant")
 		doc.live_class = live_class.name
-		doc.member = participant.get("user_email")
+		doc.member = correo
 		doc.joined_at = get_datetime(participant.get("join_time"))
 		doc.left_at = get_datetime(participant.get("leave_time"))
 		doc.duration = get_minutes(participant.get("duration"))
 		doc.insert()
+
+	if desconocidos:
+		# No se tira el dato: quedan en el registro para poder cruzarlos a mano.
+		frappe.log_error(
+			title=f"Asistencia sin casar: {live_class.name}",
+			message="Estos participantes de Zoom no existen como usuarios:\n"
+			+ "\n".join(str(x) for x in desconocidos),
+		)
 
 
 def update_attendees_count(live_class, data):

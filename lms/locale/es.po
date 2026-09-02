@@ -10917,3 +10917,95 @@ msgstr "Elige tu país"
 #: frontend/src/components/BienvenidaPago.vue
 msgid "e.g. +52 998 123 4567"
 msgstr "ej. +52 998 123 4567"
+
+#: frontend/src/utils/index.js
+msgid "Live sessions"
+msgstr "Sesiones en vivo"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "Live now"
+msgstr "En vivo ahora"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "Next live session"
+msgstr "Próxima sesión en vivo"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "Join the session"
+msgstr "Entrar a la sesión"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "Included in your membership"
+msgstr "Incluida en tu membresía"
+
+#: frontend/src/utils/envivo.js
+msgid "Starting now"
+msgstr "Empieza ya"
+
+#: frontend/src/utils/envivo.js
+msgid "in {0} min"
+msgstr "en {0} min"
+
+#: frontend/src/utils/envivo.js
+msgid "in {0} h"
+msgstr "en {0} h"
+
+#: frontend/src/utils/envivo.js
+msgid "tomorrow"
+msgstr "mañana"
+
+#: frontend/src/utils/envivo.js
+msgid "in {0} days"
+msgstr "en {0} días"
+
+#: frontend/src/pages/EnVivo.vue
+msgid "We meet to look at how your piece is going and to answer your questions."
+msgstr "Nos vemos para revisar cómo va tu obra y resolver tus dudas."
+
+#: frontend/src/pages/EnVivo.vue
+msgid "There is no session scheduled right now."
+msgstr "Ahorita no hay ninguna sesión programada."
+
+#: frontend/src/pages/EnVivo.vue
+msgid "The next one will show up here, and we will email you."
+msgstr "La próxima aparece aquí, y te avisamos por correo."
+
+#: frontend/src/pages/EnVivo.vue
+msgid "Past sessions"
+msgstr "Sesiones anteriores"
+
+#: frontend/src/pages/EnVivo.vue
+msgid "Watch"
+msgstr "Ver"
+
+#: frontend/src/pages/EnVivo.vue
+msgid "Schedule a live session"
+msgstr "Programar una sesión en vivo"
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Schedule session"
+msgstr "Programar sesión"
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Title, date and time are required."
+msgstr "Faltan el título, la fecha o la hora."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Session scheduled."
+msgstr "Sesión programada."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "The session was not created."
+msgstr "No se pudo crear la sesión."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "The Zoom meeting is created when you schedule this. Students see the link 15 minutes before it starts."
+msgstr "Al programarla se crea la reunión en Zoom. El botón para entrar les aparece quince minutos antes."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Select date"
+msgstr "Elige la fecha"
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Select time"
+msgstr "Elige la hora"

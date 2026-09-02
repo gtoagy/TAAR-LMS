@@ -270,3 +270,85 @@ class TestLMSLiveClass(BaseTestUtils):
 		with self.assertRaises(frappe.exceptions.ValidationError):
 			self.batch.save()
 		self.batch.reload()
+
+	# --- TanArtistic: la sesión de Zoom no depende de Google Calendar ---
+
+	def test_zoom_live_class_without_calendar_is_saved(self):
+		"""Sin Google Calendar la sesión de Zoom debe guardarse igual.
+
+		La reunión de Zoom ya existe cuando se llega a `after_insert`, así que
+		fallar aquí no evitaba nada: dejaba la reunión creada en Zoom y la clase
+		sin guardar en la escuela.
+		"""
+		# Se apagan los calendarios del usuario en vez de dar por hecho que no hay
+		# ninguno: el sitio de desarrollo puede traer los suyos y entonces el test
+		# pasaría por el motivo equivocado.
+		habilitados = frappe.get_all(
+			"Google Calendar", {"user": frappe.session.user, "enable": 1}, pluck="name"
+		)
+		for nombre in habilitados:
+			frappe.db.set_value("Google Calendar", nombre, "enable", 0)
+
+		try:
+			live_class = self._create_live_class(provider="Zoom", join_url="https://zoom.us/j/123456789")
+			live_class.reload()
+
+			self.assertTrue(frappe.db.exists("LMS Live Class", live_class.name))
+			self.assertFalse(live_class.event)
+		finally:
+			for nombre in habilitados:
+				frappe.db.set_value("Google Calendar", nombre, "enable", 1)
+
+	def test_zoom_live_class_without_batch_is_saved(self):
+		"""Una sesión de la escuela entera, sin grupo, también debe guardarse."""
+		live_class = self._create_live_class(
+			provider="Zoom", batch_name=None, join_url="https://zoom.us/j/987654321"
+		)
+		live_class.reload()
+
+		self.assertFalse(live_class.batch_name)
+		self.assertEqual(live_class.get_participants(), [frappe.session.user])
+
+	# --- TanArtistic: la asistencia no se cae por un correo desconocido ---
+
+	def test_attendance_skips_unknown_emails(self):
+		"""Quien entra a Zoom con otro correo no debe tumbar la asistencia.
+
+		`member` es un enlace a User y el correo lo pone Zoom. Antes, un solo
+		participante sin cuenta en la escuela lanzaba un error de enlace y dejaba
+		sin registrar también a quienes sí estaban.
+		"""
+		from lms.lms.doctype.lms_live_class.lms_live_class import create_attendance
+
+		live_class = self._create_live_class(
+			provider="Zoom", batch_name=None, join_url="https://zoom.us/j/555"
+		)
+
+		participantes = [
+			{
+				"user_email": frappe.session.user,
+				"join_time": "2026-09-17 18:00:00",
+				"leave_time": "2026-09-17 19:00:00",
+				"duration": 3600,
+			},
+			{
+				"user_email": "nadie-de-por-aqui@example.com",
+				"join_time": "2026-09-17 18:05:00",
+				"leave_time": "2026-09-17 19:00:00",
+				"duration": 3300,
+			},
+			# Quien entra sin cuenta de Zoom llega directamente sin correo.
+			{
+				"name": "Invitada",
+				"join_time": "2026-09-17 18:10:00",
+				"leave_time": "2026-09-17 18:40:00",
+				"duration": 1800,
+			},
+		]
+
+		create_attendance(live_class, participantes)
+
+		registrados = frappe.get_all(
+			"LMS Live Class Participant", {"live_class": live_class.name}, pluck="member"
+		)
+		self.assertEqual(registrados, [frappe.session.user])

@@ -33,7 +33,8 @@
   "section_break_yrpq",
   "start_url",
   "column_break_yokr",
-  "join_url"
+  "join_url",
+  "taar_grabacion"
  ],
  "fields": [
   {
@@ -107,6 +108,12 @@
    "fieldtype": "Small Text",
    "label": "Join URL",
    "read_only": 1
+  },
+  {
+   "description": "Enlace a la grabación, de donde sea que se haya guardado. Se pega a mano cuando la sesión termina: mientras esté vacío la sesión no aparece en el histórico.",
+   "fieldname": "taar_grabacion",
+   "fieldtype": "Small Text",
+   "label": "Grabación"
   },
   {
    "depends_on": "eval:doc.conferencing_provider=='Zoom'",

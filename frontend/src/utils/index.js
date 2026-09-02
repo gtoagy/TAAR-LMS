@@ -7,6 +7,7 @@ import { Upload } from '@/utils/upload'
 import { Markdown } from '@/utils/markdownParser'
 import { useSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/user'
+import { haySesiones } from '@/utils/envivo'
 import Header from '@editorjs/header'
 import Paragraph from '@editorjs/paragraph'
 import { CodeBox } from '@/utils/code'
@@ -546,6 +547,20 @@ const getSidebarItems = (forMobile = false) => {
 					icon: 'Crown',
 					to: 'Membresia',
 					activeFor: ['Membresia'],
+				},
+				// Solo si hay algo que enseñar. Una sección vacía que dice «aún no
+				// hay sesiones» se mira dos veces y ya no se vuelve a mirar, y
+				// entonces tampoco se mira el día que sí la hay.
+				//
+				// Para quien las programa es al revés: si la entrada solo apareciera
+				// habiendo sesiones, no habría por dónde crear la primera.
+				{
+					label: 'Live sessions',
+					icon: 'Video',
+					to: 'EnVivo',
+					activeFor: ['EnVivo'],
+					condition: () =>
+						haySesiones.value || !!userResource?.data?.is_moderator,
 				},
 				// Detrás de Membresía y dentro de la navegación de siempre: colgando
 				// del menú «Más» no las encontraba nadie, y en el móvil son lo único
