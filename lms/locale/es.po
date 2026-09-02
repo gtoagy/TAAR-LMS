@@ -10990,27 +10990,7 @@ msgstr "Programar sesión"
 msgid "Title, date and time are required."
 msgstr "Faltan el título, la fecha o la hora."
 
-#: frontend/src/components/Prog
-#: frontend/src/components/ProximaSesion.vue
-msgid "Cancel session"
-msgstr "Cancelar sesión"
-
-#: frontend/src/components/ProximaSesion.vue
-msgid "Cancel this session?"
-msgstr "¿Cancelar esta sesión?"
-
-#: frontend/src/components/ProximaSesion.vue
-msgid "The Zoom meeting is deleted too, so a link someone already saved stops working. This cannot be undone."
-msgstr "También se borra la reunión de Zoom, así que un enlace que alguien tuviera guardado deja de funcionar. Esto no se puede deshacer."
-
-#: frontend/src/components/ProximaSesion.vue
-msgid "Session cancelled."
-msgstr "Sesión cancelada."
-
-#: frontend/src/components/ProximaSesion.vue
-msgid "The session was not cancelled."
-msgstr "La sesión no se canceló."
-ramarSesionModal.vue
+#: frontend/src/components/ProgramarSesionModal.vue
 msgid "Session scheduled."
 msgstr "Sesión programada."
 
