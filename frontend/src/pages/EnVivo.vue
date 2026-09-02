@@ -52,6 +52,7 @@
 					v-if="proxima"
 					:sesion="proxima"
 					:puedeEntrar="datos.puede_entrar"
+					:puedeCancelar="esModerador"
 				/>
 
 				<!-- Sin fecha todavía, la sección no se queda muda: decir que se
