@@ -42,32 +42,69 @@
 				</p>
 			</div>
 
-			<!-- El botón solo existe si el servidor mandó el enlace. No se pinta uno
-			     apagado «por si acaso»: un botón que no lleva a ninguna parte se
-			     acaba pulsando igual. -->
-			<Button
-				v-if="sesion.entrar"
-				variant="solid"
-				size="md"
-				class="shrink-0"
-				@click="entrar"
-			>
-				{{ __('Join the session') }}
-			</Button>
-			<span
-				v-else-if="abierta && !puedeEntrar"
-				class="shrink-0 text-sm text-ink-gray-6"
-			>
-				{{ __('Included in your membership') }}
-			</span>
+			<div class="flex shrink-0 items-center gap-2">
+				<!-- El botón solo existe si el servidor mandó el enlace. No se pinta uno
+				     apagado «por si acaso»: un botón que no lleva a ninguna parte se
+				     acaba pulsando igual. -->
+				<Button v-if="sesion.entrar" variant="solid" size="md" @click="entrar">
+					{{ __('Join the session') }}
+				</Button>
+				<span
+					v-else-if="abierta && !puedeEntrar"
+					class="text-sm text-ink-gray-6"
+				>
+					{{ __('Included in your membership') }}
+				</span>
+
+				<!-- Cancelar vive junto a la sesión y no en el escritorio de Frappe:
+				     quien la programó desde aquí tiene que poder deshacerlo desde
+				     aquí, sin aprenderse otra pantalla. -->
+				<Button
+					v-if="puedeCancelar"
+					variant="ghost"
+					size="md"
+					:label="__('Cancel session')"
+					@click="confirmando = true"
+				>
+					<template #icon>
+						<Trash2 class="size-4" />
+					</template>
+				</Button>
+			</div>
 		</div>
+
+		<!-- Se pregunta antes porque esto no se deshace, y porque lo que se borra
+		     no está solo aquí: la reunión de Zoom desaparece con ella. -->
+		<Dialog
+			v-model:open="confirmando"
+			:title="__('Cancel this session?')"
+			:actions="[
+				{
+					label: __('Cancel session'),
+					variant: 'solid',
+					theme: 'red',
+					loading: cancelarSesion.loading,
+					onClick: ({ close }) => cancelar(close),
+				},
+			]"
+		>
+			<template #default>
+				<p class="text-base text-ink-gray-7">
+					{{
+						__(
+							'The Zoom meeting is deleted too, so a link someone already saved stops working. This cannot be undone.'
+						)
+					}}
+				</p>
+			</template>
+		</Dialog>
 	</div>
 </template>
 
 <script setup>
-import { Button } from 'frappe-ui'
-import { Video } from 'lucide-vue-next'
-import { computed, watch } from 'vue'
+import { Button, Dialog, createResource, toast } from 'frappe-ui'
+import { Trash2, Video } from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
 import {
 	ahora,
 	cuantoFalta,
@@ -79,6 +116,10 @@ import {
 const props = defineProps({
 	sesion: { type: Object, required: true },
 	puedeEntrar: { type: Boolean, default: false },
+	// Esconder el botón no es la protección: `cancelar_sesion()` vuelve a
+	// comprobar el rol en el servidor. Aquí solo se evita enseñar algo que no
+	// lleva a ninguna parte.
+	puedeCancelar: { type: Boolean, default: false },
 })
 
 const abierta = computed(() => estaAbierta(props.sesion, ahora.value))
@@ -92,5 +133,29 @@ watch(abierta, (ahoraAbierta) => {
 
 const entrar = () => {
 	window.open(props.sesion.entrar, '_blank', 'noopener')
+}
+
+const confirmando = ref(false)
+
+const cancelarSesion = createResource({
+	url: 'taar_lms.envivo.cancelar_sesion',
+})
+
+function cancelar(close) {
+	cancelarSesion.submit(
+		{ nombre: props.sesion.nombre },
+		{
+			onSuccess() {
+				refrescarSesiones()
+				toast.success(__('Session cancelled.'))
+				close()
+			},
+			onError(err) {
+				toast.error(
+					err.messages?.[0] || err.message || __('The session was not cancelled.')
+				)
+			},
+		}
+	)
 }
 </script>
