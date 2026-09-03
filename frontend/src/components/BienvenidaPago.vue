@@ -662,9 +662,15 @@ const cargarAsistente = async () => {
 
 	fijarRecorrido()
 
-	// Si venía sin pago (una alumna de siempre entrando), su primera pantalla es
-	// la primera que le falte.
-	if (!props.sessionId) paso.value = suRecorrido.value[0]
+	// Su primera pantalla es la primera que le falte. Se mira contra el recorrido
+	// y no contra si trae pago: el identificador del pago vive un día entero en
+	// el navegador, así que quien paga, crea su contraseña y deja el asistente a
+	// medias vuelve con ese identificador puesto y ya con la sesión abierta. Ahí
+	// el paso de la contraseña ya no está en su recorrido, pero seguía siendo el
+	// que había por defecto: le salía "Paso 0 de 4" pidiéndole una contraseña que
+	// el servidor se niega a cambiar —"esta cuenta ya tiene acceso"—, y como el
+	// asistente no se puede cerrar, se quedaba encerrada fuera de lo que ya pagó.
+	if (!suRecorrido.value.includes(paso.value)) paso.value = suRecorrido.value[0]
 }
 
 watch(
