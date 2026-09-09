@@ -249,6 +249,14 @@ CURSOS = [
                 {"i": 26, "vimeo": "1210957778"},
                 {"i": 27}
             ]),
+            # En produccion este capitulo esta DESPEGADO del curso a proposito
+            # desde el 8-sep-2026: no se ve, aunque sigue existiendo entero.
+            # Se queda aqui porque los docnames de este guion son posicionales
+            # (`curso-de-mascotas-10-3`) y quitarlo renumeraria el Proyecto #2,
+            # metiendole a cada leccion el contenido de su vecina. Ojo: volver a
+            # importar el curso lo devuelve a la vista — es justo lo que paso el
+            # 5-ago-2026. Despues de cada reimportacion hay que volver a pasar
+            # `docker/ajustar_mascotas.py`.
             ("🐩 Proyecto #1 (Perrito en funda)", [
                 {"i": 28, "vimeo": "1215946355"},
                 {"i": 29},
