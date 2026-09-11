@@ -130,7 +130,7 @@ import {
 } from 'frappe-ui'
 import { onMounted, reactive } from 'vue'
 import { getTimezones } from '@/utils/'
-import { refrescarSesiones } from '@/utils/envivo'
+import { refrescarSesiones, zonaDelNavegador } from '@/utils/envivo'
 
 const show = defineModel()
 
@@ -143,18 +143,6 @@ const sesion = reactive({
 	grabar: 'No Recording',
 	descripcion: '',
 })
-
-// La zona en la que está quien programa. No se usa `getUserTimezone()` porque
-// esa devuelve `null` en cuanto la zona real no sale en la lista de fábrica —y
-// `America/Cancun`, que es donde vive la escuela, no sale—, y entonces el campo
-// aparece vacío y marcado como obligatorio.
-function zonaDelNavegador() {
-	try {
-		return Intl.DateTimeFormat().resolvedOptions().timeZone || ''
-	} catch {
-		return ''
-	}
-}
 
 onMounted(() => {
 	sesion.zona = zonaDelNavegador()

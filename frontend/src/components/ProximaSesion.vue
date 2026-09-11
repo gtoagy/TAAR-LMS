@@ -73,6 +73,78 @@
 			</div>
 		</div>
 
+		<!-- Decir que vienes. No abre ninguna puerta: quien no lo pulse verá el
+		     botón de entrar igual a su hora. Sirve para saber a cuánta gente
+		     esperamos, para el aviso de la última hora, y para que la sesión
+		     acabe en su calendario en vez de en su memoria. -->
+		<div
+			v-if="puedeEntrar && !abierta"
+			class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-outline-gray-1 pt-3"
+		>
+			<Button
+				v-if="!apuntada"
+				variant="subtle"
+				size="sm"
+				:loading="apuntarme.loading"
+				@click="apuntarse"
+			>
+				<template #prefix>
+					<CalendarPlus class="size-4" />
+				</template>
+				{{ __("I'm going") }}
+			</Button>
+
+			<template v-else>
+				<span class="flex items-center gap-1.5 text-sm text-ink-gray-7">
+					<Check class="size-4 text-ink-gray-6" />
+					{{ __("You're signed up") }}
+					<span class="text-ink-gray-5">
+						· {{ __("We'll remind you an hour before.") }}
+					</span>
+				</span>
+
+				<!-- Los dos, siempre, sin adivinar qué usa cada quien: en Android
+				     también hay quien lleva Outlook. Y son enlaces de verdad
+				     porque el `.ics` lo sirve el servidor: en el iPhone es lo
+				     único que abre el calendario en vez de la app Archivos. -->
+				<span class="flex items-center gap-3 text-sm">
+					<a
+						:href="enlaceGoogleCalendar(sesion)"
+						target="_blank"
+						rel="noopener"
+						class="text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
+					>
+						Google Calendar
+					</a>
+					<a
+						:href="enlaceIcs(sesion)"
+						class="text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
+					>
+						{{ __('Apple or Outlook') }}
+					</a>
+				</span>
+
+				<button
+					class="text-sm text-ink-gray-5 underline underline-offset-2 hover:text-ink-gray-7"
+					:disabled="desapuntarme.loading"
+					@click="desapuntarse"
+				>
+					{{ __("I can't make it") }}
+				</button>
+			</template>
+
+			<!-- Por debajo de tres no se enseña: «1 persona se ha anotado» dice
+			     justo lo contrario de lo que se busca, y encima de la tarjeta
+			     más visible del panel. Quien modera lo ve siempre, que para eso
+			     es suyo el dato. -->
+			<span
+				v-if="apuntadas >= 3 || (puedeCancelar && apuntadas > 0)"
+				class="ml-auto text-sm text-ink-gray-5"
+			>
+				{{ cuantas }}
+			</span>
+		</div>
+
 		<!-- Se pregunta antes porque esto no se deshace, y porque lo que se borra
 		     no está solo aquí: la reunión de Zoom desaparece con ella. -->
 		<Dialog
@@ -103,14 +175,18 @@
 
 <script setup>
 import { Button, Dialog, createResource, toast } from 'frappe-ui'
-import { Trash2, Video } from 'lucide-vue-next'
+import { CalendarPlus, Check, Trash2, Video } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import {
 	ahora,
 	cuantoFalta,
+	enlaceGoogleCalendar,
+	enlaceIcs,
 	estaAbierta,
 	fechaLarga,
 	refrescarSesiones,
+	sesionesEnVivo,
+	zonaDelNavegador,
 } from '@/utils/envivo'
 
 const props = defineProps({
@@ -133,6 +209,58 @@ watch(abierta, (ahoraAbierta) => {
 
 const entrar = () => {
 	window.open(props.sesion.entrar, '_blank', 'noopener')
+}
+
+const apuntada = computed(() => !!props.sesion.apuntada)
+const apuntadas = computed(() => props.sesion.apuntadas || 0)
+
+const cuantas = computed(() =>
+	apuntadas.value === 1
+		? __('1 person has signed up')
+		: __('{0} people have signed up').format(apuntadas.value)
+)
+
+const apuntarme = createResource({ url: 'taar_lms.envivo.apuntarme' })
+const desapuntarme = createResource({ url: 'taar_lms.envivo.desapuntarme' })
+
+/**
+ * Apunta el resultado en el recurso compartido en vez de volver a pedirlo.
+ *
+ * Lo que cambia son dos datos que ya vienen en la respuesta, y `refrescarSesiones()`
+ * dejaría el botón muerto el viaje entero para enterarse de algo que ya sabemos.
+ * Como la tarjeta del inicio mira este mismo objeto, las dos se enteran a la vez.
+ */
+function anotarEstado(datos) {
+	const sesiones = sesionesEnVivo.data
+	if (sesiones?.proxima?.nombre !== props.sesion.nombre) return
+	sesiones.proxima.apuntada = datos.apuntada
+	sesiones.proxima.apuntadas = datos.cuantas
+}
+
+function apuntarse() {
+	apuntarme.submit(
+		{ nombre: props.sesion.nombre, zona: zonaDelNavegador() },
+		{
+			onSuccess: anotarEstado,
+			onError(err) {
+				toast.error(
+					err.messages?.[0] || err.message || __('You were not signed up.')
+				)
+			},
+		}
+	)
+}
+
+function desapuntarse() {
+	desapuntarme.submit(
+		{ nombre: props.sesion.nombre },
+		{
+			onSuccess: anotarEstado,
+			onError(err) {
+				toast.error(err.messages?.[0] || err.message || __('You were not signed up.'))
+			},
+		}
+	)
 }
 
 const confirmando = ref(false)

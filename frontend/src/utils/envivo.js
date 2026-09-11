@@ -127,3 +127,73 @@ export function fechaCorta(sesion) {
 		minute: '2-digit',
 	}).format(inicio)
 }
+
+/**
+ * La zona horaria de quien está mirando.
+ *
+ * No se usa `getUserTimezone()` de `utils`: esa comprueba la zona contra una
+ * lista de fábrica y devuelve `null` en cuanto no la encuentra — y
+ * `America/Cancun`, que es la de la escuela, no está en esa lista. Aquí lo que
+ * hace falta es lo que diga el navegador, sea lo que sea.
+ */
+export function zonaDelNavegador() {
+	try {
+		return Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+	} catch (e) {
+		return ''
+	}
+}
+
+/** La fecha como la escriben los calendarios: 20260930T220000Z, siempre en UTC. */
+function selloUtc(fecha) {
+	return fecha.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+}
+
+/** Cuándo termina, contando la duración. */
+function finDe(sesion) {
+	const inicio = inicioDe(sesion)
+	if (!inicio) return null
+	return new Date(inicio.getTime() + (sesion.minutos || 60) * 60000)
+}
+
+/**
+ * El enlace para añadirla a Google Calendar.
+ *
+ * Se arma aquí y no en el servidor porque no hace falta nada que el navegador
+ * no tenga ya: es un enlace, no un archivo. Con las horas en UTC, Google las
+ * convierte sola a la zona de la cuenta de quien lo abre.
+ *
+ * No lleva el enlace de Zoom, por lo mismo que no lo lleva el correo: acabaría
+ * en el historial del navegador y en el calendario compartido de media familia.
+ */
+export function enlaceGoogleCalendar(sesion) {
+	const inicio = inicioDe(sesion)
+	const fin = finDe(sesion)
+	if (!inicio || !fin) return ''
+
+	const escuela = `${window.location.origin}/lms/en-vivo`
+	const parametros = new URLSearchParams({
+		action: 'TEMPLATE',
+		text: sesion.titulo || '',
+		dates: `${selloUtc(inicio)}/${selloUtc(fin)}`,
+		details: [sesion.descripcion, `Entra desde la escuela: ${escuela}`]
+			.filter(Boolean)
+			.join('\n\n'),
+		location: escuela,
+	})
+	return `https://calendar.google.com/calendar/render?${parametros}`
+}
+
+/**
+ * El archivo `.ics`, para Apple, Outlook y todo lo demás.
+ *
+ * Lo escribe el servidor y esto solo apunta a él: tiene que abrirse con un
+ * enlace de verdad —nada de `fetch` ni de `download`—, porque en el iPhone una
+ * dirección que responde `text/calendar` levanta la hoja de «Agregar a
+ * Calendario», mientras que un archivo armado aquí acaba en Archivos y hay que
+ * ir a buscarlo.
+ */
+export function enlaceIcs(sesion) {
+	if (!sesion?.nombre) return ''
+	return `/api/method/taar_lms.envivo.calendario?nombre=${encodeURIComponent(sesion.nombre)}`
+}
