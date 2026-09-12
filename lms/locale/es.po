@@ -11010,6 +11010,10 @@ msgstr "Elige la fecha"
 msgid "Select time"
 msgstr "Elige la hora"
 
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Search a timezone"
+msgstr "Busca una zona horaria"
+
 #: frontend/src/components/ProximaSesion.vue
 msgid "Cancel session"
 msgstr "Cancelar sesión"

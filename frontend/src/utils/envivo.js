@@ -132,13 +132,46 @@ export function fechaCorta(sesion) {
  * La zona horaria de quien está mirando.
  *
  * No se usa `getUserTimezone()` de `utils`: esa comprueba la zona contra una
- * lista de fábrica y devuelve `null` en cuanto no la encuentra — y
- * `America/Cancun`, que es la de la escuela, no está en esa lista. Aquí lo que
- * hace falta es lo que diga el navegador, sea lo que sea.
+ * lista de fábrica y devuelve `null` en cuanto no la encuentra. Aquí lo que hace
+ * falta es lo que diga el navegador, sea lo que sea.
  */
 export function zonaDelNavegador() {
 	try {
 		return Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+	} catch (e) {
+		return ''
+	}
+}
+
+/**
+ * La zona en la que da clase la escuela.
+ *
+ * La dice el servidor, y no se adivina por el ordenador de quien programa: si
+ * ese día está de viaje, las sesiones no se mueven con él. Solo si el servidor
+ * todavía no ha contestado se tira de la del navegador, que es mejor que nada.
+ */
+export function zonaDeLaEscuela() {
+	return sesionesEnVivo.data?.zona_escuela || zonaDelNavegador()
+}
+
+/**
+ * Qué hora lleva esa zona respecto de Greenwich, escrito corto: «GMT-6».
+ *
+ * Es lo que deja ver de un golpe si se eligió la que se quería. Cien
+ * identificadores como `America/Mexico_City` se leen igual de bien estando mal
+ * elegidos, y la primera sesión se programó a las cinco de la mañana por no ver
+ * a tiempo una diferencia de estas.
+ */
+export function desfaseDe(zona) {
+	try {
+		return (
+			new Intl.DateTimeFormat('en-US', {
+				timeZone: zona,
+				timeZoneName: 'shortOffset',
+			})
+				.formatToParts(new Date())
+				.find((parte) => parte.type === 'timeZoneName')?.value || ''
+		)
 	} catch (e) {
 		return ''
 	}
