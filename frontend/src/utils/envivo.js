@@ -198,6 +198,11 @@ function finDe(sesion) {
  *
  * No lleva el enlace de Zoom, por lo mismo que no lo lleva el correo: acabaría
  * en el historial del navegador y en el calendario compartido de media familia.
+ *
+ * El texto de dentro sí lo escribe el servidor y llega hecho: es el mismo que el
+ * del `.ics`, y teniéndolo aquí habría que cambiarlo en dos repos que se
+ * despliegan por separado, con el riesgo de que durante un tiempo cada calendario
+ * dijera una cosa.
  */
 function enlaceGoogleCalendar(sesion) {
 	const inicio = inicioDe(sesion)
@@ -209,9 +214,7 @@ function enlaceGoogleCalendar(sesion) {
 		action: 'TEMPLATE',
 		text: sesion.titulo || '',
 		dates: `${selloUtc(inicio)}/${selloUtc(fin)}`,
-		details: [sesion.descripcion, `Entra desde la escuela: ${escuela}`]
-			.filter(Boolean)
-			.join('\n\n'),
+		details: sesion.calendario || '',
 		location: escuela,
 	})
 	return `https://calendar.google.com/calendar/render?${parametros}`
