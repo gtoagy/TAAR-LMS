@@ -78,7 +78,7 @@
 		     esperamos, para el aviso de la última hora, y para que la sesión
 		     acabe en su calendario en vez de en su memoria. -->
 		<div
-			v-if="puedeEntrar && !abierta"
+			v-if="haySesionIniciada && puedeEntrar && !abierta"
 			class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-outline-gray-1 pt-3"
 		>
 			<Button
@@ -176,7 +176,7 @@
 <script setup>
 import { Button, Dialog, createResource, toast } from 'frappe-ui'
 import { CalendarPlus, Check, Trash2, Video } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import {
 	ahora,
 	cuantoFalta,
@@ -210,6 +210,14 @@ watch(abierta, (ahoraAbierta) => {
 const entrar = () => {
 	window.open(props.sesion.entrar, '_blank', 'noopener')
 }
+
+// El recurso de sesiones se guarda en el navegador, y a un invitado el servidor
+// le responde 403 en vez de una respuesta vacía: el `fetch` falla y la tarjeta
+// se queda pintada con lo último que hubo. Eso ya enseñaba el título y la hora
+// de más, pero «ya estás anotada» es de una persona concreta y no puede quedarse
+// en la pantalla de quien viene después en un ordenador prestado.
+const usuario = inject('$user', null)
+const haySesionIniciada = computed(() => !!usuario?.data)
 
 const apuntada = computed(() => !!props.sesion.apuntada)
 const apuntadas = computed(() => props.sesion.apuntadas || 0)
