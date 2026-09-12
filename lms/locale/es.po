@@ -11039,12 +11039,8 @@ msgid "You're signed up"
 msgstr "Ya estás anotada"
 
 #: frontend/src/components/ProximaSesion.vue
-msgid "We'll remind you an hour before."
-msgstr "Te avisamos una hora antes."
-
-#: frontend/src/components/ProximaSesion.vue
-msgid "Apple or Outlook"
-msgstr "Apple u Outlook"
+msgid "Add to my calendar"
+msgstr "Añadir a mi calendario"
 
 #: frontend/src/components/ProximaSesion.vue
 msgid "I can't make it"

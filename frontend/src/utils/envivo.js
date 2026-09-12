@@ -166,7 +166,7 @@ function finDe(sesion) {
  * No lleva el enlace de Zoom, por lo mismo que no lo lleva el correo: acabaría
  * en el historial del navegador y en el calendario compartido de media familia.
  */
-export function enlaceGoogleCalendar(sesion) {
+function enlaceGoogleCalendar(sesion) {
 	const inicio = inicioDe(sesion)
 	const fin = finDe(sesion)
 	if (!inicio || !fin) return ''
@@ -193,7 +193,36 @@ export function enlaceGoogleCalendar(sesion) {
  * Calendario», mientras que un archivo armado aquí acaba en Archivos y hay que
  * ir a buscarlo.
  */
-export function enlaceIcs(sesion) {
+function enlaceIcs(sesion) {
 	if (!sesion?.nombre) return ''
 	return `/api/method/taar_lms.envivo.calendario?nombre=${encodeURIComponent(sesion.nombre)}`
+}
+
+/**
+ * Si este aparato abre el `.ics` en su propio calendario.
+ *
+ * En el iPhone, el iPad y el Mac, una dirección que responde `text/calendar`
+ * levanta el calendario del sistema. En Android y en Windows no: baja un archivo
+ * que hay que ir a buscar, y eso ya no es «añadir al calendario», es un trámite.
+ */
+function abreElIcsSolo() {
+	return /iPhone|iPad|iPod|Macintosh/.test(window.navigator?.userAgent || '')
+}
+
+/**
+ * El enlace de calendario que le toca a quien está mirando.
+ *
+ * Uno solo, no dos: «Google Calendar / Apple u Outlook» obliga a elegir a quien
+ * no sabe qué lleva su teléfono, y a la mitad le bajaba un archivo. Aquí se
+ * decide por ella y siempre acaba en un calendario de verdad: el del sistema
+ * donde se abre solo, y Google Calendar en el resto, que en Android es la app.
+ *
+ * `nueva` va aparte porque el `.ics` tiene que abrirse en la misma pestaña: en
+ * iOS, una pestaña nueva que no pinta nada se queda en blanco detrás de la hoja
+ * del calendario, y parece que algo se rompió.
+ */
+export function calendarioDeEsteAparato(sesion) {
+	return abreElIcsSolo()
+		? { href: enlaceIcs(sesion), nueva: false }
+		: { href: enlaceGoogleCalendar(sesion), nueva: true }
 }

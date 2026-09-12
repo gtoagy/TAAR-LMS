@@ -36,10 +36,6 @@
 						· {{ cuantoFalta(sesion) }}
 					</span>
 				</p>
-
-				<p v-if="sesion.descripcion" class="mt-2 text-sm text-ink-gray-7">
-					{{ sesion.descripcion }}
-				</p>
 			</div>
 
 			<div class="flex shrink-0 items-center gap-2">
@@ -98,31 +94,19 @@
 				<span class="flex items-center gap-1.5 text-sm text-ink-gray-7">
 					<Check class="size-4 text-ink-gray-6" />
 					{{ __("You're signed up") }}
-					<span class="text-ink-gray-5">
-						· {{ __("We'll remind you an hour before.") }}
-					</span>
 				</span>
 
-				<!-- Los dos, siempre, sin adivinar qué usa cada quien: en Android
-				     también hay quien lleva Outlook. Y son enlaces de verdad
-				     porque el `.ics` lo sirve el servidor: en el iPhone es lo
-				     único que abre el calendario en vez de la app Archivos. -->
-				<span class="flex items-center gap-3 text-sm">
-					<a
-						:href="enlaceGoogleCalendar(sesion)"
-						target="_blank"
-						rel="noopener"
-						class="text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
-					>
-						Google Calendar
-					</a>
-					<a
-						:href="enlaceIcs(sesion)"
-						class="text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
-					>
-						{{ __('Apple or Outlook') }}
-					</a>
-				</span>
+				<!-- Uno solo, y es un enlace de verdad: el `.ics` lo sirve el
+				     servidor porque en el iPhone es lo único que levanta el
+				     calendario en vez de dejar un archivo en la app Archivos. -->
+				<a
+					:href="calendario.href"
+					:target="calendario.nueva ? '_blank' : undefined"
+					:rel="calendario.nueva ? 'noopener' : undefined"
+					class="text-sm text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
+				>
+					{{ __('Add to my calendar') }}
+				</a>
 
 				<button
 					class="text-sm text-ink-gray-5 underline underline-offset-2 hover:text-ink-gray-7"
@@ -179,9 +163,8 @@ import { CalendarPlus, Check, Trash2, Video } from 'lucide-vue-next'
 import { computed, inject, ref, watch } from 'vue'
 import {
 	ahora,
+	calendarioDeEsteAparato,
 	cuantoFalta,
-	enlaceGoogleCalendar,
-	enlaceIcs,
 	estaAbierta,
 	fechaLarga,
 	refrescarSesiones,
@@ -218,6 +201,8 @@ const entrar = () => {
 // en la pantalla de quien viene después en un ordenador prestado.
 const usuario = inject('$user', null)
 const haySesionIniciada = computed(() => !!usuario?.data)
+
+const calendario = computed(() => calendarioDeEsteAparato(props.sesion))
 
 const apuntada = computed(() => !!props.sesion.apuntada)
 const apuntadas = computed(() => props.sesion.apuntadas || 0)
