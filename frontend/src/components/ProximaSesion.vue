@@ -36,10 +36,6 @@
 						· {{ cuantoFalta(sesion) }}
 					</span>
 				</p>
-
-				<p v-if="sesion.descripcion" class="mt-2 text-sm text-ink-gray-7">
-					{{ sesion.descripcion }}
-				</p>
 			</div>
 
 			<div class="flex shrink-0 items-center gap-2">
@@ -73,6 +69,66 @@
 			</div>
 		</div>
 
+		<!-- Decir que vienes. No abre ninguna puerta: quien no lo pulse verá el
+		     botón de entrar igual a su hora. Sirve para saber a cuánta gente
+		     esperamos, para el aviso de la última hora, y para que la sesión
+		     acabe en su calendario en vez de en su memoria. -->
+		<div
+			v-if="haySesionIniciada && puedeEntrar && !abierta"
+			class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-outline-gray-1 pt-3"
+		>
+			<Button
+				v-if="!apuntada"
+				variant="subtle"
+				size="sm"
+				:loading="apuntarme.loading"
+				@click="apuntarse"
+			>
+				<template #prefix>
+					<CalendarPlus class="size-4" />
+				</template>
+				{{ __("I'm going") }}
+			</Button>
+
+			<template v-else>
+				<span class="flex items-center gap-1.5 text-sm text-ink-gray-7">
+					<Check class="size-4 text-ink-gray-6" />
+					{{ __("You're signed up") }}
+				</span>
+
+				<!-- Uno solo, y es un enlace de verdad: el `.ics` lo sirve el
+				     servidor porque en el iPhone es lo único que levanta el
+				     calendario en vez de dejar un archivo en la app Archivos. -->
+				<a
+					:href="calendario.href"
+					:target="calendario.nueva ? '_blank' : undefined"
+					:rel="calendario.nueva ? 'noopener' : undefined"
+					class="text-sm text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
+				>
+					{{ __('Add to my calendar') }}
+				</a>
+
+				<button
+					class="text-sm text-ink-gray-5 underline underline-offset-2 hover:text-ink-gray-7"
+					:disabled="desapuntarme.loading"
+					@click="desapuntarse"
+				>
+					{{ __("I can't make it") }}
+				</button>
+			</template>
+
+			<!-- Por debajo de tres no se enseña: «1 persona se ha anotado» dice
+			     justo lo contrario de lo que se busca, y encima de la tarjeta
+			     más visible del panel. Quien modera lo ve siempre, que para eso
+			     es suyo el dato. -->
+			<span
+				v-if="apuntadas >= 3 || (puedeCancelar && apuntadas > 0)"
+				class="ml-auto text-sm text-ink-gray-5"
+			>
+				{{ cuantas }}
+			</span>
+		</div>
+
 		<!-- Se pregunta antes porque esto no se deshace, y porque lo que se borra
 		     no está solo aquí: la reunión de Zoom desaparece con ella. -->
 		<Dialog
@@ -103,14 +159,17 @@
 
 <script setup>
 import { Button, Dialog, createResource, toast } from 'frappe-ui'
-import { Trash2, Video } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
+import { CalendarPlus, Check, Trash2, Video } from 'lucide-vue-next'
+import { computed, inject, ref, watch } from 'vue'
 import {
 	ahora,
+	calendarioDeEsteAparato,
 	cuantoFalta,
 	estaAbierta,
 	fechaLarga,
 	refrescarSesiones,
+	sesionesEnVivo,
+	zonaDelNavegador,
 } from '@/utils/envivo'
 
 const props = defineProps({
@@ -133,6 +192,68 @@ watch(abierta, (ahoraAbierta) => {
 
 const entrar = () => {
 	window.open(props.sesion.entrar, '_blank', 'noopener')
+}
+
+// El recurso de sesiones se guarda en el navegador, y a un invitado el servidor
+// le responde 403 en vez de una respuesta vacía: el `fetch` falla y la tarjeta
+// se queda pintada con lo último que hubo. Eso ya enseñaba el título y la hora
+// de más, pero «ya estás anotada» es de una persona concreta y no puede quedarse
+// en la pantalla de quien viene después en un ordenador prestado.
+const usuario = inject('$user', null)
+const haySesionIniciada = computed(() => !!usuario?.data)
+
+const calendario = computed(() => calendarioDeEsteAparato(props.sesion))
+
+const apuntada = computed(() => !!props.sesion.apuntada)
+const apuntadas = computed(() => props.sesion.apuntadas || 0)
+
+const cuantas = computed(() =>
+	apuntadas.value === 1
+		? __('1 person has signed up')
+		: __('{0} people have signed up').format(apuntadas.value)
+)
+
+const apuntarme = createResource({ url: 'taar_lms.envivo.apuntarme' })
+const desapuntarme = createResource({ url: 'taar_lms.envivo.desapuntarme' })
+
+/**
+ * Apunta el resultado en el recurso compartido en vez de volver a pedirlo.
+ *
+ * Lo que cambia son dos datos que ya vienen en la respuesta, y `refrescarSesiones()`
+ * dejaría el botón muerto el viaje entero para enterarse de algo que ya sabemos.
+ * Como la tarjeta del inicio mira este mismo objeto, las dos se enteran a la vez.
+ */
+function anotarEstado(datos) {
+	const sesiones = sesionesEnVivo.data
+	if (sesiones?.proxima?.nombre !== props.sesion.nombre) return
+	sesiones.proxima.apuntada = datos.apuntada
+	sesiones.proxima.apuntadas = datos.cuantas
+}
+
+function apuntarse() {
+	apuntarme.submit(
+		{ nombre: props.sesion.nombre, zona: zonaDelNavegador() },
+		{
+			onSuccess: anotarEstado,
+			onError(err) {
+				toast.error(
+					err.messages?.[0] || err.message || __('You were not signed up.')
+				)
+			},
+		}
+	)
+}
+
+function desapuntarse() {
+	desapuntarme.submit(
+		{ nombre: props.sesion.nombre },
+		{
+			onSuccess: anotarEstado,
+			onError(err) {
+				toast.error(err.messages?.[0] || err.message || __('You were not signed up.'))
+			},
+		}
+	)
 }
 
 const confirmando = ref(false)

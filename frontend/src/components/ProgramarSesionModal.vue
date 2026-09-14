@@ -83,11 +83,23 @@
 								{{ __('Timezone') }}
 								<span class="text-ink-red-6">*</span>
 							</label>
+							<!-- Dos cosas estaban rotas aquí y entre las dos no
+							     había manera de elegir una zona. Una: `Combobox`
+							     emite el valor, no la opción, así que leer
+							     `opt.value` dejaba el campo vacío al pulsar
+							     cualquiera —y el servidor caía entonces en la del
+							     sistema, que era otra—. Dos: en el modo de entrada
+							     el buscador ES el campo y arranca con el valor
+							     dentro, así que teclear escribía en medio
+							     («America/CancuMexicon») y no encontraba nada;
+							     con `trigger="button"` el buscador vive dentro del
+							     desplegable y empieza vacío. -->
 							<Combobox
 								id="zonaSesion"
-								:modelValue="sesion.zona"
+								v-model="sesion.zona"
+								trigger="button"
 								:options="opcionesDeZona()"
-								@update:modelValue="(opt) => (sesion.zona = opt.value)"
+								:placeholder="__('Search a timezone')"
 							/>
 						</div>
 
@@ -130,7 +142,12 @@ import {
 } from 'frappe-ui'
 import { onMounted, reactive } from 'vue'
 import { getTimezones } from '@/utils/'
-import { refrescarSesiones } from '@/utils/envivo'
+import {
+	desfaseDe,
+	refrescarSesiones,
+	zonaDeLaEscuela,
+	zonaDelNavegador,
+} from '@/utils/envivo'
 
 const show = defineModel()
 
@@ -144,29 +161,30 @@ const sesion = reactive({
 	descripcion: '',
 })
 
-// La zona en la que está quien programa. No se usa `getUserTimezone()` porque
-// esa devuelve `null` en cuanto la zona real no sale en la lista de fábrica —y
-// `America/Cancun`, que es donde vive la escuela, no sale—, y entonces el campo
-// aparece vacío y marcado como obligatorio.
-function zonaDelNavegador() {
-	try {
-		return Intl.DateTimeFormat().resolvedOptions().timeZone || ''
-	} catch {
-		return ''
-	}
-}
-
 onMounted(() => {
-	sesion.zona = zonaDelNavegador()
+	sesion.zona = zonaDeLaEscuela()
 })
+
+/** `America/Mexico_City` se lee «Mexico City»: el identificador va aparte. */
+const nombreDeZona = (zona) => zona.split('/').pop().replace(/_/g, ' ')
 
 const opcionesDeZona = () => {
 	const zonas = getTimezones()
-	const mia = zonaDelNavegador()
-	// La propia va la primera y, si falta en el catálogo, se añade: la lista de
-	// fábrica no pretende ser todas las zonas del mundo.
-	if (mia && !zonas.includes(mia)) zonas.unshift(mia)
-	return zonas.map((zona) => ({ label: zona, value: zona }))
+	// La de la escuela va la primera, y si falta en el catálogo se añade: la
+	// lista de fábrica no pretende ser todas las zonas del mundo, y la de casa
+	// es la que se elige el 99% de las veces.
+	for (const suya of [zonaDelNavegador(), zonaDeLaEscuela()]) {
+		if (suya && !zonas.includes(suya)) zonas.unshift(suya)
+	}
+	return zonas.map((zona) => {
+		const desfase = desfaseDe(zona)
+		return {
+			// El buscador mira la etiqueta y el valor, así que se encuentra
+			// tanto por «Mexico City» como por «America/Mexico_City».
+			label: desfase ? `${nombreDeZona(zona)} · ${desfase}` : nombreDeZona(zona),
+			value: zona,
+		}
+	})
 }
 
 const opcionesDeGrabacion = () => [

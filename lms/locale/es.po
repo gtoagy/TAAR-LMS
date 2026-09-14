@@ -11010,6 +11010,10 @@ msgstr "Elige la fecha"
 msgid "Select time"
 msgstr "Elige la hora"
 
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Search a timezone"
+msgstr "Busca una zona horaria"
+
 #: frontend/src/components/ProximaSesion.vue
 msgid "Cancel session"
 msgstr "Cancelar sesión"
@@ -11029,3 +11033,31 @@ msgstr "Sesión cancelada."
 #: frontend/src/components/ProximaSesion.vue
 msgid "The session was not cancelled."
 msgstr "La sesión no se canceló."
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "I'm going"
+msgstr "Voy a asistir"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "You're signed up"
+msgstr "Ya estás anotada"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "Add to my calendar"
+msgstr "Añadir a mi calendario"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "I can't make it"
+msgstr "Ya no puedo"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "1 person has signed up"
+msgstr "1 persona se ha anotado"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "{0} people have signed up"
+msgstr "{0} personas se han anotado"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "You were not signed up."
+msgstr "No se pudo anotarte."

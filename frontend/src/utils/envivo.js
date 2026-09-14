@@ -127,3 +127,138 @@ export function fechaCorta(sesion) {
 		minute: '2-digit',
 	}).format(inicio)
 }
+
+/**
+ * La zona horaria de quien está mirando.
+ *
+ * No se usa `getUserTimezone()` de `utils`: esa comprueba la zona contra una
+ * lista de fábrica y devuelve `null` en cuanto no la encuentra. Aquí lo que hace
+ * falta es lo que diga el navegador, sea lo que sea.
+ */
+export function zonaDelNavegador() {
+	try {
+		return Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+	} catch (e) {
+		return ''
+	}
+}
+
+/**
+ * La zona en la que da clase la escuela.
+ *
+ * La dice el servidor, y no se adivina por el ordenador de quien programa: si
+ * ese día está de viaje, las sesiones no se mueven con él. Solo si el servidor
+ * todavía no ha contestado se tira de la del navegador, que es mejor que nada.
+ */
+export function zonaDeLaEscuela() {
+	return sesionesEnVivo.data?.zona_escuela || zonaDelNavegador()
+}
+
+/**
+ * Qué hora lleva esa zona respecto de Greenwich, escrito corto: «GMT-6».
+ *
+ * Es lo que deja ver de un golpe si se eligió la que se quería. Cien
+ * identificadores como `America/Mexico_City` se leen igual de bien estando mal
+ * elegidos, y la primera sesión se programó a las cinco de la mañana por no ver
+ * a tiempo una diferencia de estas.
+ */
+export function desfaseDe(zona) {
+	try {
+		return (
+			new Intl.DateTimeFormat('en-US', {
+				timeZone: zona,
+				timeZoneName: 'shortOffset',
+			})
+				.formatToParts(new Date())
+				.find((parte) => parte.type === 'timeZoneName')?.value || ''
+		)
+	} catch (e) {
+		return ''
+	}
+}
+
+/** La fecha como la escriben los calendarios: 20260930T220000Z, siempre en UTC. */
+function selloUtc(fecha) {
+	return fecha.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+}
+
+/** Cuándo termina, contando la duración. */
+function finDe(sesion) {
+	const inicio = inicioDe(sesion)
+	if (!inicio) return null
+	return new Date(inicio.getTime() + (sesion.minutos || 60) * 60000)
+}
+
+/**
+ * El enlace para añadirla a Google Calendar.
+ *
+ * Se arma aquí y no en el servidor porque no hace falta nada que el navegador
+ * no tenga ya: es un enlace, no un archivo. Con las horas en UTC, Google las
+ * convierte sola a la zona de la cuenta de quien lo abre.
+ *
+ * No lleva el enlace de Zoom, por lo mismo que no lo lleva el correo: acabaría
+ * en el historial del navegador y en el calendario compartido de media familia.
+ *
+ * El texto de dentro sí lo escribe el servidor y llega hecho: es el mismo que el
+ * del `.ics`, y teniéndolo aquí habría que cambiarlo en dos repos que se
+ * despliegan por separado, con el riesgo de que durante un tiempo cada calendario
+ * dijera una cosa.
+ */
+function enlaceGoogleCalendar(sesion) {
+	const inicio = inicioDe(sesion)
+	const fin = finDe(sesion)
+	if (!inicio || !fin) return ''
+
+	const escuela = `${window.location.origin}/lms/en-vivo`
+	const parametros = new URLSearchParams({
+		action: 'TEMPLATE',
+		text: sesion.titulo || '',
+		dates: `${selloUtc(inicio)}/${selloUtc(fin)}`,
+		details: sesion.calendario || '',
+		location: escuela,
+	})
+	return `https://calendar.google.com/calendar/render?${parametros}`
+}
+
+/**
+ * El archivo `.ics`, para Apple, Outlook y todo lo demás.
+ *
+ * Lo escribe el servidor y esto solo apunta a él: tiene que abrirse con un
+ * enlace de verdad —nada de `fetch` ni de `download`—, porque en el iPhone una
+ * dirección que responde `text/calendar` levanta la hoja de «Agregar a
+ * Calendario», mientras que un archivo armado aquí acaba en Archivos y hay que
+ * ir a buscarlo.
+ */
+function enlaceIcs(sesion) {
+	if (!sesion?.nombre) return ''
+	return `/api/method/taar_lms.envivo.calendario?nombre=${encodeURIComponent(sesion.nombre)}`
+}
+
+/**
+ * Si este aparato abre el `.ics` en su propio calendario.
+ *
+ * En el iPhone, el iPad y el Mac, una dirección que responde `text/calendar`
+ * levanta el calendario del sistema. En Android y en Windows no: baja un archivo
+ * que hay que ir a buscar, y eso ya no es «añadir al calendario», es un trámite.
+ */
+function abreElIcsSolo() {
+	return /iPhone|iPad|iPod|Macintosh/.test(window.navigator?.userAgent || '')
+}
+
+/**
+ * El enlace de calendario que le toca a quien está mirando.
+ *
+ * Uno solo, no dos: «Google Calendar / Apple u Outlook» obliga a elegir a quien
+ * no sabe qué lleva su teléfono, y a la mitad le bajaba un archivo. Aquí se
+ * decide por ella y siempre acaba en un calendario de verdad: el del sistema
+ * donde se abre solo, y Google Calendar en el resto, que en Android es la app.
+ *
+ * `nueva` va aparte porque el `.ics` tiene que abrirse en la misma pestaña: en
+ * iOS, una pestaña nueva que no pinta nada se queda en blanco detrás de la hoja
+ * del calendario, y parece que algo se rompió.
+ */
+export function calendarioDeEsteAparato(sesion) {
+	return abreElIcsSolo()
+		? { href: enlaceIcs(sesion), nueva: false }
+		: { href: enlaceGoogleCalendar(sesion), nueva: true }
+}
