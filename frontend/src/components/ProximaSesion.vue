@@ -107,13 +107,25 @@
 					{{ __("You're signed up") }}
 				</span>
 
-				<!-- Uno solo, y es un enlace de verdad: el `.ics` lo sirve el
-				     servidor porque en el iPhone es lo único que levanta el
-				     calendario en vez de dejar un archivo en la app Archivos. -->
+				<!-- Fuera de Apple es un enlace directo a Google Calendar. En Apple
+				     abre un menú: el calendario del teléfono o Google Calendar,
+				     porque el aparato no dice cuál de los dos usa ella. -->
+				<Dropdown
+					v-if="calendario.opciones"
+					:options="calendario.opciones"
+					align="start"
+				>
+					<button
+						class="text-sm text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
+					>
+						{{ __('Add to my calendar') }}
+					</button>
+				</Dropdown>
 				<a
+					v-else
 					:href="calendario.href"
-					:target="calendario.nueva ? '_blank' : undefined"
-					:rel="calendario.nueva ? 'noopener' : undefined"
+					target="_blank"
+					rel="noopener"
 					class="text-sm text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
 				>
 					{{ __('Add to my calendar') }}
@@ -171,7 +183,7 @@
 </template>
 
 <script setup>
-import { Button, Dialog, createResource, toast } from 'frappe-ui'
+import { Button, Dialog, Dropdown, createResource, toast } from 'frappe-ui'
 import { CalendarPlus, Check, Pencil, Trash2, Video } from 'lucide-vue-next'
 import { computed, inject, ref, watch } from 'vue'
 import ProgramarSesionModal from '@/components/ProgramarSesionModal.vue'
