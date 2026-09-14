@@ -10,21 +10,26 @@
 
 	La reunión de Zoom se crea de verdad al guardar — el enlace no se pega a
 	mano—, y quién puede programar lo decide el servidor, no este botón.
+
+	Con `original` hace de formulario de editar: el mismo formulario, precargado,
+	para que cambiar una hora no obligue a cancelar y volver a programar. Llama a
+	`taar_lms.envivo.editar_sesion`, y la reunión de Zoom se mueve sola al
+	guardar.
 -->
 <template>
 	<Dialog
 		v-model:open="show"
-		:title="__('Schedule a live session')"
+		:title="editando ? __('Edit live session') : __('Schedule a live session')"
 		size="xl"
 		:actions="[
 			{
 				// No es `__('Schedule')`: ese texto ya está traducido como
 				// «Calendario» por la pantalla del evaluador, y ahí lo correcto
 				// es «Programar». Con un texto propio cada uno lleva el suyo.
-				label: __('Schedule session'),
+				label: editando ? __('Save changes') : __('Schedule session'),
 				variant: 'solid',
-				loading: crearSesion.loading,
-				onClick: ({ close }) => programar(close),
+				loading: editando ? editarSesion.loading : crearSesion.loading,
+				onClick: ({ close }) => (editando ? guardar(close) : programar(close)),
 			},
 		]"
 	>
@@ -103,7 +108,10 @@
 							/>
 						</div>
 
+						<!-- Solo al crear: es un ajuste de la reunión de Zoom, y
+						     editarlo aquí no lo cambiaría allí. -->
 						<FormControl
+							v-if="!editando"
 							v-model="sesion.grabar"
 							type="select"
 							:options="opcionesDeGrabacion()"
@@ -122,9 +130,13 @@
 				     una lista, es una reunión que queda creada en Zoom. -->
 				<p class="text-sm text-ink-gray-5">
 					{{
-						__(
-							'The Zoom meeting is created when you schedule this. Students see the link 15 minutes before it starts.'
-						)
+						editando
+							? __(
+									'If you change the date or time, the Zoom meeting moves with it.'
+								)
+							: __(
+									'The Zoom meeting is created when you schedule this. Students see the link 15 minutes before it starts.'
+								)
 					}}
 				</p>
 			</div>
@@ -140,7 +152,7 @@ import {
 	createResource,
 	toast,
 } from 'frappe-ui'
-import { onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import { getTimezones } from '@/utils/'
 import {
 	desfaseDe,
@@ -150,6 +162,14 @@ import {
 } from '@/utils/envivo'
 
 const show = defineModel()
+
+const props = defineProps({
+	// La sesión tal como la pinta la tarjeta. Si llega, se edita esa; si no, se
+	// programa una nueva.
+	original: { type: Object, default: null },
+})
+
+const editando = computed(() => !!props.original)
 
 const sesion = reactive({
 	titulo: '',
@@ -162,7 +182,22 @@ const sesion = reactive({
 })
 
 onMounted(() => {
-	sesion.zona = zonaDeLaEscuela()
+	if (!props.original) {
+		sesion.zona = zonaDeLaEscuela()
+		return
+	}
+	// `inicio` viene del servidor en la zona de la sesión («2026-09-30T17:00:00-06:00»),
+	// así que la fecha y la hora se leen tal cual del texto: pasarlas por `Date`
+	// las convertiría a la hora de quien edita, y guardaría otra.
+	const inicio = props.original.inicio || ''
+	Object.assign(sesion, {
+		titulo: props.original.titulo || '',
+		fecha: inicio.slice(0, 10),
+		hora: inicio.slice(11, 16),
+		minutos: props.original.minutos || 90,
+		zona: props.original.zona || zonaDeLaEscuela(),
+		descripcion: props.original.descripcion || '',
+	})
 })
 
 /** `America/Mexico_City` se lee «Mexico City»: el identificador va aparte. */
@@ -173,7 +208,7 @@ const opcionesDeZona = () => {
 	// La de la escuela va la primera, y si falta en el catálogo se añade: la
 	// lista de fábrica no pretende ser todas las zonas del mundo, y la de casa
 	// es la que se elige el 99% de las veces.
-	for (const suya of [zonaDelNavegador(), zonaDeLaEscuela()]) {
+	for (const suya of [zonaDelNavegador(), zonaDeLaEscuela(), props.original?.zona]) {
 		if (suya && !zonas.includes(suya)) zonas.unshift(suya)
 	}
 	return zonas.map((zona) => {
@@ -196,6 +231,42 @@ const opcionesDeGrabacion = () => [
 const crearSesion = createResource({
 	url: 'taar_lms.envivo.crear_sesion',
 })
+
+const editarSesion = createResource({
+	url: 'taar_lms.envivo.editar_sesion',
+})
+
+function guardar(close) {
+	if (!sesion.titulo || !sesion.fecha || !sesion.hora) {
+		toast.error(__('Title, date and time are required.'))
+		return
+	}
+
+	// La grabación no viaja: el servidor no la cambia al editar.
+	editarSesion.submit(
+		{
+			nombre: props.original.nombre,
+			titulo: sesion.titulo,
+			fecha: sesion.fecha,
+			hora: sesion.hora,
+			minutos: sesion.minutos,
+			zona: sesion.zona,
+			descripcion: sesion.descripcion,
+		},
+		{
+			onSuccess() {
+				refrescarSesiones()
+				toast.success(__('Session updated.'))
+				close()
+			},
+			onError(err) {
+				toast.error(
+					err.messages?.[0] || err.message || __('The session was not updated.')
+				)
+			},
+		}
+	)
+}
 
 function programar(close) {
 	// Se comprueba antes de llamar porque la llamada crea una reunión en Zoom:

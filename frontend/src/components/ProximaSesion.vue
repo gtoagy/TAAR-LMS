@@ -52,11 +52,22 @@
 					{{ __('Included in your membership') }}
 				</span>
 
-				<!-- Cancelar vive junto a la sesión y no en el escritorio de Frappe:
-				     quien la programó desde aquí tiene que poder deshacerlo desde
-				     aquí, sin aprenderse otra pantalla. -->
+				<!-- Editar y cancelar viven junto a la sesión y no en el escritorio
+				     de Frappe: quien la programó desde aquí tiene que poder
+				     cambiarla o deshacerla desde aquí, sin aprenderse otra pantalla. -->
 				<Button
-					v-if="puedeCancelar"
+					v-if="puedeModerar"
+					variant="ghost"
+					size="md"
+					:label="__('Edit session')"
+					@click="editando = true"
+				>
+					<template #icon>
+						<Pencil class="size-4" />
+					</template>
+				</Button>
+				<Button
+					v-if="puedeModerar"
 					variant="ghost"
 					size="md"
 					:label="__('Cancel session')"
@@ -122,12 +133,14 @@
 			     más visible del panel. Quien modera lo ve siempre, que para eso
 			     es suyo el dato. -->
 			<span
-				v-if="apuntadas >= 3 || (puedeCancelar && apuntadas > 0)"
+				v-if="apuntadas >= 3 || (puedeModerar && apuntadas > 0)"
 				class="ml-auto text-sm text-ink-gray-5"
 			>
 				{{ cuantas }}
 			</span>
 		</div>
+
+		<ProgramarSesionModal v-if="editando" v-model="editando" :original="sesion" />
 
 		<!-- Se pregunta antes porque esto no se deshace, y porque lo que se borra
 		     no está solo aquí: la reunión de Zoom desaparece con ella. -->
@@ -159,8 +172,9 @@
 
 <script setup>
 import { Button, Dialog, createResource, toast } from 'frappe-ui'
-import { CalendarPlus, Check, Trash2, Video } from 'lucide-vue-next'
+import { CalendarPlus, Check, Pencil, Trash2, Video } from 'lucide-vue-next'
 import { computed, inject, ref, watch } from 'vue'
+import ProgramarSesionModal from '@/components/ProgramarSesionModal.vue'
 import {
 	ahora,
 	calendarioDeEsteAparato,
@@ -175,10 +189,10 @@ import {
 const props = defineProps({
 	sesion: { type: Object, required: true },
 	puedeEntrar: { type: Boolean, default: false },
-	// Esconder el botón no es la protección: `cancelar_sesion()` vuelve a
-	// comprobar el rol en el servidor. Aquí solo se evita enseñar algo que no
-	// lleva a ninguna parte.
-	puedeCancelar: { type: Boolean, default: false },
+	// Esconder los botones no es la protección: `editar_sesion()` y
+	// `cancelar_sesion()` vuelven a comprobar el rol en el servidor. Aquí solo se
+	// evita enseñar algo que no lleva a ninguna parte.
+	puedeModerar: { type: Boolean, default: false },
 })
 
 const abierta = computed(() => estaAbierta(props.sesion, ahora.value))
@@ -256,6 +270,7 @@ function desapuntarse() {
 	)
 }
 
+const editando = ref(false)
 const confirmando = ref(false)
 
 const cancelarSesion = createResource({

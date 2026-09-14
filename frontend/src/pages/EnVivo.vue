@@ -52,7 +52,7 @@
 					v-if="proxima"
 					:sesion="proxima"
 					:puedeEntrar="datos.puede_entrar"
-					:puedeCancelar="esModerador"
+					:puedeModerar="esModerador"
 				/>
 
 				<!-- Sin fecha todavía, la sección no se queda muda: decir que se
@@ -117,9 +117,15 @@ import { fechaCorta, pedirSesiones, sesionesEnVivo } from '@/utils/envivo'
 const user = inject('$user')
 const mostrarProgramar = ref(false)
 
-// Esconder el botón no es la protección: `crear_sesion()` vuelve a comprobarlo
-// en el servidor. Aquí solo se evita enseñar algo que no lleva a ninguna parte.
-const esModerador = computed(() => !!user.data?.is_moderator)
+// Lo decide el servidor con el mismo criterio con el que luego deja programar,
+// editar y cancelar: Moderator o System Manager. `is_moderator` solo mira el
+// primero, y un administrador del sitio se quedaba sin botones.
+//
+// Esconder los botones no es la protección: los endpoints vuelven a
+// comprobarlo. Aquí solo se evita enseñar algo que no lleva a ninguna parte.
+const esModerador = computed(
+	() => !!(sesionesEnVivo.data?.puede_moderar ?? user.data?.is_moderator)
+)
 
 onMounted(() => pedirSesiones())
 
