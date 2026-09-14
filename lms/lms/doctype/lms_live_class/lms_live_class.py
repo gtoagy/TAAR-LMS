@@ -291,7 +291,10 @@ def get_minutes(duration_in_seconds):
 def has_permission(doc, ptype="read", user=None):
 	user = user or frappe.session.user
 	roles = frappe.get_roles(user)
-	if "Moderator" in roles or "Batch Evaluator" in roles:
+	# TanArtistic: también System Manager. Esta regla se consulta además de la
+	# tabla de permisos del doctype, y sin él un administrador del sitio veía la
+	# sesión en el escritorio pero no podía guardarla.
+	if "Moderator" in roles or "Batch Evaluator" in roles or "System Manager" in roles:
 		return True
 
 	if ptype not in ("read", "select", "print"):

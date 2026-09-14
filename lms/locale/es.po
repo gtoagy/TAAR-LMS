@@ -11014,6 +11014,30 @@ msgstr "Elige la hora"
 msgid "Search a timezone"
 msgstr "Busca una zona horaria"
 
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Edit live session"
+msgstr "Editar sesión en vivo"
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "If you change the date or time, the Zoom meeting moves with it."
+msgstr "Si cambias la fecha o la hora, la reunión de Zoom se mueve con ella."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "Session updated."
+msgstr "Sesión actualizada."
+
+#: frontend/src/components/ProgramarSesionModal.vue
+msgid "The session was not updated."
+msgstr "La sesión no se actualizó."
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "Edit session"
+msgstr "Editar sesión"
+
 #: frontend/src/components/ProximaSesion.vue
 msgid "Cancel session"
 msgstr "Cancelar sesión"
