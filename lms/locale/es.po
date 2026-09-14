@@ -11070,6 +11070,30 @@ msgstr "Ya estás anotada"
 msgid "Add to my calendar"
 msgstr "Añadir a mi calendario"
 
+#: frontend/src/utils/envivo.js
+msgid "your local time"
+msgstr "tu hora local"
+
+#: frontend/src/utils/envivo.js
+msgid "iPhone Calendar"
+msgstr "Calendario del iPhone"
+
+#: frontend/src/utils/envivo.js
+msgid "iPad Calendar"
+msgstr "Calendario del iPad"
+
+#: frontend/src/utils/envivo.js
+msgid "Mac Calendar"
+msgstr "Calendario de la Mac"
+
+#: frontend/src/utils/envivo.js
+msgid "Every session, and they update on their own"
+msgstr "Todas las sesiones, y se actualizan solas"
+
+#: frontend/src/utils/envivo.js
+msgid "Just this session"
+msgstr "Solo esta sesión"
+
 #: frontend/src/components/ProximaSesion.vue
 msgid "I can't make it"
 msgstr "Ya no puedo"

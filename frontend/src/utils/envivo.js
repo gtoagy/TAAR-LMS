@@ -99,22 +99,68 @@ function idioma() {
 }
 
 /**
- * La fecha escrita en la hora de quien mira.
+ * La fecha escrita en la hora de quien mira, diciendo cuál es esa hora.
  *
  * A propósito no se usa la zona de la sesión: la alumna de Buenos Aires quiere
- * saber a qué hora se conecta ella, no a qué hora es en Cancún. La zona original
- * se enseña aparte, como referencia, para que nadie dude.
+ * saber a qué hora se conecta ella, no a qué hora es en Ciudad de México. Pero
+ * una hora sola no dice si ya está convertida, y quien sabe que la escuela es
+ * mexicana resta por si acaso y llega una hora tarde. Por eso termina con el
+ * nombre de su zona: «6:00 p.m. hora de Colombia».
  */
 export function fechaLarga(sesion) {
 	const inicio = inicioDe(sesion)
 	if (!inicio) return ''
-	return new Intl.DateTimeFormat(idioma(), {
+	const fecha = new Intl.DateTimeFormat(idioma(), {
 		weekday: 'long',
 		day: 'numeric',
 		month: 'long',
 		hour: 'numeric',
 		minute: '2-digit',
 	}).format(inicio)
+	return `${fecha} ${zonaEscrita(inicio)}`
+}
+
+/**
+ * Las ciudades que Chrome escribe en inglés aunque la página esté en español.
+ *
+ * Chrome lleva los datos de idioma recortados: los países sí los trae
+ * traducidos («hora de Colombia», «hora de Perú»), pero las ciudades, que es
+ * como se nombra una zona dentro de un país con varias, las deja en inglés. En
+ * Chrome salía «hora de Mexico City», justo la zona de casi todas las alumnas.
+ * Solo van las que cambian al escribirlas en español.
+ */
+const CIUDADES = {
+	'America/Mexico_City': 'Ciudad de México',
+	'America/Cancun': 'Cancún',
+	'America/Merida': 'Mérida',
+	'America/Mazatlan': 'Mazatlán',
+	'America/Bahia_Banderas': 'Bahía de Banderas',
+	'America/Argentina/Cordoba': 'Córdoba',
+	'America/Sao_Paulo': 'São Paulo',
+	'America/New_York': 'Nueva York',
+	'America/Los_Angeles': 'Los Ángeles',
+}
+
+/**
+ * La zona de quien mira, escrita: «hora de Colombia».
+ *
+ * La pone el navegador (`shortGeneric`), ya en su idioma y con el país o la
+ * ciudad que ella reconoce, salvo las ciudades de `CIUDADES`. Los navegadores de
+ * antes de 2022 no conocen `shortGeneric` y lanzan un error: a esos se les dice
+ * «tu hora local», que también responde a la duda.
+ */
+function zonaEscrita(momento) {
+	const ciudad = CIUDADES[zonaDelNavegador()]
+	if (ciudad && idioma().startsWith('es')) return `hora de ${ciudad}`
+	try {
+		const nombre = new Intl.DateTimeFormat(idioma(), { timeZoneName: 'shortGeneric' })
+			.formatToParts(momento)
+			.find((parte) => parte.type === 'timeZoneName')?.value
+		if (nombre) return nombre
+	} catch (e) {
+		// Sigue abajo.
+	}
+	return `(${__('your local time')})`
 }
 
 export function fechaCorta(sesion) {
@@ -221,44 +267,77 @@ function enlaceGoogleCalendar(sesion) {
 }
 
 /**
- * El archivo `.ics`, para Apple, Outlook y todo lo demás.
+ * El calendario de la escuela, para suscribirse desde un aparato de Apple.
  *
- * Lo escribe el servidor y esto solo apunta a él: tiene que abrirse con un
- * enlace de verdad —nada de `fetch` ni de `download`—, porque en el iPhone una
- * dirección que responde `text/calendar` levanta la hoja de «Agregar a
- * Calendario», mientras que un archivo armado aquí acaba en Archivos y hay que
- * ir a buscarlo.
+ * Es `webcal://` y no `https://` porque ese enlace no lo abre el navegador: se
+ * lo pasa al teléfono, que abre su app de Calendario y pregunta si suscribirse.
+ * Así da igual desde dónde se pulse. El `.ics` de una sola sesión por `https`
+ * solo lo sabía abrir Safari: en Chrome del iPhone se quedaba en una descarga
+ * que acababa en error.
+ *
+ * Es el calendario entero y no esta sesión porque una suscripción es para
+ * siempre: con una por sesión, cada mes aparecería un calendario nuevo en su
+ * lista. Con este, las siguientes llegan solas.
  */
-function enlaceIcs(sesion) {
-	if (!sesion?.nombre) return ''
-	return `/api/method/taar_lms.envivo.calendario?nombre=${encodeURIComponent(sesion.nombre)}`
+function enlaceSuscripcion() {
+	return `webcal://${window.location.host}/api/method/taar_lms.envivo.calendario_escuela`
 }
 
 /**
- * Si este aparato abre el `.ics` en su propio calendario.
+ * Qué aparato de Apple es este, o vacío si no es de Apple.
  *
- * En el iPhone, el iPad y el Mac, una dirección que responde `text/calendar`
- * levanta el calendario del sistema. En Android y en Windows no: baja un archivo
- * que hay que ir a buscar, y eso ya no es «añadir al calendario», es un trámite.
+ * El iPad se hace pasar por un Mac desde iPadOS 13 —pide las páginas de
+ * escritorio—, y lo único que lo delata es que tiene pantalla táctil.
  */
-function abreElIcsSolo() {
-	return /iPhone|iPad|iPod|Macintosh/.test(window.navigator?.userAgent || '')
+function aparatoDeApple() {
+	const agente = window.navigator?.userAgent || ''
+	if (/iPhone|iPod/.test(agente)) return 'iPhone'
+	if (/iPad/.test(agente)) return 'iPad'
+	if (/Macintosh/.test(agente)) {
+		return window.navigator.maxTouchPoints > 1 ? 'iPad' : 'Mac'
+	}
+	return ''
 }
 
 /**
- * El enlace de calendario que le toca a quien está mirando.
+ * Cómo se añade la sesión al calendario en este aparato.
  *
- * Uno solo, no dos: «Google Calendar / Apple u Outlook» obliga a elegir a quien
- * no sabe qué lleva su teléfono, y a la mitad le bajaba un archivo. Aquí se
- * decide por ella y siempre acaba en un calendario de verdad: el del sistema
- * donde se abre solo, y Google Calendar en el resto, que en Android es la app.
+ * Fuera de Apple, directo a Google Calendar: en Android es el calendario del
+ * teléfono, y en Windows es lo que usa casi todo el mundo. Un menú para una sola
+ * opción es un toque de más.
  *
- * `nueva` va aparte porque el `.ics` tiene que abrirse en la misma pestaña: en
- * iOS, una pestaña nueva que no pinta nada se queda en blanco detrás de la hoja
- * del calendario, y parece que algo se rompió.
+ * En Apple se pregunta, porque ahí hay dos respuestas buenas y el aparato no
+ * dice cuál usa ella: el calendario del iPhone, o Google Calendar, que en
+ * Latinoamérica llevan muchas de las que tienen iPhone con su cuenta de Gmail.
+ *
+ * Devuelve `{ href }` si va directo y `{ opciones }` si hay que elegir.
  */
 export function calendarioDeEsteAparato(sesion) {
-	return abreElIcsSolo()
-		? { href: enlaceIcs(sesion), nueva: false }
-		: { href: enlaceGoogleCalendar(sesion), nueva: true }
+	const google = enlaceGoogleCalendar(sesion)
+	const apple = aparatoDeApple()
+	if (!apple) return { href: google }
+
+	const nombres = {
+		iPhone: __('iPhone Calendar'),
+		iPad: __('iPad Calendar'),
+		Mac: __('Mac Calendar'),
+	}
+	return {
+		opciones: [
+			{
+				label: nombres[apple],
+				description: __('Every session, and they update on their own'),
+				onClick() {
+					window.location.href = enlaceSuscripcion()
+				},
+			},
+			{
+				label: 'Google Calendar',
+				description: __('Just this session'),
+				onClick() {
+					window.open(google, '_blank', 'noopener')
+				},
+			},
+		],
+	}
 }
