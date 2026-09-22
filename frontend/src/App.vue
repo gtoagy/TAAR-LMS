@@ -5,6 +5,7 @@
 			     layouts pintan aquí su <slot />, así que la invitación acompaña a
 			     la alumna por toda la escuela sin tocar ninguno de ellos. -->
 			<BarraResena />
+			<InvitacionInstalar v-if="isMobile && !settings.data?.disable_pwa" />
 			<router-view />
 		</Layout>
 		<!-- El asistente de bienvenida vive aquí arriba y no dentro del catálogo,
@@ -17,7 +18,6 @@
 			:session-id="sessionIdPago"
 		/>
 		<NotificationPanel />
-		<InstallPrompt v-if="isMobile && !settings.data?.disable_pwa" />
 		<Dialogs />
 	</FrappeUIProvider>
 </template>
@@ -31,7 +31,7 @@ import { useRouter } from 'vue-router'
 import DesktopLayout from './components/Layouts/DesktopLayout.vue'
 import MobileLayout from './components/Layouts/MobileLayout.vue'
 import NoSidebarLayout from './components/Layouts/NoSidebarLayout.vue'
-import InstallPrompt from './components/InstallPrompt.vue'
+import InvitacionInstalar from '@/components/InvitacionInstalar.vue'
 import BarraResena from '@/components/BarraResena.vue'
 import BienvenidaPago from '@/components/BienvenidaPago.vue'
 import NotificationPanel from '@/components/Notifications/NotificationPanel.vue'

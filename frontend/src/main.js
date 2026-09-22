@@ -10,6 +10,7 @@ import { usersStore } from './stores/user'
 import { initSocket } from './socket'
 import { FrappeUI, setConfig, frappeRequest, pageMetaPlugin } from 'frappe-ui'
 import { telemetryPlugin } from 'frappe-ui/frappe'
+import { arrancarAppInstalable } from '@/utils/appInstalable'
 
 let pinia = createPinia()
 let app = createApp(App)
@@ -23,6 +24,7 @@ app.use(pageMetaPlugin)
 app.provide('$dayjs', dayjs)
 app.provide('$socket', initSocket())
 app.mount('#app')
+arrancarAppInstalable()
 
 const { userResource, allUsers } = usersStore()
 app.provide('$user', userResource)

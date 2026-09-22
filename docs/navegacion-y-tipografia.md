@@ -179,6 +179,29 @@ Con la barra puesta, las pantallas no repiten su título. Su `<h1>` lleva
 Diferencia con Wapido: allá el avatar abre el menú de la cuenta. Aquí va directo a
 Mi perfil y «Cerrar sesión» se queda en «Más».
 
+### Deslizar hacia abajo recarga, solo con la app instalada
+
+En una pestaña, Safari y Chrome ya traen el gesto. Al instalar la app desaparece
+junto con la barra del navegador, y una pantalla atorada se queda sin salida.
+`DeslizarParaRecargar.vue` envuelve a `#scrollContainer` en `MobileLayout.vue`
+y lo repone con cuatro reglas:
+
+- **Solo instalada** (`esInstalada()`). En la pestaña saldrían dos indicadores y
+  dos recargas.
+- **Recarga la página entera**, como el navegador. Refrescar solo los datos no
+  saca a la app de un error ni trae la versión nueva, que son justo los casos en
+  que alguien la jala.
+- **El indicador flota; el contenido no se mueve.** Un `transform` sobre el
+  contenido lo haría el contenedor de todo lo `position: fixed` de adentro.
+  Arranca escondido debajo de la barra superior, que lo tapa.
+- **Se decide en el primer movimiento del dedo.** Si va hacia arriba o de lado, o
+  si empieza dentro de algo con scroll que no está hasta arriba, es scroll normal:
+  iOS no deja cancelar un scroll que ya empezó. Aquí el scroll de la escuela vive
+  en `#scrollContainer` y no en `window`, y como queda dentro del componente, esa
+  misma revisión cubre el «está hasta arriba».
+
+No hay botón de «Recargar» en ningún menú: el gesto basta.
+
 ---
 
 ## 5. Tipografía
@@ -295,6 +318,7 @@ tocan.
 - [ ] Una sola lista de destinos (`getSidebarLinks`)
 - [ ] Cuatro destinos y «Más» en la píldora; nunca una sexta columna
 - [ ] Barra superior con el único `<h1>`, el avatar y la campana
+- [ ] Deslizar hacia abajo para recargar, solo con la app instalada
 - [ ] Cero tamaños en píxeles: `grep -rnE 'text-\[[0-9.]+px\]' frontend/src`
 - [ ] Texto en `ink-gray-6` o más oscuro
 - [ ] `tabular-nums` en las cifras

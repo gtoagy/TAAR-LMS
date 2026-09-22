@@ -22,6 +22,11 @@ export default defineConfig(async ({ mode }) => {
 			}),
 			vue(),
 			VitePWA({
+				// Apagado: el service worker de TanArtistic lo sirve taar-lms-app
+				// en /sw.js, sin caché, y lo registra utils/appInstalable.js. Este
+				// vivía en /assets/lms/frontend/, con un scope que no controlaba
+				// ninguna página (docs/app-instalable.md).
+				disable: true,
 				registerType: 'autoUpdate',
 				devOptions: {
 					enabled: false,
