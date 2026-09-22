@@ -305,7 +305,7 @@ import {
 	useTelemetry,
 } from 'frappe-ui/frappe'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
-import { enlacesDeAyuda } from '@/utils/ayuda'
+import { enlacesDeAyuda, pedirEnlacesDeAyuda } from '@/utils/ayuda'
 import UserDropdown from '@/components/Sidebar/UserDropdown.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import SidebarLink from '@/components/Sidebar/SidebarLink.vue'
@@ -684,6 +684,7 @@ watch(haySesiones, () => {
 	updateSidebarLinks()
 })
 // Lo mismo con los WhatsApp de soporte y comunidad (utils/ayuda.js).
+pedirEnlacesDeAyuda()
 watch(
 	() => enlacesDeAyuda.data,
 	() => updateSidebarLinks()

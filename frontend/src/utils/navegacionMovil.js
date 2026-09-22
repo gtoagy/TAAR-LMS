@@ -4,6 +4,7 @@ import { getSidebarLinks } from '@/utils'
 import { useSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/user'
 import { pedirSesiones } from '@/utils/envivo'
+import { pedirEnlacesDeAyuda } from '@/utils/ayuda'
 import { panelVisible } from '@/stores/notifications'
 import { useScreenSize } from '@/utils/composables'
 
@@ -40,6 +41,7 @@ export function useNavegacionMovil(hojaAbierta) {
 
 	if (!sidebarSettings.fetched && !sidebarSettings.loading) sidebarSettings.reload()
 	pedirSesiones()
+	pedirEnlacesDeAyuda()
 	watch(
 		() => userResource.data,
 		(usuaria) => {
