@@ -11250,6 +11250,186 @@ msgstr "Ahora no"
 msgid "The reminders could not be turned on. Try again in a moment."
 msgstr "No se pudieron activar los avisos. Inténtalo de nuevo en un momento."
 
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Notifications on your phone"
+msgstr "Avisos en tu teléfono"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "They arrive even with TanArtistic closed: when someone replies to you in a lesson, when someone mentions you, when your teacher comments on your assignment, and an hour before a live session you signed up for."
+msgstr "Te llegan aunque tengas TanArtistic cerrada: cuando te responden en una lección, cuando te mencionan, cuando la maestra comenta tu entrega y una hora antes de una sesión en vivo a la que te anotaste."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Notify me"
+msgstr "Avisarme"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Muted. Your devices stay registered and nothing reaches them."
+msgstr "Silenciados. Tus dispositivos siguen registrados y no les llega nada."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "On all your devices."
+msgstr "En todos tus dispositivos."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Your devices"
+msgstr "Tus dispositivos"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Where the notifications arrive. Each one is yours: nobody else sees this list."
+msgstr "Donde te llegan los avisos. Son tuyos: nadie más ve esta lista."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Loading..."
+msgstr "Cargando..."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "No device registered yet"
+msgstr "Todavía no hay ningún dispositivo registrado"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Turn on notifications on this device with the button above. On iPhone, install TanArtistic on your home screen first."
+msgstr "Activa los avisos en este dispositivo con el botón de arriba. En iPhone, primero instala TanArtistic en tu pantalla de inicio."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "This device"
+msgstr "Este dispositivo"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Rename"
+msgstr "Cambiar el nombre"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "The test reaches all your devices at once. Try it with the app closed."
+msgstr "La prueba llega a todos tus dispositivos a la vez. Pruébala con la app cerrada."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Send a test notification"
+msgstr "Enviar un aviso de prueba"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Remove {0}?"
+msgstr "¿Eliminar {0}?"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "This device stops receiving notifications. If you open TanArtistic here again with notifications allowed, it registers itself again."
+msgstr "Este dispositivo deja de recibir avisos. Si vuelves a abrir TanArtistic aquí con los avisos permitidos, se registra de nuevo solo."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "That device stops receiving notifications. If it opens TanArtistic again, it registers itself again."
+msgstr "Ese dispositivo deja de recibir avisos. Si vuelve a abrir TanArtistic, se registra de nuevo solo."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "This device receives notifications."
+msgstr "Este dispositivo recibe los avisos."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "You allowed notifications, but this device is not registered."
+msgstr "Diste permiso, pero este dispositivo no quedó registrado."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Nothing reaches it until it is registered."
+msgstr "No le llega nada hasta que se registre."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Register this device"
+msgstr "Registrar este dispositivo"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "This device does not receive notifications yet."
+msgstr "Este dispositivo todavía no recibe avisos."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Turn on here"
+msgstr "Activarlos aquí"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Notifications are blocked for TanArtistic on this browser."
+msgstr "Los avisos de TanArtistic están bloqueados en este navegador."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "To receive them, allow them in your browser or phone settings."
+msgstr "Para recibirlos, permítelos en los ajustes del navegador o del teléfono."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "On iPhone and iPad, notifications only arrive with the app installed."
+msgstr "En iPhone y iPad, los avisos solo llegan con la app instalada."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Install TanArtistic on your home screen and turn them on from there."
+msgstr "Instala TanArtistic en tu pantalla de inicio y actívalos desde ahí."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "This browser cannot receive notifications."
+msgstr "Este navegador no puede recibir avisos."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Notifications are not available yet."
+msgstr "Los avisos todavía no están disponibles."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "This device could not be registered. Try again in a moment."
+msgstr "No se pudo registrar este dispositivo. Inténtalo de nuevo en un momento."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "The change was not saved."
+msgstr "No se guardó el cambio."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Stopped receiving after several failed attempts"
+msgstr "Dejó de recibir tras varios intentos fallidos"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "1 failed attempt"
+msgstr "1 intento fallido"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "{0} failed attempts"
+msgstr "{0} intentos fallidos"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Last notification {0}"
+msgstr "Último aviso {0}"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Ready to receive"
+msgstr "Listo para recibir"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "The name was not changed."
+msgstr "No se cambió el nombre."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Device removed"
+msgstr "Dispositivo eliminado"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "The device was not removed."
+msgstr "No se eliminó el dispositivo."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Test notification sent"
+msgstr "Aviso de prueba enviado"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "It should appear in a few seconds."
+msgstr "Debería aparecer en unos segundos."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "Sent to {0} devices."
+msgstr "Enviado a {0} dispositivos."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "It could not be delivered"
+msgstr "No se pudo entregar"
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "{0} of {1} devices rejected it."
+msgstr "{0} de {1} dispositivos lo rechazaron."
+
+#: frontend/src/pages/ProfileAvisos.vue
+msgid "The test notification was not sent."
+msgstr "No se envió el aviso de prueba."
+
 #: frontend/src/components/InvitacionInstalar.vue
 msgid "Install TanArtistic to get the live session reminders on your phone."
 msgstr "Instala TanArtistic para recibir en tu teléfono los recordatorios de las sesiones en vivo."

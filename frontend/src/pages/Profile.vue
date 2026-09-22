@@ -181,6 +181,7 @@ import { convertToTitleCase } from '@/utils'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoPermission from '@/components/NoPermission.vue'
 import EditProfile from '@/components/Modals/EditProfile.vue'
+import { configuracionPush } from '@/utils/avisosPush'
 
 const { user, brand } = sessionStore()
 const $user = inject('$user')
@@ -235,7 +236,7 @@ const validarPortada = (file) => {
 
 const setActiveTab = () => {
 	let fragments = route.path.split('/')
-	let sections = ['certificates', 'roles', 'slots', 'schedule']
+	let sections = ['certificates', 'roles', 'slots', 'schedule', 'avisos']
 	sections.forEach((section) => {
 		if (fragments.includes(section)) {
 			activeTab.value = convertToTitleCase(section)
@@ -252,6 +253,7 @@ watchEffect(() => {
 			Roles: { name: 'ProfileRoles' },
 			Slots: { name: 'ProfileEvaluator' },
 			Schedule: { name: 'ProfileEvaluationSchedule' },
+			Avisos: { name: 'ProfileAvisos' },
 		}[activeTab.value]
 		router.push(route)
 	}
@@ -295,6 +297,11 @@ const getTabButtons = () => {
 	if (currentUserHasHigherAccess() && isEvaluatorOrModerator()) {
 		buttons.push({ label: __('Slots'), value: 'Slots' })
 		buttons.push({ label: __('Schedule'), value: 'Schedule' })
+	}
+	// Los avisos en el teléfono: solo en el perfil propio, y solo si el servidor
+	// los tiene encendidos para esta cuenta (utils/avisosPush.js).
+	if (isSessionUser() && configuracionPush.data?.habilitado) {
+		buttons.push({ label: __('Notifications'), value: 'Avisos' })
 	}
 	return buttons
 }
