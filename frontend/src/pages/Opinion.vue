@@ -30,7 +30,8 @@
 					</div>
 					<component
 						:is="etiquetaTitulo"
-						class="mb-2 text-title font-semibold text-ink-gray-9"
+						class="mb-2 font-semibold text-ink-gray-9"
+						:class="titulo ? 'text-heading' : 'text-title'"
 					>
 						{{ __('Thank you for writing to us!') }}
 					</component>
@@ -72,7 +73,8 @@
 					</div>
 					<component
 						:is="etiquetaTitulo"
-						class="mb-2 text-title font-semibold text-ink-gray-9"
+						class="mb-2 font-semibold text-ink-gray-9"
+						:class="titulo ? 'text-heading' : 'text-title'"
 					>
 						<template v-if="invitacion.data?.ya_enviada">
 							{{ __('You already sent us your review. Thank you!') }}
@@ -93,7 +95,8 @@
 					<div class="text-center">
 						<component
 						:is="etiquetaTitulo"
-						class="mb-2 text-title font-semibold text-ink-gray-9"
+						class="mb-2 font-semibold text-ink-gray-9"
+						:class="titulo ? 'text-heading' : 'text-title'"
 					>
 							{{ __('Tell us your experience') }}
 						</component>
