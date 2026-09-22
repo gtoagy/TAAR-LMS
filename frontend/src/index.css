@@ -14,6 +14,27 @@
 	--taar-primary-active: #605fd8;
 	/* Panel lateral en el blanco cálido de la marca */
 	--surface-sidebar: #f2f2ef;
+
+	/*
+	 * Las medidas de la navegación del móvil, en un solo sitio: la píldora
+	 * (BarraMovil.vue), el hueco del área de scroll y todo lo que se fija abajo
+	 * las leen de aquí. Ver docs/navegacion-y-tipografia.md.
+	 *
+	 * --nav-borde: la píldora queda justo encima del indicador de inicio del
+	 *   iPhone, y a 12px del borde donde no lo hay. Sin `viewport-fit=cover` en
+	 *   index.html, `env(safe-area-inset-bottom)` vale 0 en iOS sin avisar.
+	 * --nav-safe: lo que tiene que librar cualquier cosa fija abajo: la píldora,
+	 *   su distancia al borde y 12px de aire.
+	 */
+	--nav-h: 3.5rem; /* 56px */
+	--nav-borde: max(0.75rem, env(safe-area-inset-bottom));
+	--nav-safe: calc(var(--nav-h) + var(--nav-borde) + 0.75rem);
+	--topbar-h: 3.25rem; /* 52px */
+
+	/* El estado activo de la píldora. #807fec sobre su propio 15% da 2.9:1, por
+	   debajo del 3:1 que pide un icono: en claro va el tono de enlaces (4.4:1). */
+	--taar-nav-icono-activo: #605fd8;
+	--taar-nav-texto-activo: #07181f;
 }
 
 /*
@@ -66,6 +87,10 @@ button.bg-surface-gray-10 {
 [data-theme='dark'] {
 	--surface-base: #07181f;
 	--surface-sidebar: #15252b;
+	/* En oscuro el morado de marca sí alcanza (4.4:1 sobre el selector), y la
+	   tinta de la marca no se leería: la etiqueta va en la tinta del tema. */
+	--taar-nav-icono-activo: #807fec;
+	--taar-nav-texto-activo: var(--ink-gray-9);
 }
 
 /*
@@ -142,4 +167,14 @@ label.block:not([data-slot='label']) {
 
 body:has(.plyr--fullscreen-fallback) .taar-barra-movil {
 	display: none;
+}
+
+/*
+ * Los avisos de frappe-ui (vue-sonner) salen abajo. Con la píldora en pantalla se
+ * levantan por encima de ella, con la misma medida que el área de scroll. El
+ * `!important` es porque vue-sonner escribe su distancia en línea.
+ */
+body:has(.taar-barra-movil) [data-sonner-toaster] {
+	--mobile-offset-bottom: var(--nav-safe) !important;
+	--offset-bottom: var(--nav-safe) !important;
 }

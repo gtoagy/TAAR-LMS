@@ -26,19 +26,6 @@
 					</nav>
 				</div>
 			</div>
-			<!-- Soporte y comunidad, al final de la navegación y no descolgados
-			     abajo: quien se atasca los busca donde están las demás cosas. -->
-			<div v-if="enlacesDeAyuda.length" class="mx-2 my-2.5">
-				<nav class="space-y-1">
-					<SidebarLink
-						v-for="enlace in enlacesDeAyuda"
-						:key="enlace.to"
-						:link="enlace"
-						:isCollapsed="sidebarStore.isSidebarCollapsed"
-					/>
-				</nav>
-			</div>
-
 			<div
 				v-if="sidebarSettings.data?.web_pages?.length || isModerator"
 				class="mt-4"
@@ -318,7 +305,7 @@ import {
 	useTelemetry,
 } from 'frappe-ui/frappe'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
-import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import { enlacesDeAyuda } from '@/utils/ayuda'
 import UserDropdown from '@/components/Sidebar/UserDropdown.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import SidebarLink from '@/components/Sidebar/SidebarLink.vue'
@@ -395,13 +382,6 @@ const addKeyboardShortcut = () => {
 const toggleCommandPalette = () => {
 	settingsStore.isCommandPaletteOpen = !settingsStore.isCommandPaletteOpen
 }
-
-// Dos enlaces que no cambian nunca: se piden una vez y se quedan en caché.
-const ayudaTaar = createResource({
-	cache: 'Enlaces de ayuda TAAR',
-	url: 'taar_lms.api.enlaces_de_ayuda',
-	auto: true,
-})
 
 const unreadNotifications = createResource({
 	cache: 'Unread Notifications Count',
@@ -703,34 +683,17 @@ pedirSesiones()
 watch(haySesiones, () => {
 	updateSidebarLinks()
 })
+// Lo mismo con los WhatsApp de soporte y comunidad (utils/ayuda.js).
+watch(
+	() => enlacesDeAyuda.data,
+	() => updateSidebarLinks()
+)
 
 const updateSidebarLinks = () => {
 	sidebarLinks.value = getSidebarLinks()
 	updateSidebarLinksVisibility()
 	updateUnreadCount()
 }
-
-const enlacesDeAyuda = computed(() => {
-	const datos = ayudaTaar.data || {}
-	const enlaces = []
-	if (datos.soporte) {
-		enlaces.push({
-			label: 'Soporte',
-			icon: markRaw(WhatsAppIcon),
-			to: datos.soporte,
-		})
-	}
-	// Quién puede ver la comunidad lo decide el servidor, que solo manda el
-	// enlace a quien ha pagado. Aquí solo se pinta lo que llegue.
-	if (datos.comunidad) {
-		enlaces.push({
-			label: 'Comunidad',
-			icon: markRaw(WhatsAppIcon),
-			to: datos.comunidad,
-		})
-	}
-	return enlaces
-})
 
 const isStudent = computed(() => {
 	return userResource.data?.is_student
