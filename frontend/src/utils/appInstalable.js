@@ -8,9 +8,9 @@ import { getLmsBasePath } from '@/utils/basePath'
  * falta para invitar a instalarla. Las reglas, en docs/app-instalable.md.
  *
  * El service worker es el de taar-lms-app, servido en /sw.js, y no cachea nada
- * a propósito. Existe para que la app se pueda instalar y, más adelante, para
- * recibir los avisos con la app cerrada. Como no guarda nada, la escuela
- * siempre carga lo que está publicado.
+ * a propósito. Existe para que la app se pueda instalar y para recibir los
+ * avisos con la app cerrada (utils/avisosPush.js). Como no guarda nada, la
+ * escuela siempre carga lo que está publicado.
  *
  * Lo que sí queda viejo es la pantalla abierta: una app instalada no tiene
  * botón de recargar, y corre el código con el que arrancó. De eso se encargan
@@ -51,6 +51,10 @@ export function esIOS() {
    quedarse con el evento original, porque `prompt()` solo funciona sobre él. */
 export const eventoInstalar = ref(null)
 export const instalada = ref(false)
+
+/** La guía del iPhone (InvitacionInstalar.vue). La abre la invitación, y también
+ *  los avisos: en iPhone solo llegan con la app instalada. */
+export const guiaInstalarAbierta = ref(false)
 
 function escucharInstalacion() {
 	instalada.value = esInstalada()

@@ -11217,3 +11217,43 @@ msgstr "El icono de TanArtistic aparece en tu pantalla de inicio."
 #: frontend/src/components/Layouts/DeslizarParaRecargar.vue
 msgid "Reloading"
 msgstr "Recargando"
+
+#: frontend/src/components/AvisoUnaHoraAntes.vue
+msgid "Done: I'll remind you here an hour before."
+msgstr "Listo: te aviso aquí una hora antes."
+
+#: frontend/src/components/AvisoUnaHoraAntes.vue
+msgid "On iPhone, reminders only arrive with the app installed."
+msgstr "En iPhone, los avisos solo llegan con la app instalada."
+
+#: frontend/src/components/AvisoUnaHoraAntes.vue
+msgid "Notifications are blocked for TanArtistic. Turn them on in your browser settings to get the reminder."
+msgstr "Tienes los avisos de TanArtistic bloqueados. Actívalos en los ajustes del navegador para recibir el recordatorio."
+
+#: frontend/src/components/AvisoUnaHoraAntes.vue
+msgid "Want a reminder on this phone an hour before?"
+msgstr "¿Te aviso en este teléfono una hora antes?"
+
+#: frontend/src/components/AvisoUnaHoraAntes.vue
+msgid "Want a reminder on this computer an hour before?"
+msgstr "¿Te aviso en esta computadora una hora antes?"
+
+#: frontend/src/components/AvisoUnaHoraAntes.vue
+msgid "Remind me"
+msgstr "Avísame"
+
+#: frontend/src/components/AvisoUnaHoraAntes.vue
+msgid "Not now"
+msgstr "Ahora no"
+
+#: frontend/src/components/AvisoUnaHoraAntes.vue
+msgid "The reminders could not be turned on. Try again in a moment."
+msgstr "No se pudieron activar los avisos. Inténtalo de nuevo en un momento."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Install TanArtistic to get the live session reminders on your phone."
+msgstr "Instala TanArtistic para recibir en tu teléfono los recordatorios de las sesiones en vivo."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "When you finish, open TanArtistic from its new icon and turn on notifications in your profile."
+msgstr "Al terminar, abre TanArtistic desde su icono nuevo y activa los avisos en tu perfil."

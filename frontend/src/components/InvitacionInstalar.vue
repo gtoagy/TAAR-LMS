@@ -8,7 +8,11 @@
 	>
 		<Download class="size-4 shrink-0 taar-invitacion-icono" aria-hidden="true" />
 		<p class="min-w-0 flex-1 py-2.5 text-body text-ink-gray-8">
-			{{ __('Install TanArtistic and open your classes with one tap.') }}
+			{{
+				conAvisos
+					? __('Install TanArtistic to get the live session reminders on your phone.')
+					: __('Install TanArtistic and open your classes with one tap.')
+			}}
 		</p>
 		<Button variant="solid" size="md" :loading="instalando" @click="instalar">
 			{{ ios ? __('See how') : __('Install') }}
@@ -76,7 +80,13 @@
 			</div>
 
 			<p class="mt-5 text-support text-ink-gray-6">
-				{{ __('When you finish, open TanArtistic from its new icon.') }}
+				{{
+					conAvisos
+						? __(
+								'When you finish, open TanArtistic from its new icon and turn on notifications in your profile.'
+							)
+						: __('When you finish, open TanArtistic from its new icon.')
+				}}
 			</p>
 		</template>
 	</Dialog>
@@ -88,7 +98,13 @@ import { Button, Dialog, toast } from 'frappe-ui'
 import { Check, Download, KeyRound, Plus, Share, X } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
 import { avisoDeArriba } from '@/utils/avisosDeArriba'
-import { esIOS, eventoInstalar, instalada } from '@/utils/appInstalable'
+import { configuracionPush } from '@/utils/avisosPush'
+import {
+	esIOS,
+	eventoInstalar,
+	guiaInstalarAbierta,
+	instalada,
+} from '@/utils/appInstalable'
 
 /**
  * La invitación a instalar TanArtistic en el teléfono. Reemplaza al
@@ -101,12 +117,24 @@ import { esIOS, eventoInstalar, instalada } from '@/utils/appInstalable'
  * Las reglas, en docs/app-instalable.md.
  */
 
+const props = defineProps({
+	// El banner, solo en el móvil. La guía se monta siempre: los avisos la abren
+	// también desde un iPad a lo ancho, que no cuenta como móvil.
+	conBanner: { type: Boolean, default: true },
+})
+
 const CLAVE_CERRADA = 'taar-instalar-cerrada'
 /** Cerrarla la calla una semana y no para siempre: suficiente para no dar la lata. */
 const UNA_SEMANA = 7 * 24 * 60 * 60 * 1000
 
 const session = sessionStore()
 const ios = esIOS()
+
+// En iPhone, sin instalar no llega ningún aviso: ahí la invitación promete los
+// recordatorios. Solo si el servidor los tiene encendidos para esta cuenta, que
+// mientras se prueban es una sola. En Android llegan igual desde Chrome, así
+// que allá no se promete nada que instalar no dé.
+const conAvisos = computed(() => ios && !!configuracionPush.data?.habilitado)
 
 function leerCerrada() {
 	try {
@@ -134,6 +162,7 @@ const visible = avisoDeArriba(
 	'instalar',
 	computed(
 		() =>
+			props.conBanner &&
 			session.isLoggedIn &&
 			!instalada.value &&
 			!cerrada.value &&
@@ -144,7 +173,7 @@ const visible = avisoDeArriba(
 
 /* ── Instalar ──────────────────────────────────────────────────────────────── */
 const instalando = ref(false)
-const guiaAbierta = ref(false)
+const guiaAbierta = guiaInstalarAbierta
 
 async function instalar() {
 	if (ios) {
