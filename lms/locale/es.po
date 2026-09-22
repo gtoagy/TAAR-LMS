@@ -11109,3 +11109,19 @@ msgstr "{0} personas se han anotado"
 #: frontend/src/components/ProximaSesion.vue
 msgid "You were not signed up."
 msgstr "No se pudo anotarte."
+
+#: frontend/src/utils/index.js
+msgid "Live"
+msgstr "En vivo"
+
+#: frontend/src/components/Layouts/BarraMovil.vue
+msgid "Main navigation"
+msgstr "Navegación principal"
+
+#: frontend/src/utils/index.js
+msgid "Support"
+msgstr "Soporte"
+
+#: frontend/src/components/Layouts/BarraSuperiorMovil.vue
+msgid "Notifications ({0} unread)"
+msgstr "Notificaciones ({0} sin leer)"

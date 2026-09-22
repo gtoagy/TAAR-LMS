@@ -5,7 +5,7 @@
 			v-if="panelVisible"
 			ref="panelRef"
 			class="fixed z-30 bg-surface-base transition-all duration-300 ease-in-out"
-			:class="isMobile ? 'inset-0' : 'top-0 bottom-0'"
+			:class="isMobile ? 'inset-0 pt-[env(safe-area-inset-top)]' : 'top-0 bottom-0'"
 			:style="
 				isMobile
 					? {}

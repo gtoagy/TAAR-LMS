@@ -204,6 +204,60 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 		/>
+		<!-- Dos arreglos solo para iPhone y iPad. Es el mismo script de Wapido; las
+		     reglas, en docs/navegacion-y-tipografia.md.
+
+		     1. Tamaño del texto del sistema. Safari no aplica «Ajustes > Pantalla y
+		        brillo > Tamaño del texto» al contenido web: los rem se quedan en
+		        16px digas lo que digas. La única puerta es la fuente
+		        -apple-system-body, que sí sigue ese ajuste (17px en el tamaño por
+		        omisión). Se mide y se escala la raíz en proporción: con el ajuste
+		        por omisión queda exactamente al 100%, y la app no cambia para nadie
+		        que no haya tocado nada. Se vuelve a medir al regresar a la app, por
+		        si el ajuste cambió mientras estaba en segundo plano. En la Mac no se
+		        aplica: ahí -apple-system-body mide 13px y encogería todo.
+
+		     2. Zoom al tocar un campo. iOS agranda la página al enfocar un campo con
+		        letra menor a 16px, y los campos usan 14px. maximum-scale=1 lo evita,
+		        y en iOS (desde la 10) no quita el pellizco para ampliar. Solo aquí:
+		        en Android sí lo quitaría, y Android no hace ese zoom.
+
+		     Este archivo pasa por Jinja al servirse (lms/www/_lms.html): el script
+		     no puede llevar llaves dobles, ni llave con porcentaje o almohadilla. -->
+		<script>
+			(function () {
+				var ua = navigator.userAgent;
+				var esIOS =
+					/iPad|iPhone|iPod/.test(ua) ||
+					(navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+				if (!esIOS) return;
+
+				var raiz = document.documentElement;
+				var viewport = document.querySelector('meta[name="viewport"]');
+				if (viewport && viewport.content.indexOf('maximum-scale') === -1) {
+					viewport.content += ', maximum-scale=1';
+				}
+
+				var CUERPO_IOS_PX = 17;
+				function ajustarTamano() {
+					var sonda = document.createElement('span');
+					sonda.style.font = '-apple-system-body';
+					// Si el navegador no reconoce la fuente, la descarta y font queda
+					// vacío. Medir ahí daría 16px y encogería la app: mejor no tocar nada.
+					if (!sonda.style.font) return;
+					sonda.style.position = 'absolute';
+					sonda.style.visibility = 'hidden';
+					raiz.appendChild(sonda);
+					var px = parseFloat(getComputedStyle(sonda).fontSize);
+					raiz.removeChild(sonda);
+					if (px > 0) raiz.style.fontSize = (px / CUERPO_IOS_PX) * 100 + '%';
+				}
+				ajustarTamano();
+				document.addEventListener('visibilitychange', function () {
+					if (document.visibilityState === 'visible') ajustarTamano();
+				});
+			})();
+		</script>
 		<title>{{ title | e }}</title>
 		<meta name="title" content="{{ meta.title | e }}" />
 		<meta name="image" content="{{ meta.image | e }}" />

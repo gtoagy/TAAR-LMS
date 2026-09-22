@@ -2,7 +2,7 @@
 	<div class="w-full px-5 pt-5 pb-10">
 		<div class="space-y-2">
 			<div class="flex items-center justify-between">
-				<div class="text-3xl-bold text-ink-gray-9">
+				<div class="text-heading font-semibold text-ink-gray-9">
 					{{ __('Hey') }}, {{ user.data?.full_name }} 👋
 				</div>
 				<div>
@@ -12,7 +12,7 @@
 							class="bg-surface-amber-2 px-2 py-1 rounded-md cursor-pointer"
 						>
 							<span> 🔥 </span>
-							<span class="text-ink-gray-9">
+							<span class="text-label font-medium tabular-nums text-ink-gray-9">
 								{{ streakInfo.data?.current_streak }}
 							</span>
 						</div>
@@ -20,7 +20,7 @@
 				</div>
 			</div>
 
-			<div class="text-xl text-ink-gray-6 leading-6">
+			<div class="text-support text-ink-gray-6">
 				{{ subtitle }}
 			</div>
 		</div>

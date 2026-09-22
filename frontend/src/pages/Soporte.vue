@@ -1,6 +1,8 @@
 <template>
 	<div class="h-full">
+		<!-- En el móvil sobra: la barra superior ya dice dónde está. -->
 		<header
+			v-if="!titulo"
 			class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
 		>
 			<Breadcrumbs class="h-7" :items="breadcrumbs" />
@@ -19,9 +21,12 @@
 
 		<div v-else-if="!puedeAtender" class="p-5">
 			<div class="mx-auto mt-16 max-w-sm text-center">
-				<h1 class="mb-2 text-xl font-semibold text-ink-gray-9">
+				<component
+					:is="etiquetaTitulo"
+					class="mb-2 text-heading font-semibold text-ink-gray-9"
+				>
 					{{ __('This page is for the school team.') }}
-				</h1>
+				</component>
 				<router-link :to="{ name: 'Courses' }" class="mt-6 inline-block">
 					<Button variant="solid" size="md">
 						{{ __('Go to my courses') }}
@@ -32,10 +37,11 @@
 
 		<div v-else class="p-5">
 			<div class="mx-auto max-w-3xl">
-				<h1 class="text-2xl font-semibold text-ink-gray-9">
+				<!-- Con la barra superior del móvil el título ya está arriba. -->
+				<h1 v-if="!titulo" class="text-title font-semibold text-ink-gray-9">
 					{{ __('Student support') }}
 				</h1>
-				<p class="mt-1 text-base text-ink-gray-7">
+				<p class="mt-1 text-body text-ink-gray-7">
 					{{
 						__(
 							'Look up a student to resend her access or move her account to another email.'
@@ -61,11 +67,11 @@
 
 				<ErrorMessage v-else-if="errorBusqueda" class="mt-6" :message="errorBusqueda" />
 
-				<p v-else-if="!suficiente" class="mt-6 text-sm text-ink-gray-5">
+				<p v-else-if="!suficiente" class="mt-6 text-support text-ink-gray-6">
 					{{ __('Write at least {0} letters to search.').format(MINIMO_LETRAS) }}
 				</p>
 
-				<p v-else-if="!resultados.length" class="mt-6 text-base text-ink-gray-7">
+				<p v-else-if="!resultados.length" class="mt-6 text-body text-ink-gray-7">
 					{{ __('Nobody matches that. Try her name, or part of her email.') }}
 				</p>
 
@@ -77,12 +83,12 @@
 					>
 						<div class="flex flex-wrap items-start justify-between gap-2">
 							<div class="min-w-0">
-								<div class="font-medium text-ink-gray-9">
+								<div class="text-body font-medium text-ink-gray-9">
 									{{ alumna.nombre || alumna.correo }}
 								</div>
 								<!-- break-all: hay correos largos y la tarjeta tiene que
 								     caber en un móvil sin desbordarse a lo ancho. -->
-								<div class="break-all text-sm text-ink-gray-6">
+								<div class="break-all text-support text-ink-gray-6">
 									{{ alumna.correo }}
 								</div>
 							</div>
@@ -101,7 +107,7 @@
 							</Badge>
 						</div>
 
-						<p class="mt-3 text-sm text-ink-gray-7">
+						<p class="mt-3 text-support text-ink-gray-7">
 							{{ textoMembresia(alumna.membresia) }}
 						</p>
 
@@ -109,7 +115,7 @@
 							<span
 								v-for="curso in alumna.cursos"
 								:key="curso.nombre"
-								class="rounded-full px-2 py-0.5 text-xs"
+								class="rounded-full px-2 py-0.5 text-label"
 								:class="
 									curso.comprado
 										? 'bg-surface-amber-2 text-ink-amber-8'
@@ -125,7 +131,7 @@
 								</template>
 							</span>
 						</div>
-						<p v-else class="mt-3 text-sm text-ink-gray-5">
+						<p v-else class="mt-3 text-support text-ink-gray-6">
 							{{ __('No courses yet.') }}
 						</p>
 
@@ -162,7 +168,7 @@
 			]"
 		>
 			<template #body-content>
-				<p class="text-base text-ink-gray-7">
+				<p class="text-body text-ink-gray-7">
 					{{
 						__(
 							'We will email {0} with her link to create her password. Her previous link stops working.'
@@ -188,7 +194,7 @@
 		>
 			<template #body-content>
 				<div class="space-y-4">
-					<p class="text-base text-ink-gray-7">
+					<p class="text-body text-ink-gray-7">
 						{{ __('Her account today: {0}').format(elegida?.correo) }}
 					</p>
 
@@ -207,7 +213,7 @@
 					     después: quien atiende tiene que saber que esto no es
 					     "editar un campo", es mover la cuenta entera. -->
 					<div
-						class="rounded-md bg-surface-gray-1 p-3 text-sm leading-relaxed text-ink-gray-7"
+						class="rounded-md bg-surface-gray-1 p-3 text-support text-ink-gray-7"
 					>
 						<p>
 							{{
@@ -257,8 +263,10 @@ import {
 import { computed, inject, ref, watch } from 'vue'
 import { AtSign, Send } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
+import { useTituloMovil } from '@/utils/navegacionMovil'
 
 const { brand, isLoggedIn } = sessionStore()
+const { titulo, etiquetaTitulo } = useTituloMovil()
 const user = inject('$user')
 
 // El mismo mínimo que aplica el servidor. Por debajo no se pregunta: encajarían

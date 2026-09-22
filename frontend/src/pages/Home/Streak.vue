@@ -1,11 +1,11 @@
 <template>
 	<Dialog v-model:open="show" :title="__('Learning Consistency')">
 		<template #default>
-			<div class="text-base">
+			<div class="text-body">
 				<div class="text-center">
-					<div class="text-[30px]">🔥</div>
+					<div class="text-display">🔥</div>
 					<div class="mt-3">
-						<div class="text-ink-gray-5 mb-1">
+						<div class="mb-1 text-ink-gray-6">
 							{{
 								streakInfo.data?.current_streak < 1
 									? __('You can do better,')
@@ -15,7 +15,7 @@
 							}}
 							{{ __(' you are on a') }}
 						</div>
-						<div class="text-3xl-semibold text-ink-gray-9">
+						<div class="text-title font-semibold tabular-nums text-ink-gray-9">
 							{{ streakInfo.data?.current_streak }} {{ __('day streak') }}
 						</div>
 					</div>
@@ -28,7 +28,7 @@
 						<div class="text-ink-gray-6">
 							{{ __('Current Streak') }}
 						</div>
-						<div class="text-xl-semibold text-ink-gray-9">
+						<div class="text-heading font-semibold tabular-nums text-ink-gray-9">
 							{{ streakInfo.data?.current_streak }} {{ __('days') }}
 						</div>
 					</div>
@@ -36,14 +36,14 @@
 						<div class="text-ink-gray-6">
 							{{ __('Longest Streak') }}
 						</div>
-						<div class="text-xl-semibold text-ink-gray-9">
+						<div class="text-heading font-semibold tabular-nums text-ink-gray-9">
 							{{ streakInfo.data?.longest_streak }} {{ __('days') }}
 						</div>
 					</div>
 				</div>
 
 				<div
-					class="text-ink-gray-7 border border-outline-gray-1 px-2.5 py-2 rounded-md text-xs leading-5 mt-5"
+					class="text-ink-gray-7 border border-outline-gray-1 px-2.5 py-2 rounded-md text-support mt-5"
 				>
 					{{
 						__(

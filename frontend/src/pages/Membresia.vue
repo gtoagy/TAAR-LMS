@@ -1,8 +1,9 @@
 <template>
 	<div class="h-full">
-		<!-- En el móvil sobra: la barra de abajo ya dice dónde está. -->
+		<!-- En el móvil sobra: la barra superior ya dice dónde está. -->
 		<header
-			class="sticky top-0 z-10 hidden items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:flex sm:px-5"
+			v-if="!titulo"
+			class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
 		>
 			<Breadcrumbs class="h-7" :items="breadcrumbs" />
 		</header>
@@ -19,10 +20,11 @@
 				>
 					<Crown class="size-6 text-ink-gray-7" />
 				</div>
-				<h1 class="text-2xl font-semibold text-ink-gray-9 mb-2">
+				<!-- Con la barra superior del móvil el título ya está arriba. -->
+				<h1 v-if="!titulo" class="mb-2 text-title font-semibold text-ink-gray-9">
 					{{ __('Membership') }}
 				</h1>
-				<p class="text-base text-ink-gray-7 mb-8">
+				<p class="mb-8 text-body text-ink-gray-7">
 					{{ __('Unlimited access to the membership courses.') }}
 				</p>
 
@@ -37,19 +39,19 @@
 					"
 				>
 					<div class="mb-1 flex flex-wrap items-center gap-2">
-						<span class="text-lg font-medium text-ink-gray-9">
+						<span class="text-heading font-semibold text-ink-gray-9">
 							{{ __('Your membership is active.') }}
 						</span>
 						<span
 							v-if="nombrePlan"
-							class="rounded-full bg-surface-gray-3 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-ink-gray-7"
+							class="rounded-full bg-surface-gray-3 px-2 py-0.5 text-micro font-semibold uppercase tracking-wide text-ink-gray-7"
 						>
 							{{ nombrePlan }}
 						</span>
 					</div>
 					<p
 						v-if="membership.data.status === 'En mora'"
-						class="text-base text-orange-700 mb-2"
+						class="mb-2 text-body text-orange-700"
 					>
 						{{
 							__(
@@ -59,7 +61,7 @@
 					</p>
 					<p
 						v-if="membership.data.period_end"
-						class="text-base text-ink-gray-7"
+						class="text-body text-ink-gray-7"
 					>
 						<template v-if="membership.data.cancel_at_period_end">
 							{{
@@ -84,7 +86,7 @@
 							{{ __('Manage my membership') }}
 						</Button>
 					</div>
-					<p class="text-sm text-ink-gray-5 mt-4">
+					<p class="mt-4 text-support text-ink-gray-6">
 						{{
 							__(
 								'From "Manage my membership" you can change your card, download your invoices or cancel your subscription.'
@@ -100,13 +102,13 @@
 					v-if="puedeMejorar"
 					class="mt-4 rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-6 text-start"
 				>
-					<div class="text-lg font-medium text-ink-gray-9 mb-1">
+					<div class="mb-1 text-heading font-semibold text-ink-gray-9">
 						{{ __('Your plan is the monthly one.') }}
 					</div>
-					<p class="text-base text-ink-gray-7">
+					<p class="text-body text-ink-gray-7">
 						{{ __('With the annual plan you also get:') }}
 					</p>
-					<div class="my-4 space-y-2 text-base text-ink-gray-8">
+					<div class="my-4 space-y-2 text-body text-ink-gray-8">
 						<div
 							v-for="curso in comparativa.cursos_solo_anual"
 							:key="curso"
@@ -122,7 +124,7 @@
 					</div>
 					<p
 						v-if="comparativa.valor_sueltos"
-						class="mb-4 text-sm text-ink-gray-6"
+						class="mb-4 text-support text-ink-gray-6"
 					>
 						{{
 							__('Bought separately they cost {0}.').format(
@@ -136,7 +138,7 @@
 						</template>
 						{{ __('Change to the annual plan') }}
 					</Button>
-					<p class="text-sm text-ink-gray-5 mt-3">
+					<p class="mt-3 text-support text-ink-gray-6">
 						{{
 							__(
 								'Stripe shows you what you pay today, with the part you already paid this month discounted.'
@@ -160,20 +162,22 @@
 					>
 						<div class="flex items-center gap-2">
 							<span
-								class="text-sm font-medium uppercase tracking-wide text-ink-gray-5"
+								class="text-label font-medium uppercase tracking-wide text-ink-gray-6"
 							>
 								{{ __('Monthly') }}
 							</span>
 							<span
 								v-if="membership.data.especial"
-								class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800"
+								class="rounded-full bg-amber-100 px-2 py-0.5 text-micro font-semibold text-amber-800"
 							>
 								{{ __('Full access') }}
 							</span>
 						</div>
-						<div class="mt-2 text-3xl font-bold text-ink-gray-9">
+						<div
+							class="mt-2 text-title font-bold tabular-nums text-ink-gray-9 md:text-display"
+						>
 							{{ membership.data.price_display }}
-							<span class="text-base font-normal text-ink-gray-5">
+							<span class="text-support font-normal text-ink-gray-6">
 								{{ __('/ month') }}
 							</span>
 						</div>
@@ -182,7 +186,7 @@
 						     mismo error que teníamos antes, pero al revés. -->
 						<div
 							v-if="membership.data.especial"
-							class="my-5 flex-1 space-y-2 text-base text-ink-gray-8"
+							class="my-5 flex-1 space-y-2 text-body text-ink-gray-8"
 						>
 							<div class="flex items-start gap-2">
 								<Check class="mt-1 size-4 shrink-0 text-green-600" />
@@ -208,7 +212,7 @@
 							</div>
 						</div>
 
-						<div v-else class="my-5 flex-1 space-y-2 text-base text-ink-gray-8">
+						<div v-else class="my-5 flex-1 space-y-2 text-body text-ink-gray-8">
 							<div class="flex items-start gap-2">
 								<Check class="mt-1 size-4 shrink-0 text-green-600" />
 								{{
@@ -228,7 +232,7 @@
 							<div
 								v-for="curso in comparativa.cursos_solo_anual"
 								:key="curso"
-								class="flex items-start gap-2 text-ink-gray-5"
+								class="flex items-start gap-2 text-ink-gray-6"
 							>
 								<X class="mt-1 size-4 shrink-0 text-ink-gray-4" />
 								{{ curso }}
@@ -236,7 +240,7 @@
 						</div>
 						<p
 							v-if="membership.data.especial"
-							class="mb-4 text-sm font-medium text-amber-800"
+							class="mb-4 text-support font-medium text-amber-800"
 						>
 							{{
 								__(
@@ -259,23 +263,25 @@
 					>
 						<div class="flex items-center gap-2">
 							<span
-								class="text-sm font-medium uppercase tracking-wide text-ink-gray-5"
+								class="text-label font-medium uppercase tracking-wide text-ink-gray-6"
 							>
 								{{ __('Annual') }}
 							</span>
 							<span
-								class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
+								class="rounded-full bg-green-100 px-2 py-0.5 text-micro font-semibold text-green-700"
 							>
 								{{ __('2 months free') }}
 							</span>
 						</div>
-						<div class="mt-2 text-3xl font-bold text-ink-gray-9">
+						<div
+							class="mt-2 text-title font-bold tabular-nums text-ink-gray-9 md:text-display"
+						>
 							{{ membership.data.price_display_anual }}
-							<span class="text-base font-normal text-ink-gray-5">
+							<span class="text-support font-normal text-ink-gray-6">
 								{{ __('/ year') }}
 							</span>
 						</div>
-						<div class="my-5 flex-1 space-y-2 text-base text-ink-gray-8">
+						<div class="my-5 flex-1 space-y-2 text-body text-ink-gray-8">
 							<div class="flex items-start gap-2">
 								<Check class="mt-1 size-4 shrink-0 text-green-600" />
 								<strong>
@@ -301,7 +307,7 @@
 						</div>
 						<p
 							v-if="comparativa.valor_sueltos"
-							class="mb-4 text-sm text-ink-gray-6"
+							class="mb-4 text-support text-ink-gray-6"
 						>
 							{{
 								__('Bought separately they cost {0}.').format(
@@ -325,12 +331,12 @@
 					</div>
 
 					<div class="sm:col-span-2 text-center">
-						<p class="text-sm text-ink-gray-5">
+						<p class="text-support text-ink-gray-6">
 							{{ __('Prices are shown in your local currency at checkout.') }}
 						</p>
 						<p
 							v-if="membership.data.status === 'Cancelada'"
-							class="mt-2 text-sm text-ink-gray-5"
+							class="mt-2 text-support text-ink-gray-6"
 						>
 							{{
 								__(
@@ -355,6 +361,9 @@ import {
 import { computed } from 'vue'
 import { Check, Crown, X } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
+import { useTituloMovil } from '@/utils/navegacionMovil'
+
+const { titulo } = useTituloMovil()
 
 const { user } = sessionStore()
 

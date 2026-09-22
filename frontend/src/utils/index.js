@@ -8,6 +8,9 @@ import { Markdown } from '@/utils/markdownParser'
 import { useSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/user'
 import { haySesiones } from '@/utils/envivo'
+import { enlacesDeAyuda } from '@/utils/ayuda'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import { markRaw } from 'vue'
 import Header from '@editorjs/header'
 import Paragraph from '@editorjs/paragraph'
 import { CodeBox } from '@/utils/code'
@@ -472,11 +475,25 @@ export function getUserTimezone() {
 	}
 }
 
+/**
+ * La lista única de destinos: de aquí salen el panel lateral del ordenador y la
+ * barra inferior del móvil. TanArtistic le añadió tres campos, que solo lee el
+ * móvil:
+ *
+ * - `pestana`: el orden en la barra inferior (1 a 4). La barra lleva como mucho
+ *   cuatro destinos y «Más»; lo que no tiene `pestana` va a la hoja de «Más».
+ * - `etiquetaCorta`: la que cabe debajo de un icono, cuando la de siempre no.
+ * - `onlyMobile`: solo en el móvil. En el ordenador, perfil y sesión viven en el
+ *   menú del logo.
+ *
+ * Ver docs/navegacion-y-tipografia.md.
+ */
 export function getSidebarLinks(forMobile = false) {
 	let links = getSidebarItems(forMobile)
 
 	links.forEach((link) => {
 		link.items = link.items.filter((item) => {
+			if (item.onlyMobile && !forMobile) return false
 			return item.condition ? item.condition() : true
 		})
 	})
@@ -501,6 +518,9 @@ const getSidebarItems = (forMobile = false) => {
 					label: 'Home',
 					icon: 'Home',
 					to: 'Home',
+					// Sin esto, Inicio no se marcaba nunca como activo.
+					activeFor: ['Home'],
+					pestana: 1,
 					condition: () => {
 						return userResource?.data
 					},
@@ -525,6 +545,7 @@ const getSidebarItems = (forMobile = false) => {
 					icon: 'BookOpen',
 					to: 'Courses',
 					activeFor: ['Courses', 'CourseDetail', 'Lesson'],
+					pestana: 2,
 				},
 				{
 					label: 'Programs',
@@ -547,6 +568,9 @@ const getSidebarItems = (forMobile = false) => {
 					icon: 'Crown',
 					to: 'Membresia',
 					activeFor: ['Membresia'],
+					// Va en la barra por dinero, no por frecuencia: es donde se
+					// renueva, se pasa al plan anual y se vuelve tras un cobro fallido.
+					pestana: 4,
 				},
 				// Solo si hay algo que enseñar. Una sección vacía que dice «aún no
 				// hay sesiones» se mira dos veces y ya no se vuelve a mirar, y
@@ -556,19 +580,23 @@ const getSidebarItems = (forMobile = false) => {
 				// habiendo sesiones, no habría por dónde crear la primera.
 				{
 					label: 'Live sessions',
+					// «Sesiones en vivo» no cabe debajo de un icono.
+					etiquetaCorta: 'Live',
 					icon: 'Video',
 					to: 'EnVivo',
 					activeFor: ['EnVivo'],
+					pestana: 3,
 					condition: () =>
 						haySesiones.value || !!userResource?.data?.is_moderator,
 				},
-				// Detrás de Membresía y dentro de la navegación de siempre: colgando
-				// del menú «Más» no las encontraba nadie, y en el móvil son lo único
-				// que avisa de que ha pasado algo.
+				// Detrás de Membresía y dentro de la navegación de siempre. En el
+				// móvil no es un destino sino un panel: va en la barra superior, a
+				// la derecha, con su contador (BarraSuperiorMovil.vue).
 				{
 					label: 'Notifications',
 					icon: 'Bell',
 					panel: 'notifications',
+					barraSuperior: true,
 					condition: () => {
 						return userResource?.data
 					},
@@ -620,7 +648,7 @@ const getSidebarItems = (forMobile = false) => {
 					icon: 'CircleHelp',
 					to: 'Quizzes',
 					condition: () => {
-						return !forMobile && isAdmin()
+						return isAdmin()
 					},
 					activeFor: [
 						'Quizzes',
@@ -635,7 +663,7 @@ const getSidebarItems = (forMobile = false) => {
 					icon: 'Pencil',
 					to: 'Assignments',
 					condition: () => {
-						return !forMobile && isAdmin()
+						return isAdmin()
 					},
 					activeFor: [
 						'Assignments',
@@ -648,13 +676,78 @@ const getSidebarItems = (forMobile = false) => {
 					icon: 'Code',
 					to: 'ProgrammingExercises',
 					condition: () => {
-						return !forMobile && isAdmin()
+						return isAdmin()
 					},
 					activeFor: [
 						'ProgrammingExercises',
 						'ProgrammingExerciseSubmissions',
 						'ProgrammingExerciseSubmission',
 					],
+				},
+				// La herramienta del equipo para reenviar un acceso o mover una
+				// cuenta. Existía sin que ninguna navegación la enlazara.
+				{
+					label: 'Student support',
+					icon: 'LifeBuoy',
+					to: 'Soporte',
+					activeFor: ['Soporte'],
+					condition: () =>
+						!!(
+							userResource?.data?.is_moderator ||
+							userResource?.data?.is_system_manager
+						),
+				},
+			],
+		},
+		// Los dos WhatsApp, al final de la navegación y no descolgados abajo:
+		// quien se atasca los busca donde están las demás cosas. Ver utils/ayuda.js.
+		{
+			label: 'Help',
+			hideLabel: true,
+			items: [
+				{
+					label: 'Support',
+					icon: markRaw(WhatsAppIcon),
+					to: enlacesDeAyuda.data?.soporte,
+					condition: () => !!enlacesDeAyuda.data?.soporte,
+				},
+				{
+					label: 'Community',
+					icon: markRaw(WhatsAppIcon),
+					to: enlacesDeAyuda.data?.comunidad,
+					condition: () => !!enlacesDeAyuda.data?.comunidad,
+				},
+			],
+		},
+		// Solo en el móvil: en el ordenador viven en el menú del logo.
+		{
+			label: 'Account',
+			hideLabel: true,
+			items: [
+				{
+					label: 'Profile',
+					icon: 'UserRound',
+					to: 'Profile',
+					activeFor: ['Profile'],
+					onlyMobile: true,
+					// Se entra por su avatar, a la izquierda de la barra superior.
+					// Sigue en la lista porque de aquí sale el título «Mi perfil».
+					barraSuperior: true,
+					condition: () => !!userResource?.data,
+				},
+				{
+					label: 'Log out',
+					icon: 'LogOut',
+					action: 'logout',
+					onlyMobile: true,
+					condition: () => !!userResource?.data,
+				},
+				{
+					label: 'Log in',
+					icon: 'LogIn',
+					action: 'login',
+					onlyMobile: true,
+					condition: () => !userResource?.data,
 				},
 			],
 		},
@@ -674,7 +767,8 @@ const checkIfCanAddProgram = (forMobile = false) => {
 	const { userResource } = usersStore()
 	const { programs } = useSettings()
 	if (!userResource.data) return false
-	if (forMobile) return false
+	// El móvil ya no lo resuelve aparte: la barra carga `programs` igual que el
+	// panel lateral y lee esta misma condición.
 	if (userResource?.data?.is_moderator || userResource?.data?.is_instructor) {
 		return true
 	}

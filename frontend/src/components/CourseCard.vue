@@ -26,7 +26,7 @@
 			     dentro del código. -->
 			<span
 				v-if="course.upcoming"
-				class="absolute start-3 top-3 inline-flex items-center gap-x-1 rounded-md border border-outline-amber-1 bg-surface-amber-1 px-2 py-0.5 text-xs font-medium text-ink-amber-6"
+				class="absolute start-3 top-3 inline-flex items-center gap-x-1 rounded-md border border-outline-amber-1 bg-surface-amber-1 px-2 py-0.5 text-micro font-semibold text-ink-amber-6"
 			>
 				<span class="lucide-clock size-3" />
 				{{ __('Pre-launch') }}
@@ -51,20 +51,16 @@
 			</div> -->
 			<div
 				v-if="!course.image"
-				class="flex items-center justify-center text-white flex-1 font-extrabold my-auto px-5 text-center leading-6 h-full"
-				:class="
-					course.title.length > 32
-						? 'text-xl'
-						: course.title.length > 20
-						? 'text-3xl'
-						: 'text-4xl'
-				"
+				class="flex items-center justify-center text-white flex-1 font-extrabold my-auto px-5 text-center h-full"
+				:class="course.title.length > 32 ? 'text-heading' : 'text-title'"
 			>
 				{{ course.title }}
 			</div>
 		</div>
 		<div class="flex flex-col flex-auto p-4 border-x-2 border-b-2 rounded-b-md">
-			<div class="flex items-center justify-between mb-2">
+			<div
+				class="mb-2 flex items-center justify-between text-label tabular-nums text-ink-gray-6"
+			>
 				<div v-if="course.lessons">
 					<Tooltip :text="__('Lessons')">
 						<span class="flex items-center">
@@ -101,13 +97,12 @@
 
 			<div
 				v-if="course.image"
-				class="font-semibold leading-6"
-				:class="course.title.length > 32 ? 'text-xl' : 'text-3xl'"
+				class="text-heading font-semibold"
 			>
 				{{ course.title }}
 			</div>
 
-			<div class="short-introduction text-sm">
+			<div class="short-introduction text-support text-ink-gray-6">
 				{{ course.short_introduction }}
 			</div>
 
@@ -116,7 +111,10 @@
 				:progress="course.membership.progress"
 			/>
 
-			<div v-if="user && course.membership" class="text-sm mt-2 mb-4">
+			<div
+				v-if="user && course.membership"
+				class="mt-2 mb-4 text-label tabular-nums text-ink-gray-6"
+			>
 				{{ Math.ceil(course.membership.progress) }}% {{ __('completed') }}
 			</div>
 
@@ -129,8 +127,8 @@
 						class="whitespace-nowrap font-semibold"
 						:class="
 							ventaIndividual && !soloConPlanAnual
-								? 'text-base'
-								: 'text-xs text-ink-gray-6'
+								? 'text-body tabular-nums'
+								: 'text-label text-ink-gray-6'
 						"
 					>
 						{{ priceLabel }}

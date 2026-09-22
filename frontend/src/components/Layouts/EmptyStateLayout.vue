@@ -6,10 +6,10 @@
 		>
 			<span class="size-7.5 text-ink-gray-5" :class="icon" />
 			<div class="flex flex-col items-center gap-1">
-				<span class="text-xl-medium text-center text-ink-gray-8">
+				<span class="text-center text-heading font-semibold text-ink-gray-9">
 					{{ computedTitle }}
 				</span>
-				<span class="text-center text-p-base text-ink-gray-6">
+				<span class="text-center text-support text-ink-gray-6">
 					{{ computedDescription }}
 				</span>
 			</div>

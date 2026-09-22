@@ -16,23 +16,23 @@
 					/>
 					<Video v-else class="size-4 shrink-0 text-ink-gray-5" />
 					<span
-						class="text-xs font-medium uppercase tracking-wide"
-						:class="abierta ? 'text-red-700' : 'text-ink-gray-5'"
+						class="text-label font-medium uppercase tracking-wide"
+						:class="abierta ? 'text-red-700' : 'text-ink-gray-6'"
 					>
 						{{ abierta ? __('Live now') : __('Next live session') }}
 					</span>
 				</div>
 
-				<p class="truncate text-base font-medium text-ink-gray-9">
+				<p class="truncate text-heading font-semibold text-ink-gray-9">
 					{{ sesion.titulo }}
 				</p>
 
 				<!-- La mayúscula va en el párrafo y no en el `span`: `::first-letter`
 				     no existe para un elemento en línea. Y es `first-letter` y no
 				     `capitalize`, que escribiría «17 De Septiembre». -->
-				<p class="mt-0.5 text-sm text-ink-gray-7 first-letter:uppercase">
+				<p class="mt-0.5 text-support text-ink-gray-7 first-letter:uppercase">
 					<span>{{ fechaLarga(sesion) }}</span>
-					<span v-if="!abierta" class="text-ink-gray-5">
+					<span v-if="!abierta" class="text-ink-gray-6">
 						· {{ cuantoFalta(sesion) }}
 					</span>
 				</p>
@@ -47,7 +47,7 @@
 				</Button>
 				<span
 					v-else-if="abierta && !puedeEntrar"
-					class="text-sm text-ink-gray-6"
+					class="text-support text-ink-gray-6"
 				>
 					{{ __('Included in your membership') }}
 				</span>
@@ -102,7 +102,7 @@
 			</Button>
 
 			<template v-else>
-				<span class="flex items-center gap-1.5 text-sm text-ink-gray-7">
+				<span class="flex items-center gap-1.5 text-support text-ink-gray-7">
 					<Check class="size-4 text-ink-gray-6" />
 					{{ __("You're signed up") }}
 				</span>
@@ -116,7 +116,7 @@
 					align="start"
 				>
 					<button
-						class="text-sm text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
+						class="text-support text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
 					>
 						{{ __('Add to my calendar') }}
 					</button>
@@ -126,13 +126,13 @@
 					:href="calendario.href"
 					target="_blank"
 					rel="noopener"
-					class="text-sm text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
+					class="text-support text-ink-gray-7 underline underline-offset-2 hover:text-ink-gray-9"
 				>
 					{{ __('Add to my calendar') }}
 				</a>
 
 				<button
-					class="text-sm text-ink-gray-5 underline underline-offset-2 hover:text-ink-gray-7"
+					class="text-support text-ink-gray-6 underline underline-offset-2 hover:text-ink-gray-8"
 					:disabled="desapuntarme.loading"
 					@click="desapuntarse"
 				>
@@ -146,7 +146,7 @@
 			     es suyo el dato. -->
 			<span
 				v-if="apuntadas >= 3 || (puedeModerar && apuntadas > 0)"
-				class="ml-auto text-sm text-ink-gray-5"
+				class="ml-auto text-label tabular-nums text-ink-gray-6"
 			>
 				{{ cuantas }}
 			</span>
@@ -170,7 +170,7 @@
 			]"
 		>
 			<template #default>
-				<p class="text-base text-ink-gray-7">
+				<p class="text-body text-ink-gray-7">
 					{{
 						__(
 							'The Zoom meeting is deleted too, so a link someone already saved stops working. This cannot be undone.'

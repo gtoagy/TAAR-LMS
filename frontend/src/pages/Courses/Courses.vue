@@ -38,9 +38,9 @@
 		<div
 			class="mb-5 flex flex-col justify-between space-y-4 lg:flex-row lg:items-center lg:space-y-0"
 		>
-			<div class="text-xl-semibold text-ink-gray-9">
+			<h2 class="text-heading font-semibold text-ink-gray-9">
 				{{ __('All Courses') }}
-			</div>
+			</h2>
 			<!-- gap y no space-y: el selector de categoría viene envuelto en un
 			     display:contents, que se come el margen y lo dejaba pegado al
 			     buscador. -->
