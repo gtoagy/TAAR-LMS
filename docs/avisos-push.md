@@ -96,8 +96,10 @@ teléfonos que se abran.
   suena. Para las vacaciones, o para la maestra el día que no quiere enterarse
   de cada respuesta.
 - **Limpieza:** un 404 o 410 de Apple o Google borra la fila (la app se
-  desinstaló). Cualquier otro error suma un fallo; a los 5 seguidos se deja de
-  intentar, sin borrar, y al volver a abrir la app el contador regresa a 0.
+  desinstaló), salvo en sus primeros 10 minutos de vida (`GRACIA_MINUTOS`, ver la
+  trampa del 410 recién nacido). Cualquier otro error suma un fallo; a los 5
+  seguidos se deja de intentar, sin borrar, y al volver a abrir la app el
+  contador regresa a 0.
 - **La bitácora** es el campo «Aviso en el teléfono» de cada Notification Log que
   debía sonar: `enviado`, `parcial`, `fallido`, `sin dispositivos` o
   `silenciada`. «Silenciada» lo decidió ella; «sin dispositivos» es que no tiene
@@ -171,6 +173,15 @@ objeto `notification` con `title`, `body`, `navigate` (absoluta), `tag`, `lang`.
   http y la librería lo rechaza; se usa `https://<host>`.
 - **Un error de configuración no es culpa del teléfono**: si la firma no se puede
   armar, se anota una vez y no se le suma un fallo a cada dispositivo.
+- **El 410 recién nacido.** Google contesta `410 push subscription has
+  unsubscribed or expired` a una suscripción de segundos, antes de que su propio
+  registro se propague. Medido el 22-sep-2026: 410 tres segundos después de
+  suscribirse y **201, al mismo endpoint, minuto y medio más tarde**. Nadie se
+  dio de baja. Si se borrara la fila, la alumna que activa los avisos y recibe
+  una respuesta en ese minuto se quedaría sin aparato, en silencio, hasta volver
+  a abrir la app. Por eso hay `GRACIA_MINUTOS = 10`: dentro de esa ventana un
+  caducado solo suma un fallo (`ultimo_error`: «410 recién suscrita, se
+  conserva»).
 - **`push` SIEMPRE muestra la notificación.** Chrome castiga el push silencioso
   con su propio aviso de «este sitio se actualizó en segundo plano».
 - **`renotify` exige `tag`**: sin él, Chrome lanza un error y no muestra nada.
@@ -189,8 +200,8 @@ objeto `notification` con `title`, `body`, `navigate` (absoluta), `tag`, `lang`.
 - **El emisor sin navegador:** un servidor HTTP local que haga de Apple o Google
   y un par de llaves de «teléfono» falso. Se descifra lo que llega con `http_ece`
   y se comprueba el esquema `vapid`, el `aud` de cada servidor, el TTL, que un
-  410 borra la fila y que un 500 suma un fallo. Así se encontraron las trampas
-  de `Vapid01` y del `sub`.
+  410 borra la fila vieja pero conserva la recién nacida, y que un 500 suma un
+  fallo. Así se encontraron las trampas de `Vapid01` y del `sub`.
 - **El handler del service worker:** DevTools > Application > Service workers >
   Push, con un JSON como el payload de arriba.
 - `vitest`: `src/tests/avisosPush.test.ts` (el guardia de la promesa en vuelo, el
