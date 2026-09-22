@@ -11,6 +11,7 @@ import { initSocket } from './socket'
 import { FrappeUI, setConfig, frappeRequest, pageMetaPlugin } from 'frappe-ui'
 import { telemetryPlugin } from 'frappe-ui/frappe'
 import { arrancarAppInstalable } from '@/utils/appInstalable'
+import { arrancarAvisosPush } from '@/utils/avisosPush'
 
 let pinia = createPinia()
 let app = createApp(App)
@@ -25,6 +26,7 @@ app.provide('$dayjs', dayjs)
 app.provide('$socket', initSocket())
 app.mount('#app')
 arrancarAppInstalable()
+arrancarAvisosPush(router)
 
 const { userResource, allUsers } = usersStore()
 app.provide('$user', userResource)

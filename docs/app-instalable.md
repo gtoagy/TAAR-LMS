@@ -49,7 +49,8 @@ El service worker de Wapido, **que no cachea nada**, servido en la raíz:
 
 - `taar-lms-app` lo sirve en `/sw.js` con un `page_renderer`. En la raíz porque
   los avisos con la app cerrada necesitan un service worker que controle las
-  páginas de la escuela.
+  páginas de la escuela. Sus handlers de avisos, en
+  [avisos-push.md](avisos-push.md).
 - No intercepta ninguna petición: la escuela carga siempre lo publicado y no hay
   precache que se pueda quedar viejo en una app que no tiene botón de recargar.
 - Al activarse borra todas las cachés del origen, incluidas las que dejó VitePWA.
@@ -130,10 +131,15 @@ reseña.
   respeta `disable_pwa`.
 - La X la calla **una semana**, no para siempre.
 - **Uno a la vez** con los demás avisos de arriba (`utils/avisosDeArriba.js`):
-  primero la reseña, después instalar. Cuando lleguen los avisos push, su permiso
-  va detrás de instalar, porque en iPhone sin instalar no llegan.
-- Todavía no promete avisos. Cuando la parte de los avisos push esté publicada, el
-  texto cambia: en iPhone, sin instalar no llegan los recordatorios de las sesiones.
+  primero la reseña, después instalar. Los avisos push no tienen banner: su
+  permiso se pide en «¿Te aviso una hora antes?» ([avisos-push.md](avisos-push.md)).
+  Si algún día lo tienen, va detrás de instalar, porque en iPhone sin instalar no
+  llegan.
+- **En iPhone promete los recordatorios** de las sesiones en vivo, pero solo si
+  los avisos están encendidos para esa cuenta (`taar_push_solo_para`). En Android
+  no, porque allá llegan igual desde Chrome sin instalar.
+- La guía (`guiaInstalarAbierta`) se monta siempre, aunque el banner no salga: la
+  abren también los avisos, y desde un iPad a lo ancho, que no cuenta como móvil.
 
 ---
 

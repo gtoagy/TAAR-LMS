@@ -5,7 +5,7 @@
 			     layouts pintan aquí su <slot />, así que la invitación acompaña a
 			     la alumna por toda la escuela sin tocar ninguno de ellos. -->
 			<BarraResena />
-			<InvitacionInstalar v-if="isMobile && !settings.data?.disable_pwa" />
+			<InvitacionInstalar v-if="!settings.data?.disable_pwa" :con-banner="isMobile" />
 			<router-view />
 		</Layout>
 		<!-- El asistente de bienvenida vive aquí arriba y no dentro del catálogo,

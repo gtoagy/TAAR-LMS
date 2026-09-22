@@ -152,6 +152,9 @@
 			</span>
 		</div>
 
+		<!-- Solo a quien ya dijo que viene: el aviso de la última hora es para ella. -->
+		<AvisoUnaHoraAntes v-if="haySesionIniciada && puedeEntrar && !abierta && apuntada" />
+
 		<ProgramarSesionModal v-if="editando" v-model="editando" :original="sesion" />
 
 		<!-- Se pregunta antes porque esto no se deshace, y porque lo que se borra
@@ -186,6 +189,7 @@
 import { Button, Dialog, Dropdown, createResource, toast } from 'frappe-ui'
 import { CalendarPlus, Check, Pencil, Trash2, Video } from 'lucide-vue-next'
 import { computed, inject, ref, watch } from 'vue'
+import AvisoUnaHoraAntes from '@/components/AvisoUnaHoraAntes.vue'
 import ProgramarSesionModal from '@/components/ProgramarSesionModal.vue'
 import {
 	ahora,

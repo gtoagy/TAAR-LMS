@@ -118,6 +118,12 @@ const routes = [
 				component: () =>
 					import('@/pages/ProfileEvaluationSchedule.vue'),
 			},
+			// Los avisos en el teléfono y sus dispositivos (pages/ProfileAvisos.vue).
+			{
+				name: 'ProfileAvisos',
+				path: 'avisos',
+				component: () => import('@/pages/ProfileAvisos.vue'),
+			},
 		],
 	},
 	{
