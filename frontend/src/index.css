@@ -22,6 +22,34 @@
  * así que basta redefinir esos tokens SOLO dentro del propio <button> —
  * tooltips y demás superficies gray-10 (que son <div>) quedan intactas.
  */
+/*
+ * `body` declara su tamaño. No es decorativo: sin esto, todo lo que no dice
+ * cuánto mide hereda los 16px del navegador y sale más grande que los títulos.
+ * Dentro del layout manda el `text-p-base` de App.vue; esto cubre lo que se
+ * teletransporta a <body> (diálogos, menús, avisos), que queda fuera de él.
+ * Ningún grep lo encuentra, porque el problema es justo la falta de clase.
+ */
+body {
+	@apply text-body;
+}
+
+/*
+ * Movimiento reducido. Quien lo activa suele hacerlo porque las animaciones le
+ * marean: nada se desliza ni gira, todo llega de golpe a su sitio. Va aquí, en el
+ * CSS que sí se importa, para que alcance también a los componentes de
+ * frappe-ui y a las transiciones de Vue.
+ */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
 button.bg-surface-gray-10 {
 	--surface-gray-10: var(--taar-primary);
 	--surface-gray-9: var(--taar-primary-hover);
