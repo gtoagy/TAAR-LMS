@@ -1,6 +1,9 @@
 <template>
 	<div class="h-full">
+		<!-- En el móvil sobra: la barra superior ya dice dónde está, y con ella
+		     el <h1> es suyo (etiquetaTitulo pasa los de aquí a <h2>). -->
 		<header
+			v-if="!titulo"
 			class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
 		>
 			<Breadcrumbs class="h-7" :items="breadcrumbs" />
@@ -25,9 +28,9 @@
 					>
 						<Heart class="size-6 text-ink-gray-7" />
 					</div>
-					<h1 class="mb-2 text-2xl font-semibold text-ink-gray-9">
+					<component :is="etiquetaTitulo" class="mb-2 text-2xl font-semibold text-ink-gray-9">
 						{{ __('Thank you for writing to us!') }}
-					</h1>
+					</component>
 					<!-- El descuento puede tardar en cuadrar con la suscripción, y eso
 					     no es un problema de ella: se le cuenta igual de bien en los dos
 					     casos, nunca como un fallo. -->
@@ -64,14 +67,14 @@
 					>
 						<Heart class="size-6 text-ink-gray-7" />
 					</div>
-					<h1 class="mb-2 text-2xl font-semibold text-ink-gray-9">
+					<component :is="etiquetaTitulo" class="mb-2 text-2xl font-semibold text-ink-gray-9">
 						<template v-if="invitacion.data?.ya_enviada">
 							{{ __('You already sent us your review. Thank you!') }}
 						</template>
 						<template v-else>
 							{{ __('You do not have this invitation right now.') }}
 						</template>
-					</h1>
+					</component>
 					<router-link :to="{ name: 'Courses' }" class="mt-6 inline-block">
 						<Button variant="solid" size="md">
 							{{ __('Go to my courses') }}
@@ -82,9 +85,9 @@
 				<!-- Formulario -->
 				<template v-else>
 					<div class="text-center">
-						<h1 class="mb-2 text-2xl font-semibold text-ink-gray-9">
+						<component :is="etiquetaTitulo" class="mb-2 text-2xl font-semibold text-ink-gray-9">
 							{{ __('Tell us your experience') }}
-						</h1>
+						</component>
 						<p class="text-base text-ink-gray-7">
 							{{
 								__(
@@ -218,6 +221,9 @@ import { computed, ref } from 'vue'
 import { Heart, ImagePlus, X } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
 import { validateFile } from '@/utils'
+import { useTituloMovil } from '@/utils/navegacionMovil'
+
+const { titulo, etiquetaTitulo } = useTituloMovil()
 
 const { brand, isLoggedIn, user } = sessionStore()
 

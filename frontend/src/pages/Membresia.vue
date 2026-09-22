@@ -1,8 +1,9 @@
 <template>
 	<div class="h-full">
-		<!-- En el móvil sobra: la barra de abajo ya dice dónde está. -->
+		<!-- En el móvil sobra: la barra superior ya dice dónde está. -->
 		<header
-			class="sticky top-0 z-10 hidden items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:flex sm:px-5"
+			v-if="!titulo"
+			class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
 		>
 			<Breadcrumbs class="h-7" :items="breadcrumbs" />
 		</header>
@@ -19,7 +20,8 @@
 				>
 					<Crown class="size-6 text-ink-gray-7" />
 				</div>
-				<h1 class="text-2xl font-semibold text-ink-gray-9 mb-2">
+				<!-- Con la barra superior del móvil el título ya está arriba. -->
+				<h1 v-if="!titulo" class="text-2xl font-semibold text-ink-gray-9 mb-2">
 					{{ __('Membership') }}
 				</h1>
 				<p class="text-base text-ink-gray-7 mb-8">
@@ -355,6 +357,9 @@ import {
 import { computed } from 'vue'
 import { Check, Crown, X } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
+import { useTituloMovil } from '@/utils/navegacionMovil'
+
+const { titulo } = useTituloMovil()
 
 const { user } = sessionStore()
 

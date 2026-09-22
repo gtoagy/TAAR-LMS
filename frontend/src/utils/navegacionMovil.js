@@ -5,6 +5,7 @@ import { useSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/user'
 import { pedirSesiones } from '@/utils/envivo'
 import { panelVisible } from '@/stores/notifications'
+import { useScreenSize } from '@/utils/composables'
 
 /**
  * La navegación del móvil, sacada de la lista única de `getSidebarLinks`.
@@ -95,4 +96,60 @@ export function useNavegacionMovil(hojaAbierta) {
 	})
 
 	return { grupos, pestanas, gruposMas, indiceActivo }
+}
+
+/**
+ * Las pantallas que llevan la barra superior del móvil, con el único <h1>.
+ *
+ * Es una lista cerrada a propósito: solo las que ya escondían su propia cabecera
+ * en el móvil, o que son de TanArtistic. Lección, Detalle del curso y las
+ * pantallas de administración conservan su cabecera de upstream, que trae
+ * controles que hacen falta (el índice del curso, guardar, crear).
+ */
+const PANTALLAS_CON_BARRA = [
+	'Home',
+	'Courses',
+	'EnVivo',
+	'Membresia',
+	'Profile',
+	'Opinion',
+	'Soporte',
+]
+
+/** Títulos de pantallas que no salen en la navegación. */
+const TITULOS_EXTRA = { Opinion: 'Your experience' }
+
+/**
+ * El título de la barra superior, sacado de la ruta y de la misma lista de
+ * destinos: no hay que alimentarlo desde cada pantalla y nunca queda en blanco
+ * mientras carga. `null` = esta pantalla no lleva barra.
+ *
+ * `etiquetaTitulo` es para las pantallas: con la barra puesta, el <h1> ya está
+ * arriba y lo suyo pasa a <h2>.
+ */
+export function useTituloMovil() {
+	const route = useRoute()
+	const { userResource } = usersStore()
+	const { isMobile } = useScreenSize()
+
+	const titulo = computed(() => {
+		if (!isMobile.value) return null
+		const pantalla = route.matched[0]?.name
+		if (!PANTALLAS_CON_BARRA.includes(pantalla)) return null
+		// El perfil de otra persona no es «Mi perfil»: se queda sin barra.
+		if (
+			pantalla === 'Profile' &&
+			route.params.username !== userResource.data?.username
+		)
+			return null
+		const destino = getSidebarLinks(true)
+			.flatMap((g) => g.items)
+			.find((i) => i.to === pantalla)
+		const label = destino?.label || TITULOS_EXTRA[pantalla]
+		return label ? __(label) : null
+	})
+
+	const etiquetaTitulo = computed(() => (titulo.value ? 'h2' : 'h1'))
+
+	return { titulo, etiquetaTitulo }
 }

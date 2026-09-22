@@ -1,8 +1,9 @@
 <template>
 	<div class="h-full">
-		<!-- En el móvil sobra: la barra de abajo ya dice dónde está. -->
+		<!-- En el móvil sobra: la barra superior ya dice dónde está. -->
 		<header
-			class="sticky top-0 z-10 hidden items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:flex sm:px-5"
+			v-if="!titulo"
+			class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
 		>
 			<Breadcrumbs class="h-7" :items="breadcrumbs" />
 		</header>
@@ -22,7 +23,8 @@
 					>
 						<Video class="size-6 text-ink-gray-7" />
 					</div>
-					<h1 class="mb-2 text-2xl font-semibold text-ink-gray-9">
+					<!-- Con la barra superior del móvil el título ya está arriba. -->
+					<h1 v-if="!titulo" class="mb-2 text-2xl font-semibold text-ink-gray-9">
 						{{ __('Live sessions') }}
 					</h1>
 					<p class="text-base text-ink-gray-7">
@@ -113,6 +115,9 @@ import { computed, inject, onMounted, ref } from 'vue'
 import ProgramarSesionModal from '@/components/ProgramarSesionModal.vue'
 import ProximaSesion from '@/components/ProximaSesion.vue'
 import { fechaCorta, pedirSesiones, sesionesEnVivo } from '@/utils/envivo'
+import { useTituloMovil } from '@/utils/navegacionMovil'
+
+const { titulo } = useTituloMovil()
 
 const user = inject('$user')
 const mostrarProgramar = ref(false)
