@@ -38,6 +38,7 @@ import { Sparkles, X } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { sessionStore } from '@/stores/session'
+import { avisoDeArriba } from '@/utils/avisosDeArriba'
 
 const CLAVE_CERRADA = 'taar-barra-resena-cerrada'
 
@@ -62,12 +63,16 @@ const cerrar = () => {
 	sessionStorage.setItem(CLAVE_CERRADA, '1')
 }
 
-const visible = computed(
-	() =>
-		!cerrada.value &&
-		// Estando ya en la página de la reseña, invitarla otra vez sobra.
-		route.name !== 'Opinion' &&
-		invitacion.data?.invitada &&
-		!invitacion.data?.ya_enviada
+// Con los demás avisos de arriba, de uno en uno (utils/avisosDeArriba.js).
+const visible = avisoDeArriba(
+	'resena',
+	computed(
+		() =>
+			!cerrada.value &&
+			// Estando ya en la página de la reseña, invitarla otra vez sobra.
+			route.name !== 'Opinion' &&
+			invitacion.data?.invitada &&
+			!invitacion.data?.ya_enviada
+	)
 )
 </script>

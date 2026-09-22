@@ -11125,3 +11125,95 @@ msgstr "Soporte"
 #: frontend/src/components/Layouts/BarraSuperiorMovil.vue
 msgid "Notifications ({0} unread)"
 msgstr "Notificaciones ({0} sin leer)"
+
+#: frontend/src/utils/appInstalable.js
+msgid "There is a new version of TanArtistic"
+msgstr "Hay una versión nueva de TanArtistic"
+
+#: frontend/src/utils/appInstalable.js
+msgid "Update when you finish what you are doing."
+msgstr "Actualiza cuando termines lo que estás haciendo."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Install TanArtistic and open your classes with one tap."
+msgstr "Instala TanArtistic y entra a tus clases con un toque."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "See how"
+msgstr "Ver cómo"
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Install TanArtistic on your iPhone"
+msgstr "Instala TanArtistic en tu iPhone"
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "It takes less than a minute. TanArtistic stays as one more app on your phone: with its own icon and without the browser bar."
+msgstr "Toma menos de un minuto. TanArtistic queda como una app más en tu teléfono: con su propio icono y sin la barra del navegador."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "You will sign in again."
+msgstr "Vas a iniciar sesión otra vez."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "The installed app keeps its session apart from the browser. It is normal, not an error. If you do not remember your password, the sign-in screen has \"Forgot password?\"."
+msgstr "La app instalada guarda su sesión aparte del navegador. Es normal, no es un error. Si no recuerdas tu contraseña, en la pantalla de entrar está «¿Se te olvidó tu contraseña?»."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "When you finish, open TanArtistic from its new icon."
+msgstr "Cuando termines, abre TanArtistic desde su icono nuevo."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "TanArtistic is installed"
+msgstr "TanArtistic quedó instalada"
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Open it from its icon on your home screen."
+msgstr "Ábrela desde su icono en tu pantalla de inicio."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "It could not be installed"
+msgstr "No se pudo instalar"
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Try it from your browser menu."
+msgstr "Inténtalo desde el menú de tu navegador."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Tap the Share button"
+msgstr "Toca el botón de Compartir"
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Open the browser menu"
+msgstr "Abre el menú del navegador"
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Look for Share. If you do not find it, open this same page in Safari: there it is in plain sight."
+msgstr "Busca la opción Compartir. Si no la encuentras, abre esta misma página en Safari: ahí está a la vista."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "It is the square with the arrow pointing up, at the top right."
+msgstr "Es el cuadrito con la flecha hacia arriba, arriba a la derecha."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "It is the square with the arrow pointing up. Depending on your iPhone it is in the bottom bar or inside the three dots button."
+msgstr "Es el cuadrito con la flecha hacia arriba. Según tu iPhone, está en la barra de abajo o dentro del botón de los tres puntos."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Choose \"Add to Home Screen\""
+msgstr "Elige «Agregar a pantalla de inicio»"
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "It is further down the list; scroll a little."
+msgstr "Está más abajo en la lista; desliza un poco."
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "Confirm with \"Add\""
+msgstr "Confirma con «Agregar»"
+
+#: frontend/src/components/InvitacionInstalar.vue
+msgid "The TanArtistic icon appears on your home screen."
+msgstr "El icono de TanArtistic aparece en tu pantalla de inicio."
+
+#: frontend/src/components/Layouts/DeslizarParaRecargar.vue
+msgid "Reloading"
+msgstr "Recargando"
