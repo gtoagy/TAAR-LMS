@@ -17,4 +17,6 @@ export interface SidebarLink {
 	pestana?: number
 	/** La etiqueta que cabe debajo de un icono, si la de siempre no. */
 	etiquetaCorta?: string
+	/** En el móvil vive en la barra superior y no en la hoja de «Más». */
+	barraSuperior?: boolean
 }

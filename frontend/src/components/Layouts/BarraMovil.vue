@@ -27,7 +27,6 @@
 						type="button"
 						class="flex min-h-11 w-full items-center gap-3 rounded-2xl px-3 text-start text-body text-ink-gray-8 active:bg-surface-gray-2"
 						:class="esDeLaRuta(item, route) ? 'bg-surface-gray-2 font-medium text-ink-gray-9' : ''"
-						:data-notifications-trigger="item.panel === 'notifications' ? '' : null"
 						@click="abrir(item)"
 					>
 						<component
@@ -35,12 +34,6 @@
 							class="size-5 shrink-0 stroke-1.5 text-ink-gray-6"
 						/>
 						<span class="min-w-0 flex-1 truncate">{{ __(item.label) }}</span>
-						<span
-							v-if="item.panel === 'notifications' && noLeidas"
-							class="taar-contador"
-						>
-							{{ contador }}
-						</span>
 					</button>
 				</template>
 			</div>
@@ -96,18 +89,9 @@
 					aria-haspopup="dialog"
 					:aria-expanded="hojaAbierta"
 					aria-controls="taar-hoja-mas"
-					@click="alternarHoja"
+					@click="hojaAbierta = !hojaAbierta"
 				>
-					<span class="relative">
-						<Ellipsis class="size-5" :stroke-width="masActivo ? 2 : 1.5" />
-						<!-- Las notificaciones viven en «Más»: su contador se ve aquí. -->
-						<span
-							v-if="noLeidas"
-							class="taar-contador absolute -end-2.5 -top-1.5"
-						>
-							{{ contador }}
-						</span>
-					</span>
+					<Ellipsis class="size-5" :stroke-width="masActivo ? 2 : 1.5" />
 					<span class="text-label">{{ __('More') }}</span>
 				</button>
 			</div>
@@ -116,30 +100,22 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { createResource } from 'frappe-ui'
 import { useEventListener } from '@vueuse/core'
 import * as icons from 'lucide-vue-next'
 import { Ellipsis } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
-import { usersStore } from '@/stores/user'
-import {
-	closeNotifications,
-	panelVisible,
-	toggleNotifications,
-} from '@/stores/notifications'
 import { esDeLaRuta, useNavegacionMovil } from '@/utils/navegacionMovil'
 
 /**
  * La barra inferior del móvil: una píldora flotante con cuatro destinos y «Más».
- * Las reglas, en docs/navegacion-y-tipografia.md.
+ * Su perfil y sus avisos no van aquí sino en la barra superior
+ * (BarraSuperiorMovil.vue). Las reglas, en docs/navegacion-y-tipografia.md.
  */
 const route = useRoute()
 const router = useRouter()
-const { logout, user } = sessionStore()
-const { userResource } = usersStore()
-const socket = inject('$socket')
+const { logout } = sessionStore()
 
 const hojaAbierta = ref(false)
 const { pestanas, gruposMas, indiceActivo } = useNavegacionMovil(hojaAbierta)
@@ -152,38 +128,7 @@ const masActivo = computed(() => indiceActivo.value === pestanas.value.length)
 const icono = (item) =>
 	typeof item.icon === 'string' ? icons[item.icon] : item.icon
 
-/* ── Notificaciones sin leer ─────────────────────────────────────────────────
-   El mismo recurso y la misma clave de caché que el panel lateral del
-   ordenador: al marcar una como leída, stores/notifications.js lo recarga y el
-   contador se entera sin pedir nada más. */
-const sinLeer = createResource({
-	cache: 'Unread Notifications Count',
-	url: 'frappe.client.get_count',
-	makeParams() {
-		return {
-			doctype: 'Notification Log',
-			filters: { for_user: user, read: 0 },
-		}
-	},
-	auto: !!user,
-})
-const noLeidas = computed(() => (user ? sinLeer.data || 0 : 0))
-const contador = computed(() => (noLeidas.value > 9 ? '9+' : noLeidas.value))
-
-const alLlegarAviso = () => sinLeer.reload()
-onMounted(() => socket?.on('publish_lms_notifications', alLlegarAviso))
-// Con el handler: `off` sin él quitaría también el del panel lateral.
-onUnmounted(() => socket?.off('publish_lms_notifications', alLlegarAviso))
-
 /* ── La hoja de «Más» ──────────────────────────────────────────────────────── */
-function alternarHoja() {
-	if (panelVisible.value) {
-		closeNotifications()
-		return
-	}
-	hojaAbierta.value = !hojaAbierta.value
-}
-
 watch(
 	() => route.fullPath,
 	() => (hojaAbierta.value = false)
@@ -194,15 +139,8 @@ useEventListener(document, 'keydown', (e) => {
 
 function abrir(item) {
 	hojaAbierta.value = false
-	if (item.panel === 'notifications') return toggleNotifications()
 	if (item.action === 'login') return (window.location.href = '/login')
 	if (item.action === 'logout') return logout.submit()
-	if (item.to === 'Profile') {
-		return router.push({
-			name: 'Profile',
-			params: { username: userResource.data?.username },
-		})
-	}
 	if (item.to?.startsWith('http')) return window.open(item.to, '_blank')
 	if (item.to?.includes('@')) return (window.location.href = `mailto:${item.to}`)
 	if (item.to && router.hasRoute(item.to)) router.push({ name: item.to })
@@ -302,21 +240,6 @@ function abrir(item) {
 .taar-pestana:focus-visible {
 	outline: 2px solid var(--taar-primary);
 	outline-offset: -2px;
-}
-
-.taar-contador {
-	display: grid;
-	place-items: center;
-	height: 1rem;
-	min-width: 1rem;
-	padding-inline: 0.25rem;
-	border-radius: 9999px;
-	background: #605fd8;
-	color: #ffffff;
-	font-size: 0.6875rem;
-	line-height: 1;
-	font-weight: 600;
-	font-variant-numeric: tabular-nums;
 }
 
 .taar-hoja-mas {

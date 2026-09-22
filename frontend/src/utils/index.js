@@ -590,12 +590,13 @@ const getSidebarItems = (forMobile = false) => {
 						haySesiones.value || !!userResource?.data?.is_moderator,
 				},
 				// Detrás de Membresía y dentro de la navegación de siempre. En el
-				// móvil van a la hoja de «Más», que enseña su contador en el botón:
-				// no caben en una barra de cuatro destinos.
+				// móvil no es un destino sino un panel: va en la barra superior, a
+				// la derecha, con su contador (BarraSuperiorMovil.vue).
 				{
 					label: 'Notifications',
 					icon: 'Bell',
 					panel: 'notifications',
+					barraSuperior: true,
 					condition: () => {
 						return userResource?.data
 					},
@@ -729,6 +730,9 @@ const getSidebarItems = (forMobile = false) => {
 					to: 'Profile',
 					activeFor: ['Profile'],
 					onlyMobile: true,
+					// Se entra por su avatar, a la izquierda de la barra superior.
+					// Sigue en la lista porque de aquí sale el título «Mi perfil».
+					barraSuperior: true,
 					condition: () => !!userResource?.data,
 				},
 				{

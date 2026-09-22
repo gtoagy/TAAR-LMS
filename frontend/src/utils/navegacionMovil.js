@@ -5,7 +5,6 @@ import { useSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/user'
 import { pedirSesiones } from '@/utils/envivo'
 import { pedirEnlacesDeAyuda } from '@/utils/ayuda'
-import { panelVisible } from '@/stores/notifications'
 import { useScreenSize } from '@/utils/composables'
 
 /**
@@ -19,9 +18,10 @@ import { useScreenSize } from '@/utils/composables'
  *
  * Reglas (docs/navegacion-y-tipografia.md):
  * - Como mucho cuatro destinos con `pestana`, más «Más». Nunca una sexta.
- * - Lo que no es pestaña vive en la hoja de «Más», agrupado como en la lista.
- * - Si la ruta actual vive en «Más», se marca «Más»: la barra nunca queda
- *   entera apagada.
+ * - Lo que no es pestaña vive en la hoja de «Más», agrupado como en la lista,
+ *   salvo lo marcado con `barraSuperior` (su perfil y sus avisos), que va arriba.
+ * - Si la ruta actual vive en «Más», se marca «Más». En su perfil no se marca
+ *   ninguna pestaña: se marca su avatar en la barra superior.
  */
 
 /** La clave con la que LMS Settings apaga un destino: «Live sessions» → live_sessions. */
@@ -77,7 +77,10 @@ export function useNavegacionMovil(hojaAbierta) {
 	const gruposMas = computed(() => {
 		const enBarra = new Set(pestanas.value)
 		return grupos.value
-			.map((g) => ({ ...g, items: g.items.filter((i) => !enBarra.has(i)) }))
+			.map((g) => ({
+				...g,
+				items: g.items.filter((i) => !enBarra.has(i) && !i.barraSuperior),
+			}))
 			.filter((g) => g.items.length)
 	})
 
@@ -86,12 +89,11 @@ export function useNavegacionMovil(hojaAbierta) {
 	)
 
 	/**
-	 * La columna marcada. Con la hoja de «Más» abierta, o con el panel de
-	 * notificaciones (que es un panel y no una página), se marca «Más», que es de
-	 * donde salieron. `null` = ninguna: una ruta que no sale en la navegación.
+	 * La columna marcada. Con la hoja de «Más» abierta se marca «Más». `null` =
+	 * ninguna: una ruta que no sale en la píldora (su perfil, una lección).
 	 */
 	const indiceActivo = computed(() => {
-		if (hojaAbierta.value || panelVisible.value) return pestanas.value.length
+		if (hojaAbierta.value) return pestanas.value.length
 		const i = pestanas.value.findIndex((t) => esDeLaRuta(t, route))
 		if (i !== -1) return i
 		return rutaEnMas.value ? pestanas.value.length : null
