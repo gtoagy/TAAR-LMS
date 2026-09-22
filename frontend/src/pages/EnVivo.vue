@@ -24,10 +24,10 @@
 						<Video class="size-6 text-ink-gray-7" />
 					</div>
 					<!-- Con la barra superior del móvil el título ya está arriba. -->
-					<h1 v-if="!titulo" class="mb-2 text-2xl font-semibold text-ink-gray-9">
+					<h1 v-if="!titulo" class="mb-2 text-title font-semibold text-ink-gray-9">
 						{{ __('Live sessions') }}
 					</h1>
-					<p class="text-base text-ink-gray-7">
+					<p class="text-body text-ink-gray-7">
 						{{
 							__(
 								'We meet to look at how your piece is going and to answer your questions.'
@@ -63,16 +63,16 @@
 					v-else
 					class="rounded-lg border border-outline-gray-2 bg-surface-base p-6 text-center"
 				>
-					<p class="text-base text-ink-gray-8">
+					<p class="text-heading font-semibold text-ink-gray-9">
 						{{ __('There is no session scheduled right now.') }}
 					</p>
-					<p class="mt-1 text-sm text-ink-gray-6">
+					<p class="mt-1 text-support text-ink-gray-6">
 						{{ __('The next one will show up here, and we will email you.') }}
 					</p>
 				</div>
 
 				<div v-if="anteriores.length" class="mt-10">
-					<h2 class="mb-3 text-lg font-semibold text-ink-gray-9">
+					<h2 class="mb-3 text-heading font-semibold text-ink-gray-9">
 						{{ __('Past sessions') }}
 					</h2>
 					<div class="divide-y divide-outline-gray-1 rounded-lg border">
@@ -85,15 +85,15 @@
 							class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-surface-gray-1"
 						>
 							<div class="min-w-0">
-								<p class="truncate text-base text-ink-gray-9">
+								<p class="truncate text-body font-medium text-ink-gray-9">
 									{{ sesion.titulo }}
 								</p>
-								<p class="text-sm text-ink-gray-5 first-letter:uppercase">
+								<p class="text-label tabular-nums text-ink-gray-6 first-letter:uppercase">
 									{{ fechaCorta(sesion) }}
 								</p>
 							</div>
 							<span
-								class="flex shrink-0 items-center gap-1 text-sm text-ink-gray-7"
+								class="flex shrink-0 items-center gap-1 text-body text-ink-gray-7"
 							>
 								<Play class="size-4" />
 								{{ __('Watch') }}

@@ -12,19 +12,19 @@
 
 		<div v-if="myCourses.data?.length" class="mt-10">
 			<div class="flex items-center justify-between mb-3">
-				<span class="font-semibold text-lg text-ink-gray-9">
+				<h2 class="text-heading font-semibold text-ink-gray-9">
 					{{
 						myCourses.data[0].membership
 							? __('My Courses')
 							: __('Our Popular Courses')
 					}}
-				</span>
+				</h2>
 				<router-link
 					:to="{
 						name: 'Courses',
 					}"
 				>
-					<span class="flex items-center gap-x-1 text-ink-gray-5 text-xs">
+					<span class="flex items-center gap-x-1 text-label font-medium text-ink-gray-6">
 						<span>
 							{{ __('See all') }}
 						</span>
@@ -44,19 +44,19 @@
 
 		<div v-if="myBatches.data?.length" class="mt-10">
 			<div class="flex items-center justify-between mb-3">
-				<span class="font-semibold text-lg text-ink-gray-9">
+				<h2 class="text-heading font-semibold text-ink-gray-9">
 					{{
 						myBatches.data?.[0].students?.includes(user.data?.name)
 							? __('My Batches')
 							: __('Our Upcoming Batches')
 					}}
-				</span>
+				</h2>
 				<router-link
 					:to="{
 						name: 'Batches',
 					}"
 				>
-					<span class="flex items-center gap-x-1 text-ink-gray-5 text-xs">
+					<span class="flex items-center gap-x-1 text-label font-medium text-ink-gray-6">
 						<span>
 							{{ __('See all') }}
 						</span>

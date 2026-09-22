@@ -128,7 +128,7 @@
 
 				<!-- Se dice aquí y no después: lo que se guarda no es una fecha en
 				     una lista, es una reunión que queda creada en Zoom. -->
-				<p class="text-sm text-ink-gray-5">
+				<p class="text-support text-ink-gray-6">
 					{{
 						editando
 							? __(

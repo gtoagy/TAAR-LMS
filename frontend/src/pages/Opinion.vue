@@ -28,13 +28,16 @@
 					>
 						<Heart class="size-6 text-ink-gray-7" />
 					</div>
-					<component :is="etiquetaTitulo" class="mb-2 text-2xl font-semibold text-ink-gray-9">
+					<component
+						:is="etiquetaTitulo"
+						class="mb-2 text-title font-semibold text-ink-gray-9"
+					>
 						{{ __('Thank you for writing to us!') }}
 					</component>
 					<!-- El descuento puede tardar en cuadrar con la suscripción, y eso
 					     no es un problema de ella: se le cuenta igual de bien en los dos
 					     casos, nunca como un fallo. -->
-					<p class="text-base text-ink-gray-7">
+					<p class="text-body text-ink-gray-7">
 						<template v-if="resultado.descuento_aplicado">
 							{{
 								__(
@@ -67,7 +70,10 @@
 					>
 						<Heart class="size-6 text-ink-gray-7" />
 					</div>
-					<component :is="etiquetaTitulo" class="mb-2 text-2xl font-semibold text-ink-gray-9">
+					<component
+						:is="etiquetaTitulo"
+						class="mb-2 text-title font-semibold text-ink-gray-9"
+					>
 						<template v-if="invitacion.data?.ya_enviada">
 							{{ __('You already sent us your review. Thank you!') }}
 						</template>
@@ -85,10 +91,13 @@
 				<!-- Formulario -->
 				<template v-else>
 					<div class="text-center">
-						<component :is="etiquetaTitulo" class="mb-2 text-2xl font-semibold text-ink-gray-9">
+						<component
+						:is="etiquetaTitulo"
+						class="mb-2 text-title font-semibold text-ink-gray-9"
+					>
 							{{ __('Tell us your experience') }}
 						</component>
-						<p class="text-base text-ink-gray-7">
+						<p class="text-body text-ink-gray-7">
 							{{
 								__(
 									'Tell us how the school has been for you and we apply {0}% off your subscription for {1} months.'
@@ -151,7 +160,7 @@
 
 								<div
 									v-if="subiendo"
-									class="grid aspect-square place-items-center rounded-md border border-dashed border-outline-gray-2 text-xs text-ink-gray-6"
+									class="grid aspect-square place-items-center rounded-md border border-dashed border-outline-gray-2 text-label tabular-nums text-ink-gray-6"
 								>
 									{{ `${__('Uploading')} ${progreso}%` }}
 								</div>
@@ -159,12 +168,12 @@
 								<button
 									v-else-if="imagenes.length < MAXIMO_FOTOS"
 									type="button"
-									class="grid aspect-square place-items-center rounded-md border border-dashed border-outline-gray-2 text-ink-gray-5 hover:bg-surface-gray-1"
+									class="grid aspect-square place-items-center rounded-md border border-dashed border-outline-gray-2 text-ink-gray-6 hover:bg-surface-gray-1"
 									@click="elegirFotos()"
 								>
 									<span class="flex flex-col items-center gap-1">
 										<ImagePlus class="size-5 stroke-1" />
-										<span class="text-xs">{{ __('Add photos') }}</span>
+										<span class="text-label">{{ __('Add photos') }}</span>
 									</span>
 								</button>
 							</div>
@@ -190,7 +199,7 @@
 							</Button>
 							<!-- Contador amable: dice lo que falta, no lo que sobra -->
 							<p
-								class="text-sm"
+								class="text-support"
 								:class="puedeEnviar ? 'text-green-700' : 'text-ink-gray-6'"
 							>
 								{{ aviso }}
