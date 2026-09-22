@@ -93,6 +93,7 @@ import { sanitizeHTML } from '@/utils'
 import { useSidebar } from '@/stores/sidebar'
 import { useScreenSize } from '@/utils/composables'
 import EmptyStateLayout from '@/components/Layouts/EmptyStateLayout.vue'
+import { navegarDentro } from '@/utils/avisosPush'
 import {
 	panelVisible,
 	closeNotifications,
@@ -152,6 +153,11 @@ const onSelect = (n) => {
 
 const navigateToPage = (log) => {
 	if (!log.link) return
+	// TanArtistic: cualquier enlace a una pantalla de la escuela va a esa
+	// pantalla. Lo necesitan los avisos nuevos (/lms/en-vivo), y de paso la
+	// respuesta en una lección abre la lección y no la ficha del curso, y el
+	// comentario en un grupo deja de romperse con el `#discussions`.
+	if (navegarDentro(router, log.link)) return
 	let link = log.link.split('/')
 	if (link[2] == 'courses') {
 		router.push({ name: 'CourseDetail', params: { courseName: link[3] } })
