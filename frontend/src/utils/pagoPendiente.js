@@ -41,11 +41,17 @@ export function recordarPagoPendiente(sessionId, tipo) {
  * así que al volver de pagar no salía el asistente y solo aparecía si la alumna
  * recargaba por su cuenta. Leyendo la dirección aquí, quien pregunte primero lo
  * encuentra, y de paso queda guardado para las siguientes cargas.
+ *
+ * El identificador es el de Stripe (`cs_`) o el del modal de la landing cuando
+ * se paga con PayPal (`pp_`) o Mercado Pago (`mp_`). El servidor ya trata los
+ * tres igual; si aquí faltara uno, esa alumna volvería de pagar sin asistente.
  */
+const PAGOS = /^(cs|pp|mp)_/
+
 export function recogerPagoPendiente() {
 	try {
 		const enLaUrl = new URLSearchParams(window.location.search).get('session_id')
-		if (enLaUrl && enLaUrl.startsWith('cs_')) {
+		if (enLaUrl && PAGOS.test(enLaUrl)) {
 			const tipo = window.location.pathname.includes('/courses/') ? 'curso' : 'membresia'
 			recordarPagoPendiente(enLaUrl, tipo)
 			return enLaUrl
