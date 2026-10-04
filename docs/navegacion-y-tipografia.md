@@ -43,7 +43,7 @@ misma lista alimenta el panel lateral del ordenador y la navegación del móvil
 |---|---|
 | `pestana: n` | va en la píldora, en la posición `n` (de la 1 a la 4) |
 | `etiquetaCorta` | la etiqueta de la pestaña cuando la larga no cabe («Live») |
-| `onlyMobile` | solo en el móvil (Mi perfil, Cerrar sesión, Iniciar sesión) |
+| `onlyMobile` | solo en el móvil (Mi perfil, Cerrar sesión) |
 | `barraSuperior` | en el móvil vive en la barra superior, no en «Más» |
 | `activeFor` | las rutas que marcan ese destino; mira también las rutas hijas |
 
@@ -175,6 +175,21 @@ Con la barra puesta, las pantallas no repiten su título. Su `<h1>` lleva
   fuera y lo vuelve a cerrar.
 - Las dos columnas miden 44 px aunque estén vacías (sin sesión), para que el
   título quede siempre centrado.
+
+### Sin sesión: «Iniciar sesión» a la vista
+
+`AvisoSinSesion.vue`, en `MobileLayout.vue`, entre la barra superior y el área de
+scroll. Quien no ha entrado ve en **todas** las pantallas del móvil una franja con
+«¿Ya tienes cuenta?» y el botón morado «Iniciar sesión». Antes vivía dentro de
+«Más», y la alumna que llegaba sin sesión veía el catálogo con candados sin
+enterarse de por qué.
+
+- Va fuera de `#scrollContainer`: no se va al bajar y no se monta sobre las
+  cabeceras `sticky top-0` de las pantallas.
+- No se puede cerrar: no es un aviso, es el estado en el que está.
+- Al entrar vuelve a la pantalla donde estaba (`redirect-to`).
+- «Iniciar sesión» ya no sale en la hoja de «Más». En el ordenador sigue siendo
+  el botón morado del pie del panel lateral.
 
 Diferencia con Wapido: allá el avatar abre el menú de la cuenta. Aquí va directo a
 Mi perfil y «Cerrar sesión» se queda en «Más».

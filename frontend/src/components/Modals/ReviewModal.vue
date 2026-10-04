@@ -5,7 +5,7 @@
 		size="xl"
 		:actions="[
 			{
-				label: 'Submit',
+				label: __('Send'),
 				variant: 'solid',
 				onClick: ({ close }) => submitReview(close),
 			},
@@ -60,7 +60,7 @@ function submitReview(close: () => void) {
 	createReview.submit(review, {
 		validate() {
 			if (!review.rating) {
-				return 'Please enter a rating.'
+				return __('Please enter a rating.')
 			}
 		},
 		onSuccess() {

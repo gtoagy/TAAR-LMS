@@ -11,6 +11,7 @@ import 'dayjs/esm/locale/ar'
 import 'dayjs/esm/locale/he'
 import 'dayjs/esm/locale/fa'
 import 'dayjs/esm/locale/ur'
+import 'dayjs/esm/locale/es'
 
 dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
@@ -27,5 +28,9 @@ if (
 ) {
 	dayjs.locale(window.lang)
 }
+
+// TanArtistic: «hace 2 horas» y no «2 hours ago». El idioma es el del <html>,
+// que el servidor pone con el de la cuenta (lms/www/_lms.py).
+if (document.documentElement.lang?.startsWith('es')) dayjs.locale('es')
 
 export default dayjs

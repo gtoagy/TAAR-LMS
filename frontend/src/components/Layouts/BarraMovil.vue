@@ -139,7 +139,6 @@ useEventListener(document, 'keydown', (e) => {
 
 function abrir(item) {
 	hojaAbierta.value = false
-	if (item.action === 'login') return (window.location.href = '/login')
 	if (item.action === 'logout') return logout.submit()
 	if (item.to?.startsWith('http')) return window.open(item.to, '_blank')
 	if (item.to?.includes('@')) return (window.location.href = `mailto:${item.to}`)

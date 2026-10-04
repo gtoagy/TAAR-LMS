@@ -4,7 +4,7 @@
 			{{
 				__('This video contains {0} {1}:').format(
 					quizzes.length,
-					quizzes.length == 1 ? 'quiz' : 'quizzes'
+					quizzes.length == 1 ? __('quiz') : __('quizzes')
 				)
 			}}
 
@@ -147,7 +147,7 @@
 					{{
 						__(
 							'Complete the upcoming quiz to continue watching the video. The quiz will open in {0} {1}.'
-						).format(quizLoadTimer, quizLoadTimer === 1 ? 'second' : 'seconds')
+						).format(quizLoadTimer, quizLoadTimer === 1 ? __('second') : __('seconds'))
 					}}
 				</span>
 			</div>

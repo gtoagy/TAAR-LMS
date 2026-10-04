@@ -5,7 +5,7 @@ import App from './App.vue'
 import { createPinia } from 'pinia'
 import dayjs from '@/utils/dayjs'
 import { createDialog } from '@/utils/dialogs'
-import translationPlugin from './translation'
+import translationPlugin, { traduccionesListas } from './translation'
 import { usersStore } from './stores/user'
 import { initSocket } from './socket'
 import { FrappeUI, setConfig, frappeRequest, pageMetaPlugin } from 'frappe-ui'
@@ -24,7 +24,9 @@ app.use(translationPlugin)
 app.use(pageMetaPlugin)
 app.provide('$dayjs', dayjs)
 app.provide('$socket', initSocket())
-app.mount('#app')
+// Se monta con las traducciones ya puestas: lo que se pinta antes sale en
+// inglés. Lo de abajo no espera, que `beforeinstallprompt` llega casi al cargar.
+traduccionesListas().then(() => app.mount('#app'))
 arrancarAppInstalable()
 arrancarAvisosPush(router)
 

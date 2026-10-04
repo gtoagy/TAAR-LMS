@@ -742,13 +742,8 @@ const getSidebarItems = (forMobile = false) => {
 					onlyMobile: true,
 					condition: () => !!userResource?.data,
 				},
-				{
-					label: 'Log in',
-					icon: 'LogIn',
-					action: 'login',
-					onlyMobile: true,
-					condition: () => !userResource?.data,
-				},
+				// «Iniciar sesión» no va aquí: sin sesión, el móvil lo lleva a la
+				// vista en todas las pantallas (Layouts/AvisoSinSesion.vue).
 			],
 		},
 	]

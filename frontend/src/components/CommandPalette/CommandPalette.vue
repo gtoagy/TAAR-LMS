@@ -7,7 +7,7 @@
 					<input
 						ref="inputRef"
 						type="text"
-						placeholder="Search"
+						:placeholder="__('Search')"
 						class="w-full border-none bg-transparent py-3 !ps-2 pe-4.5 text-base text-ink-gray-7 placeholder-ink-gray-4 focus:ring-0"
 						@input="onInput"
 						v-model="query"
@@ -194,7 +194,7 @@ const jumpToOptions = ref([
 		title: __('Jump to'),
 		items: [
 			{
-				title: 'Courses',
+				title: __('Courses'),
 				icon: BookOpen,
 				route: {
 					name: 'Courses',
@@ -202,7 +202,7 @@ const jumpToOptions = ref([
 				isActive: true,
 			},
 			{
-				title: 'Batches',
+				title: __('Batches'),
 				icon: Users,
 				route: {
 					name: 'Batches',
@@ -210,7 +210,7 @@ const jumpToOptions = ref([
 				isActive: false,
 			},
 			{
-				title: 'Jobs',
+				title: __('Jobs'),
 				icon: Briefcase,
 				route: {
 					name: 'Jobs',
