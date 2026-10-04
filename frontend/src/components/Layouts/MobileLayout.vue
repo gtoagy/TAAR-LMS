@@ -3,6 +3,7 @@
 		class="relative flex h-screen-dvh flex-col pt-[env(safe-area-inset-top)]"
 	>
 		<BarraSuperiorMovil />
+		<AvisoSinSesion />
 
 		<!-- El área de scroll llega hasta abajo y la píldora flota encima; el
 		     hueco de abajo (--nav-safe) es para que la última tarjeta no quede
@@ -21,6 +22,7 @@
 	</div>
 </template>
 <script setup>
+import AvisoSinSesion from '@/components/Layouts/AvisoSinSesion.vue'
 import BarraMovil from '@/components/Layouts/BarraMovil.vue'
 import BarraSuperiorMovil from '@/components/Layouts/BarraSuperiorMovil.vue'
 import DeslizarParaRecargar from '@/components/Layouts/DeslizarParaRecargar.vue'

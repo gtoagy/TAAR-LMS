@@ -1,7 +1,8 @@
-import { useTimeAgo } from '@vueuse/core'
+import dayjs from '@/utils/dayjs'
 
+// Con dayjs y no con useTimeAgo de vueuse, que solo habla inglés.
 export function timeAgo(date) {
-	return useTimeAgo(date).value
+	return dayjs(date).fromNow()
 }
 
 export const formatSeconds = (time) => {

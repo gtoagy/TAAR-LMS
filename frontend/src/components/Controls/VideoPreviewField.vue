@@ -1,9 +1,9 @@
 <template>
 	<div class="space-y-1.5">
 		<FormLabel v-if="label" :label="__(label)" :required="required" />
-		<div class="flex items-start gap-4">
+		<div class="flex flex-col items-start gap-3 sm:flex-row sm:gap-4">
 			<div
-				class="relative aspect-[750/422] w-56 shrink-0 grid place-items-center overflow-hidden rounded-lg border border-outline-gray-2 bg-surface-gray-2"
+				class="relative aspect-[750/422] w-full sm:w-56 shrink-0 grid place-items-center overflow-hidden rounded-lg border border-outline-gray-2 bg-surface-gray-2"
 			>
 				<iframe
 					v-if="preview.type === 'youtube'"
@@ -41,7 +41,7 @@
 			</div>
 
 			<!-- Uploaded video: thumbnail-style controls (no raw filename in an input). -->
-			<div v-if="isUploadedVideo" class="flex-1 space-y-2">
+			<div v-if="isUploadedVideo" class="w-full min-w-0 space-y-2 sm:w-auto sm:flex-1">
 				<div class="text-p-sm-medium text-ink-gray-7 truncate">
 					{{ fileName }}
 				</div>
@@ -78,7 +78,7 @@
 			</div>
 
 			<!-- Empty or YouTube link: URL input + upload. -->
-			<div v-else class="flex-1 space-y-2">
+			<div v-else class="w-full min-w-0 space-y-2 sm:w-auto sm:flex-1">
 				<FormControl
 					type="text"
 					v-model="urlInput"

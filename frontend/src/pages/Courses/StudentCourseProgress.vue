@@ -1,28 +1,28 @@
 <template>
 	<Dialog
 		v-model:open="show"
-		title="Student Progress"
+		:title="__('Student Progress')"
 		:size="hasAssessmentData ? '4xl' : 'xl'"
 	>
 		<template #default>
 			<div class="text-base text-ink-gray-9 max-h-[70vh] overflow-y-auto">
-				<div class="flex justify-between mb-5 px-2">
-					<div class="flex items-center gap-x-2">
+				<div class="mb-5 flex flex-col gap-3 px-2 sm:flex-row sm:justify-between">
+					<div class="flex min-w-0 items-center gap-x-2">
 						<Avatar
 							:image="student?.member_image"
 							:label="student?.member_name"
 							size="xl"
 						/>
-						<div class="space-y-1">
+						<div class="min-w-0 space-y-1">
 							<div class="font-semibold">
 								{{ student?.member_name }}
 							</div>
-							<div class="text-ink-gray-5">
+							<div class="truncate text-ink-gray-5">
 								{{ student.member }}
 							</div>
 						</div>
 					</div>
-					<div class="w-25 space-y-2">
+					<div class="space-y-2 sm:w-25">
 						<div class="text-ink-gray-5 text-sm">
 							{{ Math.round(student.progress) }}% {{ __('completed') }}
 						</div>
@@ -33,7 +33,7 @@
 					</div>
 				</div>
 
-				<div class="grid gap-5" :class="hasAssessmentData ? 'grid-cols-2' : ''">
+				<div class="grid gap-5" :class="hasAssessmentData ? 'grid-cols-1 sm:grid-cols-2' : ''">
 					<div
 						v-if="lessons.data"
 						class="border border-outline-elevation-2 rounded-lg px-3 max-h-[60vh] overflow-y-auto"
@@ -43,7 +43,7 @@
 						</div>
 						<div
 							v-for="progress in lessons.data"
-							class="flex justify-between text-sm py-2 my-1"
+							class="flex justify-between gap-3 text-sm py-2 my-1"
 						>
 							<div class="">
 								<span class="me-3 text-xs">
@@ -109,13 +109,16 @@
 							</div>
 							<div
 								v-for="assignment in assessmentProgress.data.assignments"
-								class="flex justify-between text-sm py-2 my-1"
+								class="flex justify-between gap-3 text-sm py-2 my-1"
 							>
 								<div>
 									{{ assignment.assignment_title }}
 								</div>
-								<Badge :theme="getAssessmentStatusTheme(assignment.status)">
-									{{ assignment.status }}
+								<Badge
+									:theme="getAssessmentStatusTheme(assignment.status)"
+									class="shrink-0"
+								>
+									{{ __(assignment.status) }}
 								</Badge>
 							</div>
 						</div>

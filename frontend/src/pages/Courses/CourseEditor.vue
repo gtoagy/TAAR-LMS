@@ -39,7 +39,24 @@
 			</div>
 		</div>
 
-		<aside class="border-s overflow-y-auto">
+		<aside class="border-t overflow-y-auto md:border-s md:border-t-0">
+			<!-- En pantalla ancha esta cabecera la pinta CourseDetail encima de la
+			     columna; en el teléfono no hay columna y sin esto no había forma
+			     de añadir una sección. -->
+			<div
+				v-if="mode === 'edit' && props.course?.data"
+				class="flex items-center justify-between gap-x-2 border-b px-5 py-1 md:hidden"
+			>
+				<div class="py-2.5 text-base-medium text-ink-gray-9">
+					{{ __('Chapters') }}
+				</div>
+				<Button size="sm" @click="openAddChapter()">
+					<template #prefix>
+						<span class="lucide-plus size-4" />
+					</template>
+					{{ __('Add') }}
+				</Button>
+			</div>
 			<SkeletonLoader
 				v-if="outline.loading && !outline.data"
 				variant="editor-sidebar"
@@ -79,7 +96,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { createResource } from 'frappe-ui'
+import { Button, createResource } from 'frappe-ui'
 import { useSidebar } from '@/stores/sidebar'
 import CourseOutline from '@/components/CourseOutline.vue'
 import StudentLessonSidebar from '@/components/StudentLessonSidebar.vue'

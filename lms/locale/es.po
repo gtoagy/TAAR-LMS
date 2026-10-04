@@ -4977,7 +4977,7 @@ msgstr "Marcar esta opción como respuesta correcta."
 #: lms/lms/doctype/lms_quiz_question/lms_quiz_question.json
 #: lms/lms/doctype/lms_quiz_result/lms_quiz_result.json
 msgid "Marks"
-msgstr "puntos"
+msgstr "Puntos"
 
 #. Label of the marks_to_cut (Int) field in DocType 'LMS Quiz'
 #: lms/lms/doctype/lms_quiz/lms_quiz.json
@@ -5859,7 +5859,7 @@ msgstr "Curso abierto"
 #: lms/lms/doctype/lms_question/lms_question.json
 #: lms/lms/doctype/lms_quiz_question/lms_quiz_question.json
 msgid "Open Ended"
-msgstr "Apertura finalizada"
+msgstr "Respuesta abierta"
 
 #: frontend/src/components/Settings/Transactions/TransactionDetails.vue:16
 msgid "Open the "
@@ -7951,7 +7951,7 @@ msgstr "Envíos eliminados correctamente"
 #: frontend/src/components/Quiz.vue:328 frontend/src/components/Quiz.vue:418
 #: lms/templates/assignment.html:9 lms/www/new-sign-up.html:32
 msgid "Submit"
-msgstr "Validar"
+msgstr "Enviar"
 
 #: frontend/src/pages/Batches/components/BatchFeedback.vue:56
 msgid "Submit Feedback"
@@ -8572,7 +8572,7 @@ msgstr "Total"
 #: frontend/src/pages/QuizForm.vue:162 frontend/src/pages/Quizzes.vue:308
 #: lms/lms/doctype/lms_quiz/lms_quiz.json
 msgid "Total Marks"
-msgstr "Marcas totales"
+msgstr "Puntos totales"
 
 #: frontend/src/components/Quiz.vue:432
 msgid "Total Questions"
@@ -8898,7 +8898,7 @@ msgstr "Imagen de Usuario"
 #: lms/lms/doctype/lms_question/lms_question.json
 #: lms/lms/doctype/lms_quiz_question/lms_quiz_question.json
 msgid "User Input"
-msgstr "Entrada del usuario"
+msgstr "Respuesta escrita"
 
 #. Name of a DocType
 #: lms/lms/doctype/user_skill/user_skill.json
@@ -11437,3 +11437,107 @@ msgstr "Instala TanArtistic para recibir en tu teléfono los recordatorios de la
 #: frontend/src/components/InvitacionInstalar.vue
 msgid "When you finish, open TanArtistic from its new icon and turn on notifications in your profile."
 msgstr "Al terminar, abre TanArtistic desde su icono nuevo y activa los avisos en tu perfil."
+
+#: frontend/src/components/Notifications/NotificationPanel.vue
+msgid "Unread"
+msgstr "Sin leer"
+
+#: frontend/src/components/Notifications/NotificationPanel.vue
+msgid "Read"
+msgstr "Leídas"
+
+#: frontend/src/components/Layouts/AvisoSinSesion.vue
+msgid "Already have an account?"
+msgstr "¿Ya tienes cuenta?"
+
+#: frontend/src/components/Layouts/AvisoSinSesion.vue
+msgid "Log in to see your courses."
+msgstr "Inicia sesión para ver tus cursos."
+
+#: frontend/src/components/PdfBlock.vue
+msgid "Download"
+msgstr "Descargar"
+
+#: frontend/src/pages/Profile.vue
+msgid "Only image file is allowed."
+msgstr "Solo se permiten imágenes."
+
+#: frontend/src/utils/index.js
+msgid "Only image or PDF files are allowed."
+msgstr "Solo se permiten imágenes o archivos PDF."
+
+#: frontend/src/pages/QuizForm.vue
+msgid "Auto-filled based on the sum of all questions' marks."
+msgstr "Se llena solo con la suma de los puntos de todas las preguntas."
+
+#: frontend/src/components/DiscussionReplies.vue
+msgid "Type your reply here..."
+msgstr "Escribe tu respuesta aquí..."
+
+#: frontend/src/components/Modals/ReviewModal.vue
+msgid "Please enter a rating."
+msgstr "Elige cuántas estrellas le das."
+
+#: frontend/src/components/Quiz.vue
+msgid "1 time"
+msgstr "1 vez"
+
+#: frontend/src/components/Quiz.vue
+msgid "{0} times"
+msgstr "{0} veces"
+
+#: frontend/src/components/Quiz.vue
+msgid "mark"
+msgstr "punto"
+
+#: frontend/src/components/Quiz.vue
+msgid "marks"
+msgstr "puntos"
+
+#: frontend/src/components/Quiz.vue
+msgid "No."
+msgstr "N.º"
+
+#: frontend/src/components/Quiz.vue
+msgid "Score out of"
+msgstr "Puntuación máxima"
+
+#: frontend/src/components/VideoBlock.vue
+msgid "quiz"
+msgstr "cuestionario"
+
+#: frontend/src/components/VideoBlock.vue
+msgid "quizzes"
+msgstr "cuestionarios"
+
+#: frontend/src/components/VideoBlock.vue
+msgid "second"
+msgstr "segundo"
+
+#: frontend/src/components/VideoBlock.vue
+msgid "seconds"
+msgstr "segundos"
+
+#: frontend/src/pages/Courses/CourseDashboard.vue
+msgid "Just Started"
+msgstr "Empezando"
+
+#: frontend/src/pages/Courses/CourseDashboard.vue
+msgid "Advanced"
+msgstr "Avanzadas"
+
+#: frontend/src/pages/Courses/CourseDetail.vue
+msgid "Enroll student"
+msgstr "Inscribir"
+
+#: frontend/src/pages/Courses/StudentCourseProgress.vue
+msgid "Student Progress"
+msgstr "Progreso de la alumna"
+
+#: frontend/src/pages/Courses/StudentCourseProgress.vue
+msgid "Not Submitted"
+msgstr "Sin entregar"
+
+#: frontend/src/pages/Assignments.vue
+msgid "Image or PDF"
+msgstr "Imagen o PDF"

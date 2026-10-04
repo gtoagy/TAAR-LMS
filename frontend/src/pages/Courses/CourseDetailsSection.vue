@@ -3,7 +3,7 @@
 		<div class="text-base-semibold text-ink-gray-9">
 			{{ __('Course details') }}
 		</div>
-		<div class="grid grid-cols-2 gap-5">
+		<div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
 			<FormControl
 				v-model="doc.title"
 				:label="__('Title')"
@@ -70,11 +70,11 @@
 				:placeholder="__('Type something')"
 				:required="true"
 				variant="outline"
-				class="col-span-2"
+				class="sm:col-span-2"
 				@change="markDirty()"
 			/>
 		</div>
-		<div class="grid gap-5 grid-cols-1 xl:grid-cols-2">
+		<div class="grid gap-5 grid-cols-1 2xl:grid-cols-2">
 			<CourseThumbnailField />
 			<VideoPreviewField
 				:modelValue="doc.video_link"

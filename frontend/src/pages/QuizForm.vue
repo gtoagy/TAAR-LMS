@@ -2,8 +2,8 @@
 	<header
 		class="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-base px-3 py-2.5 sm:px-5"
 	>
-		<Breadcrumbs :items="breadcrumbs" />
-		<div v-if="!readOnlyMode" class="flex items-center gap-x-2">
+		<Breadcrumbs :items="breadcrumbs" class="min-w-0" />
+		<div v-if="!readOnlyMode" class="flex shrink-0 items-center gap-x-2">
 			<Badge v-if="quizDetails.isDirty" theme="orange">
 				{{ __('Not Saved') }}
 			</Badge>
@@ -16,11 +16,11 @@
 					},
 				}"
 			>
-				<Button variant="outline">
+				<Button variant="outline" :aria-label="__('Test Quiz')">
 					<template #prefix>
 						<span class="lucide-list-checks size-4" />
 					</template>
-					{{ __('Test Quiz') }}
+					<span class="hidden sm:inline">{{ __('Test Quiz') }}</span>
 				</Button>
 			</router-link>
 			<router-link
@@ -32,11 +32,11 @@
 					},
 				}"
 			>
-				<Button variant="outline">
+				<Button variant="outline" :aria-label="__('Check Submissions')">
 					<template #prefix>
 						<span class="lucide-clipboard-list size-4" />
 					</template>
-					{{ __('Check Submissions') }}
+					<span class="hidden sm:inline">{{ __('Check Submissions') }}</span>
 				</Button>
 			</router-link>
 			<Tooltip v-if="quizDetails.doc?.name" :text="__('Delete quiz')">
@@ -58,7 +58,7 @@
 	</div>
 	<div
 		v-else-if="quizDetails.doc"
-		class="grid min-h-0 flex-1 grid-cols-[7fr,3fr]"
+		class="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[7fr,3fr]"
 	>
 		<!-- LEFT: Questions -->
 		<div class="flex min-h-0 flex-col">
@@ -75,7 +75,7 @@
 			</div>
 			<ListView
 				v-if="questions.length"
-				class="flex-1 overflow-y-auto px-5"
+				class="taar-lista-al-ancho flex-1 overflow-y-auto px-5"
 				:columns="questionColumns"
 				:rows="questions"
 				row-key="name"
@@ -148,7 +148,7 @@
 		</div>
 
 		<!-- RIGHT: Details + Settings -->
-		<div class="space-y-8 overflow-y-auto border-l p-5">
+		<div class="space-y-8 overflow-y-auto border-t p-5 md:border-l md:border-t-0">
 			<div class="space-y-5">
 				<div class="text-ink-gray-9 font-semibold">{{ __('Details') }}</div>
 				<FormControl
@@ -251,6 +251,7 @@
 	/>
 </template>
 <script setup>
+import { useScreenSize } from '@/utils/composables'
 import {
 	Breadcrumbs,
 	createResource,
@@ -430,6 +431,8 @@ const calculateTotalMarks = () => {
 	return totalMarks
 }
 
+const { isMobile } = useScreenSize()
+
 const questionColumns = computed(() => {
 	return [
 		{
@@ -439,15 +442,16 @@ const questionColumns = computed(() => {
 		},
 		{
 			label: __('Question'),
-			key: __('question_detail'),
-			width: '40rem',
+			key: 'question_detail',
+			width: isMobile.value ? 1 : '40rem',
 		},
 		{
 			label: __('Marks'),
 			key: 'marks',
 			width: '5rem',
 		},
-	]
+		// En el teléfono, solo lo que cabe: con todas, la tabla se deslizaba de lado.
+	].filter((columna) => !isMobile.value || ['question_detail', 'marks'].includes(columna.key))
 })
 
 const openQuestionModal = (question = null) => {

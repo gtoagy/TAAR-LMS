@@ -4,10 +4,10 @@
 			{{ __('Course thumbnail') }}
 		</label>
 
-		<div class="flex items-start gap-5">
+		<div class="flex flex-col items-start gap-3 sm:flex-row sm:gap-5">
 			<button
 				type="button"
-				class="w-56 aspect-[750/422] rounded-lg overflow-hidden border border-outline-gray-2 flex items-center justify-center shrink-0 hover:opacity-95 transition"
+				class="w-full sm:w-56 aspect-[750/422] rounded-lg overflow-hidden border border-outline-gray-2 flex items-center justify-center shrink-0 hover:opacity-95 transition"
 				:style="
 					!hasImage && doc.card_gradient
 						? { backgroundColor: wellColor }
@@ -35,7 +35,7 @@
 				</div>
 			</button>
 
-			<div class="flex-1 min-w-0 space-y-3">
+			<div class="w-full min-w-0 space-y-3 sm:w-auto sm:flex-1">
 				<template v-if="hasImage">
 					<div class="space-y-0.5 text-sm">
 						<div class="text-ink-gray-9 font-medium break-all leading-5">

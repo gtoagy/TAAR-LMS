@@ -20,7 +20,7 @@
 			<div class="text-xl-semibold text-ink-gray-9">
 				{{ __('{0} Quizzes').format(totalQuizzes.data || 0) }}
 			</div>
-			<FormControl v-model="search" type="text" placeholder="Search">
+			<FormControl v-model="search" type="text" :placeholder="__('Search')">
 				<template #prefix>
 					<span class="lucide-search size-4 text-ink-gray-5" />
 				</template>
@@ -38,7 +38,7 @@
 			:rows="quizzes.data"
 			row-key="name"
 			:options="{ showTooltip: false, selectable: true }"
-			class="flex-1 overflow-y-auto px-5"
+			class="taar-lista-al-ancho flex-1 overflow-y-auto px-5"
 		>
 			<ListHeader class="mb-2 grid items-center rounded bg-surface-gray-2 p-2">
 				<ListHeaderItem :item="item" v-for="item in quizColumns">
@@ -120,6 +120,7 @@
 	</div>
 </template>
 <script setup>
+import { useScreenSize } from '@/utils/composables'
 import {
 	Breadcrumbs,
 	Button,
@@ -256,6 +257,8 @@ const deleteQuiz = (selections, unselectAll) => {
 	toast.success(__('Quizzes deleted successfully'))
 }
 
+const { isMobile } = useScreenSize()
+
 const quizColumns = computed(() => {
 	return [
 		{
@@ -299,7 +302,8 @@ const quizColumns = computed(() => {
 			align: 'right',
 			icon: 'clock',
 		},
-	]
+		// En el teléfono, solo lo que cabe: con todas, la tabla se deslizaba de lado.
+	].filter((columna) => !isMobile.value || ['title', 'modified'].includes(columna.key))
 })
 
 const breadcrumbs = computed(() => {

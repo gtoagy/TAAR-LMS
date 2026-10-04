@@ -1,6 +1,6 @@
 <template>
-	<div class="py-10">
-		<div class="mx-10 space-y-6 px-20">
+	<div class="py-6 md:py-10">
+		<div class="space-y-6 px-5 md:mx-10 md:px-20">
 			<!-- Include-in-preview control row -->
 			<div class="flex items-center justify-between gap-3">
 				<div class="flex items-center gap-3">
