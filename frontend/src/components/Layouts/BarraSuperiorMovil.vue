@@ -5,11 +5,16 @@
 	     pantallas de PANTALLAS_CON_BARRA; en las demás no se pinta nada.
 
 	     A los lados, lo que es de ella y no un destino: su perfil a la izquierda
-	     y sus avisos a la derecha. Las dos columnas miden lo mismo aunque estén
-	     vacías (sin sesión), para que el título quede siempre centrado. -->
+	     y sus avisos a la derecha. Sin sesión no hay ninguno de los dos: el
+	     título va a la izquierda y a la derecha, «Iniciar sesión». -->
 	<header
 		v-if="titulo"
-		class="relative z-30 grid h-[var(--topbar-h)] shrink-0 grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-2 border-b border-outline-gray-1 bg-surface-base px-3.5"
+		class="relative z-30 grid h-[var(--topbar-h)] shrink-0 items-center gap-2 border-b border-outline-gray-1 bg-surface-base px-3.5"
+		:class="
+			session.isLoggedIn
+				? 'grid-cols-[2.75rem_minmax(0,1fr)_2.75rem]'
+				: 'grid-cols-[minmax(0,1fr)_auto]'
+		"
 	>
 		<router-link
 			v-if="perfil"
@@ -26,9 +31,12 @@
 				:class="{ 'taar-barra-avatar-activo': enMiPerfil }"
 			/>
 		</router-link>
-		<span v-else />
+		<span v-else-if="session.isLoggedIn" />
 
-		<h1 class="truncate text-center text-heading font-semibold text-ink-gray-9">
+		<h1
+			class="truncate text-heading font-semibold text-ink-gray-9"
+			:class="session.isLoggedIn ? 'text-center' : 'ps-1.5 text-start'"
+		>
 			{{ titulo }}
 		</h1>
 
@@ -49,6 +57,7 @@
 				{{ contador }}
 			</span>
 		</button>
+		<BotonIniciarSesion v-else-if="!session.isLoggedIn" />
 	</header>
 </template>
 
@@ -61,10 +70,13 @@ import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/user'
 import { panelVisible, toggleNotifications } from '@/stores/notifications'
 import { useTituloMovil } from '@/utils/navegacionMovil'
+import BotonIniciarSesion from '@/components/Layouts/BotonIniciarSesion.vue'
 
 const route = useRoute()
 const { titulo } = useTituloMovil()
-const { user } = sessionStore()
+// El store entero para `isLoggedIn`: desestructurado se queda congelado.
+const session = sessionStore()
+const { user } = session
 const { userResource } = usersStore()
 const socket = inject('$socket')
 

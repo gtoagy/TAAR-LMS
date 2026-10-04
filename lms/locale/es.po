@@ -11446,14 +11446,6 @@ msgstr "Sin leer"
 msgid "Read"
 msgstr "Leídas"
 
-#: frontend/src/components/Layouts/AvisoSinSesion.vue
-msgid "Already have an account?"
-msgstr "¿Ya tienes cuenta?"
-
-#: frontend/src/components/Layouts/AvisoSinSesion.vue
-msgid "Log in to see your courses."
-msgstr "Inicia sesión para ver tus cursos."
-
 #: frontend/src/components/PdfBlock.vue
 msgid "Download"
 msgstr "Descargar"
