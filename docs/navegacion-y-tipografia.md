@@ -80,6 +80,9 @@ avisos tienen que librarla con el mismo número:
 - 56 px de alto menos 6 px de relleno: cada pestaña mide 44.
 - El borde va como sombra (`0 0 0 1px`) para no comerse esos 44 px.
 - Fondo translúcido con desenfoque; sin soporte, fondo sólido.
+- Una pantalla con `h-full` en la raíz se desbordaría de su caja y dejaría el
+  hueco en medio, con su final detrás de la píldora: `MobileLayout.vue` la hace
+  crecer con su contenido (`.taar-area-scroll > .h-full`).
 - El área de scroll (`#scrollContainer`) lleva `pb-[var(--nav-safe)]` y los
   avisos de vue-sonner suben con `--mobile-offset-bottom`, así que nada queda
   tapado.
@@ -173,23 +176,23 @@ Con la barra puesta, las pantallas no repiten su título. Su `<h1>` lleva
   el socket `publish_lms_notifications`. El botón lleva
   `data-notifications-trigger`: sin él, el clic que abre el panel cuenta como clic
   fuera y lo vuelve a cerrar.
-- Las dos columnas miden 44 px aunque estén vacías (sin sesión), para que el
-  título quede siempre centrado.
+- Las dos columnas miden 44 px, para que el título quede centrado.
 
-### Sin sesión: «Iniciar sesión» a la vista
+### Sin sesión: «Iniciar sesión» arriba a la derecha
 
-`AvisoSinSesion.vue`, en `MobileLayout.vue`, entre la barra superior y el área de
-scroll. Quien no ha entrado ve en **todas** las pantallas del móvil una franja con
-«¿Ya tienes cuenta?» y el botón morado «Iniciar sesión». Antes vivía dentro de
-«Más», y la alumna que llegaba sin sesión veía el catálogo con candados sin
-enterarse de por qué.
+`BotonIniciarSesion.vue`. Quien no ha entrado ve el botón morado «Iniciar sesión»
+arriba a la derecha, donde iría su campana, y el título de la pantalla pasa a la
+izquierda. Antes vivía dentro de «Más», y la alumna que llegaba sin sesión veía el
+catálogo con candados sin enterarse de por qué.
 
-- Va fuera de `#scrollContainer`: no se va al bajar y no se monta sobre las
-  cabeceras `sticky top-0` de las pantallas.
-- No se puede cerrar: no es un aviso, es el estado en el que está.
+- Sale en la barra superior y, en las pantallas que no la llevan (la ficha del
+  curso), en `LayoutHeader.vue`.
 - Al entrar vuelve a la pantalla donde estaba (`redirect-to`).
-- «Iniciar sesión» ya no sale en la hoja de «Más». En el ordenador sigue siendo
-  el botón morado del pie del panel lateral.
+- En el ordenador sigue siendo el botón morado del pie del panel lateral.
+
+Sin sesión, detrás de «Más» solo queda Soporte. Cuando hay una sola cosa, la
+píldora la enseña directamente en esa columna en vez de abrir una hoja para
+elegir entre uno (`unico` en `BarraMovil.vue`).
 
 Diferencia con Wapido: allá el avatar abre el menú de la cuenta. Aquí va directo a
 Mi perfil y «Cerrar sesión» se queda en «Más».

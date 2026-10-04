@@ -82,7 +82,26 @@
 					</span>
 				</router-link>
 
+				<!-- Con una sola cosa detrás de «Más» (sin sesión, Soporte), una hoja
+				     para elegir entre uno no ayuda: va ella directamente. -->
 				<button
+					v-if="unico"
+					type="button"
+					class="taar-pestana"
+					:class="{ 'taar-pestana-activa': masActivo }"
+					@click="abrir(unico)"
+				>
+					<component
+						:is="icono(unico)"
+						class="size-5"
+						:stroke-width="masActivo ? 2 : 1.5"
+					/>
+					<span class="max-w-full truncate text-label">
+						{{ __(unico.etiquetaCorta || unico.label) }}
+					</span>
+				</button>
+				<button
+					v-else
 					type="button"
 					class="taar-pestana"
 					:class="{ 'taar-pestana-activa': masActivo }"
@@ -124,6 +143,12 @@ const { pestanas, gruposMas, indiceActivo } = useNavegacionMovil(hojaAbierta)
 // columnas y el selector sigue cuadrando, porque divide entre las que haya.
 const columnas = computed(() => pestanas.value.length + 1)
 const masActivo = computed(() => indiceActivo.value === pestanas.value.length)
+
+/** Lo único que hay detrás de «Más», si es una sola cosa. */
+const unico = computed(() => {
+	const items = gruposMas.value.flatMap((g) => g.items)
+	return items.length === 1 ? items[0] : null
+})
 
 const icono = (item) =>
 	typeof item.icon === 'string' ? icons[item.icon] : item.icon
