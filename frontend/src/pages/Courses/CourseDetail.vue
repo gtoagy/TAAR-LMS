@@ -19,7 +19,11 @@
 				</router-link>
 				<!-- "Publicado" es estado de edición: le sirve a quien administra
 				     el curso, al alumno solo le ensucia la ficha -->
-				<Badge v-if="course.data?.published && isAdmin" theme="green">
+				<Badge
+					v-if="course.data?.published && isAdmin"
+					theme="green"
+					class="hidden sm:inline-flex"
+				>
 					{{ __('Published') }}
 				</Badge>
 			</template>
@@ -74,17 +78,26 @@
 					</Tooltip>
 					<Button
 						variant="outline"
+						:aria-label="
+							editorMode === 'preview'
+								? __('Close student view')
+								: __('Student View')
+						"
 						@click="editorMode = editorMode === 'preview' ? 'edit' : 'preview'"
 					>
 						<template #prefix>
 							<span v-if="editorMode === 'preview'" class="lucide-x size-4" />
 							<span v-else class="lucide-eye size-4" />
 						</template>
-						{{
-							editorMode === 'preview'
-								? __('Close student view')
-								: __('Student View')
-						}}
+						<!-- En el teléfono, solo el ojo: con el texto la cabecera se
+						     salía de la pantalla. -->
+						<span class="hidden sm:inline">
+							{{
+								editorMode === 'preview'
+									? __('Close student view')
+									: __('Student View')
+							}}
+						</span>
 					</Button>
 				</template>
 				<Button
@@ -95,7 +108,7 @@
 					<template #prefix>
 						<span class="lucide-plus size-4" />
 					</template>
-					{{ __('Enroll') }}
+					{{ __('Enroll student') }}
 				</Button>
 				<Button
 					v-if="user.data?.is_moderator"
@@ -114,7 +127,7 @@
 			<CourseOverview :course="course" />
 		</div>
 		<div v-else class="relative flex flex-1 min-h-0 flex-col">
-			<Tabs :tabs="tabs" v-model="tabIndex">
+			<Tabs :tabs="tabs" v-model="tabIndex" class="taar-pestanas-curso">
 				<template #tab-panel="{ tab }">
 					<template v-if="course.data">
 						<CourseEditor
@@ -176,6 +189,7 @@ import {
 	usePageMeta,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
+import { useScreenSize } from '@/utils/composables'
 import LayoutHeader from '@/components/Layouts/LayoutHeader.vue'
 import CourseOverview from '@/pages/Courses/CourseOverview.vue'
 import CourseDashboard from '@/pages/Courses/CourseDashboard.vue'
@@ -194,7 +208,7 @@ type Brand = { name?: string; logo?: string; favicon?: string }
 interface TabDef {
 	label: string
 	component: ReturnType<typeof markRaw>
-	icon: string
+	icon?: string
 }
 
 const { brand } = sessionStore() as { brand: Brand }
@@ -202,6 +216,9 @@ const router: Router = useRouter()
 const route: RouteLocationNormalizedLoadedGeneric = useRoute()
 const user = inject<SessionUser>('$user')!
 const tabIndex: Ref<number> = ref(0)
+// En el teléfono las cuatro pestañas no caben con icono: van solo con texto.
+const { isMobile } = useScreenSize()
+const iconoDe = (icono: string) => (isMobile.value ? undefined : icono)
 
 interface EditorSelection {
 	chapterNumber: string
@@ -321,22 +338,22 @@ const tabs = ref<TabDef[]>([
 	{
 		label: __('Overview'),
 		component: markRaw(CourseOverview),
-		icon: 'lucide-list',
+		icon: iconoDe('lucide-list'),
 	},
 	{
 		label: __('Dashboard'),
 		component: markRaw(CourseDashboard),
-		icon: 'lucide-trending-up',
+		icon: iconoDe('lucide-trending-up'),
 	},
 	{
 		label: __('Course editor'),
 		component: markRaw(CourseEditor),
-		icon: 'lucide-book-open',
+		icon: iconoDe('lucide-book-open'),
 	},
 	{
 		label: __('Settings'),
 		component: markRaw(CourseForm),
-		icon: 'lucide-settings-2',
+		icon: iconoDe('lucide-settings-2'),
 	},
 ])
 
@@ -392,5 +409,17 @@ usePageMeta(() => {
 :deep([role='tabpanel'][data-state='active']) {
 	flex: 1 1 0%;
 	min-height: 0;
+}
+
+/* TanArtistic: que «Editor del curso» no se parta en tres líneas. */
+:deep(.taar-pestanas-curso [role='tab']) {
+	white-space: nowrap;
+}
+/* Las cuatro caben en un teléfono de 360 px si van un poco más juntas. */
+@media (max-width: 639px) {
+	:deep(.taar-pestanas-curso [role='tablist']) {
+		gap: 0.875rem;
+		padding-inline: 0.75rem;
+	}
 }
 </style>

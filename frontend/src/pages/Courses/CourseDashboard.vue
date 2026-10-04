@@ -1,6 +1,6 @@
 <template>
 	<div class="p-5">
-		<div class="grid grid-cols-4 gap-5 mb-5 text-ink-gray-9">
+		<div class="grid grid-cols-2 gap-3 mb-5 text-ink-gray-9 md:grid-cols-4 md:gap-5">
 			<NumberChartGraph
 				:title="__('Enrolled')"
 				:value="formatAmount(course.data?.enrollments)"
@@ -33,7 +33,7 @@
 				</span>
 			</div>
 		</div>
-		<div v-else class="grid grid-cols-[2fr_1fr] gap-5 items-start">
+		<div v-else class="grid grid-cols-1 gap-5 items-start lg:grid-cols-[2fr_1fr]">
 			<div class="border rounded-lg py-3 px-4">
 				<div class="flex items-center justify-between mb-3">
 					<div class="text-xl-semibold text-ink-gray-9">
@@ -174,7 +174,7 @@
 								></div>
 								<Tooltip :text="row.name.split('(')[1].replace(')', '')">
 									<div class="ms-2">
-										{{ row.name.split('(')[0] }}
+										{{ __(row.name.split('(')[0].trim()) }}
 									</div>
 								</Tooltip>
 								<Tooltip :text="String(row.value)">
@@ -308,6 +308,7 @@ import Select from '@/components/Controls/Select.vue'
 import { computed, inject, ref, watch } from 'vue'
 import type dayjsType from 'dayjs'
 import { formatAmount } from '@/utils'
+import { useScreenSize } from '@/utils/composables'
 import colors from '@/utils/frappe-ui-colors.json'
 import CourseEnrollmentModal from '@/pages/Courses/CourseEnrollmentModal.vue'
 import EmptyStateLayout from '@/components/Layouts/EmptyStateLayout.vue'
@@ -426,6 +427,8 @@ const progressColors = computed(() => {
 	return colorList
 })
 
+const { isMobile } = useScreenSize()
+
 const progressColumns = computed(() => {
 	return [
 		{
@@ -443,7 +446,9 @@ const progressColumns = computed(() => {
 			key: 'creation',
 			align: 'right',
 		},
-	]
+		// En el teléfono la fecha no cabe y partía cada fila en dos líneas; está
+		// en el detalle que se abre al tocar a la alumna.
+	].filter((columna) => !isMobile.value || columna.key !== 'creation')
 })
 
 const lessonProgressSortingOptions = [

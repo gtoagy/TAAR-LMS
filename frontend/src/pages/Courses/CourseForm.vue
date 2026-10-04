@@ -9,7 +9,7 @@
 			<CourseDetailsSection />
 			<CourseOverviewSection />
 		</div>
-		<aside class="border-s overflow-y-auto px-3">
+		<aside class="border-t overflow-y-auto px-3 md:border-s md:border-t-0">
 			<CoursePublishSettings />
 		</aside>
 	</div>

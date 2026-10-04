@@ -8572,7 +8572,7 @@ msgstr "Total"
 #: frontend/src/pages/QuizForm.vue:162 frontend/src/pages/Quizzes.vue:308
 #: lms/lms/doctype/lms_quiz/lms_quiz.json
 msgid "Total Marks"
-msgstr "Marcas totales"
+msgstr "Puntos totales"
 
 #: frontend/src/components/Quiz.vue:432
 msgid "Total Questions"
@@ -11517,3 +11517,15 @@ msgstr "segundo"
 #: frontend/src/components/VideoBlock.vue
 msgid "seconds"
 msgstr "segundos"
+
+#: frontend/src/pages/Courses/CourseDashboard.vue
+msgid "Just Started"
+msgstr "Empezando"
+
+#: frontend/src/pages/Courses/CourseDashboard.vue
+msgid "Advanced"
+msgstr "Avanzadas"
+
+#: frontend/src/pages/Courses/CourseDetail.vue
+msgid "Enroll student"
+msgstr "Inscribir"

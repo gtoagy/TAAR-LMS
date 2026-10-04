@@ -20,7 +20,7 @@
 			<div class="text-xl-semibold text-ink-gray-9">
 				{{ __('{0} Quizzes').format(totalQuizzes.data || 0) }}
 			</div>
-			<FormControl v-model="search" type="text" placeholder="Search">
+			<FormControl v-model="search" type="text" :placeholder="__('Search')">
 				<template #prefix>
 					<span class="lucide-search size-4 text-ink-gray-5" />
 				</template>

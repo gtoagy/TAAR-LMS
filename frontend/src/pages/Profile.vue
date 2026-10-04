@@ -145,7 +145,9 @@
 				</Button>
 			</div>
 
-			<div class="mb-4 mt-10">
+			<!-- Quien administra tiene más pestañas de las que caben en un
+			     teléfono: se deslizan aquí dentro en vez de ensanchar la página. -->
+			<div class="mb-4 mt-10 max-w-full overflow-x-auto no-scrollbar">
 				<TabButtons
 					class="inline-block"
 					:buttons="getTabButtons()"
