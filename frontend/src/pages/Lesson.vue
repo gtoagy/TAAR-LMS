@@ -200,7 +200,7 @@
 								v-if="zenModeEnabled"
 								class="flex flex-wrap items-center gap-2 mt-2 md:mt-0"
 							>
-								<Button @click="showDiscussionsInZenMode()">
+								<Button v-if="CON_NOTAS_Y_PREGUNTAS" @click="showDiscussionsInZenMode()">
 									<template #icon>
 										<span class="lucide-message-circle-question size-4" />
 									</template>
@@ -312,7 +312,11 @@
 						</div>
 					</div>
 					<div
-						v-if="lesson.data && (allowDiscussions || tabs.length > 1)"
+						v-if="
+							CON_NOTAS_Y_PREGUNTAS &&
+							lesson.data &&
+							(allowDiscussions || tabs.length > 1)
+						"
 						class="mt-10 pb-5 pt-5 sm:pb-20 border-t px-5"
 						ref="discussionsContainer"
 					>
@@ -370,7 +374,7 @@
 		/>
 	</PanelLateral>
 	<InlineLessonMenu
-		v-if="lesson.data?.name"
+		v-if="CON_NOTAS_Y_PREGUNTAS && lesson.data?.name"
 		v-model="showInlineMenu"
 		:lesson="lesson.data?.name"
 		v-model:notes="notes"
@@ -445,6 +449,11 @@ const socket = inject('$socket')
 const router = useRouter()
 const route = useRoute()
 const allowDiscussions = ref(false)
+// TanArtistic: las notas y las preguntas de debajo de la lección están
+// apagadas. Las alumnas preguntan por WhatsApp y en la comunidad, y ahí abajo
+// solo hacían ruido. Con esto en `true` vuelve todo: las pestañas, el botón
+// del modo sin distracciones y el menú de notas al seleccionar texto.
+const CON_NOTAS_Y_PREGUNTAS = false
 const editor = ref(null)
 const instructorEditor = ref(null)
 const lessonProgress = ref(0)
