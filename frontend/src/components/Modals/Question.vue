@@ -36,7 +36,12 @@
 							:label="__('Type')"
 							v-model="question.type"
 							type="select"
-							:options="['Choices', 'User Input', 'Open Ended']"
+							:options="
+								['Choices', 'User Input', 'Open Ended'].map((tipo) => ({
+									label: __(tipo),
+									value: tipo,
+								}))
+							"
 							class="pb-2"
 							:required="true"
 						/>

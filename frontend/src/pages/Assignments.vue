@@ -66,7 +66,7 @@
 					showAssignmentForm = true
 				},
 			}"
-			class="flex-1 px-5"
+			class="taar-lista-al-ancho flex-1 px-5"
 		>
 			<ListHeader class="mb-2 grid items-center rounded bg-surface-gray-2 p-2">
 				<ListHeaderItem :item="item" v-for="item in assignmentColumns">
@@ -91,6 +91,9 @@
 								class="text-sm text-ink-gray-5"
 							>
 								{{ row[column.key] }}
+							</div>
+							<div v-else-if="column.key == 'type'">
+								{{ __(row[column.key]) }}
 							</div>
 							<div v-else>
 								{{ row[column.key] }}
@@ -147,6 +150,7 @@
 	/>
 </template>
 <script setup>
+import { useScreenSize } from '@/utils/composables'
 import {
 	Breadcrumbs,
 	Button,
@@ -267,6 +271,8 @@ const totalAssignments = createResource({
 	},
 })
 
+const { isMobile } = useScreenSize()
+
 const assignmentColumns = computed(() => {
 	return [
 		{
@@ -289,7 +295,8 @@ const assignmentColumns = computed(() => {
 			align: 'right',
 			icon: 'clock',
 		},
-	]
+		// En el teléfono, solo lo que cabe: con todas, la tabla se deslizaba de lado.
+	].filter((columna) => !isMobile.value || ['title', 'type'].includes(columna.key))
 })
 
 const assignmentTypes = computed(() => {

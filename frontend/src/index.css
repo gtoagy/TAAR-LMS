@@ -178,3 +178,18 @@ body:has(.taar-barra-movil) [data-sonner-toaster] {
 	--mobile-offset-bottom: var(--nav-safe) !important;
 	--offset-bottom: var(--nav-safe) !important;
 }
+
+/*
+ * Las listas de administración (cuestionarios, tareas, preguntas). El ListView
+ * de frappe-ui se ensancha a lo que pida su contenido (w-max) y en el teléfono
+ * la tabla se deslizaba de lado. Ahí va al ancho de la pantalla y cada celda
+ * corta su texto.
+ */
+@media (max-width: 639px) {
+	.taar-lista-al-ancho {
+		width: 100% !important;
+	}
+	.taar-lista-al-ancho * {
+		min-width: 0;
+	}
+}

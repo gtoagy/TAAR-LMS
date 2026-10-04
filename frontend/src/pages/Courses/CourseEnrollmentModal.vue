@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model:open="show" title="Enroll a Student" size="xl">
+	<Dialog v-model:open="show" :title="__('Enroll a Student')" size="xl">
 		<template #default>
 			<div class="space-y-4">
 				<FormControl
@@ -38,7 +38,7 @@
 		<template #actions="{ close }">
 			<div class="text-end">
 				<Button variant="solid" @click="enrollStudent(close)">
-					{{ __('Enroll') }}
+					{{ __('Enroll student') }}
 				</Button>
 			</div>
 		</template>

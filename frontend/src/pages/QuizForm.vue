@@ -75,7 +75,7 @@
 			</div>
 			<ListView
 				v-if="questions.length"
-				class="flex-1 overflow-y-auto px-5"
+				class="taar-lista-al-ancho flex-1 overflow-y-auto px-5"
 				:columns="questionColumns"
 				:rows="questions"
 				row-key="name"
@@ -251,6 +251,7 @@
 	/>
 </template>
 <script setup>
+import { useScreenSize } from '@/utils/composables'
 import {
 	Breadcrumbs,
 	createResource,
@@ -430,6 +431,8 @@ const calculateTotalMarks = () => {
 	return totalMarks
 }
 
+const { isMobile } = useScreenSize()
+
 const questionColumns = computed(() => {
 	return [
 		{
@@ -439,15 +442,16 @@ const questionColumns = computed(() => {
 		},
 		{
 			label: __('Question'),
-			key: __('question_detail'),
-			width: '40rem',
+			key: 'question_detail',
+			width: isMobile.value ? 1 : '40rem',
 		},
 		{
 			label: __('Marks'),
 			key: 'marks',
 			width: '5rem',
 		},
-	]
+		// En el teléfono, solo lo que cabe: con todas, la tabla se deslizaba de lado.
+	].filter((columna) => !isMobile.value || ['question_detail', 'marks'].includes(columna.key))
 })
 
 const openQuestionModal = (question = null) => {

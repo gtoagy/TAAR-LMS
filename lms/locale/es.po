@@ -4977,7 +4977,7 @@ msgstr "Marcar esta opción como respuesta correcta."
 #: lms/lms/doctype/lms_quiz_question/lms_quiz_question.json
 #: lms/lms/doctype/lms_quiz_result/lms_quiz_result.json
 msgid "Marks"
-msgstr "puntos"
+msgstr "Puntos"
 
 #. Label of the marks_to_cut (Int) field in DocType 'LMS Quiz'
 #: lms/lms/doctype/lms_quiz/lms_quiz.json
@@ -5859,7 +5859,7 @@ msgstr "Curso abierto"
 #: lms/lms/doctype/lms_question/lms_question.json
 #: lms/lms/doctype/lms_quiz_question/lms_quiz_question.json
 msgid "Open Ended"
-msgstr "Apertura finalizada"
+msgstr "Respuesta abierta"
 
 #: frontend/src/components/Settings/Transactions/TransactionDetails.vue:16
 msgid "Open the "
@@ -8898,7 +8898,7 @@ msgstr "Imagen de Usuario"
 #: lms/lms/doctype/lms_question/lms_question.json
 #: lms/lms/doctype/lms_quiz_question/lms_quiz_question.json
 msgid "User Input"
-msgstr "Entrada del usuario"
+msgstr "Respuesta escrita"
 
 #. Name of a DocType
 #: lms/lms/doctype/user_skill/user_skill.json
@@ -11529,3 +11529,15 @@ msgstr "Avanzadas"
 #: frontend/src/pages/Courses/CourseDetail.vue
 msgid "Enroll student"
 msgstr "Inscribir"
+
+#: frontend/src/pages/Courses/StudentCourseProgress.vue
+msgid "Student Progress"
+msgstr "Progreso de la alumna"
+
+#: frontend/src/pages/Courses/StudentCourseProgress.vue
+msgid "Not Submitted"
+msgstr "Sin entregar"
+
+#: frontend/src/pages/Assignments.vue
+msgid "Image or PDF"
+msgstr "Imagen o PDF"
