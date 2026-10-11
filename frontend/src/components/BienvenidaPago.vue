@@ -371,10 +371,11 @@
 </template>
 
 <script setup>
-import { call, createResource, Dialog, FormControl, LoadingIndicator, toast } from 'frappe-ui'
+import { Dialog, FormControl, LoadingIndicator, toast } from 'frappe-ui'
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/user'
+import { fijarToken, llamar } from '@/utils/tokenCsrf'
 
 const show = defineModel()
 
@@ -588,20 +589,15 @@ const anteriorDe = (desde) => {
 
 /* ── Carga ────────────────────────────────────────────────────────────────── */
 
-const infoPago = createResource({
-	url: 'taar_lms.api.info_post_pago',
-	makeParams: () => ({ session_id: props.sessionId }),
-})
-
-const estadoAsistente = createResource({
-	url: 'taar_lms.api.estado_onboarding',
-})
+// Las llamadas del asistente van por `llamar` y no por `call` ni por un
+// resource: si el servidor rechaza una por el token de la sesión, pide el
+// bueno y la repite. Lo explica utils/tokenCsrf.js.
 
 const cargar = async () => {
 	cargando.value = true
 	try {
 		if (props.sessionId) {
-			const d = await infoPago.fetch()
+			const d = await llamar('taar_lms.api.info_post_pago', { session_id: props.sessionId })
 			datos.value = d
 			estado.value = d?.estado
 			correo.value = d?.email || ''
@@ -638,7 +634,7 @@ const cargar = async () => {
 }
 
 const cargarAsistente = async () => {
-	const a = await estadoAsistente.fetch()
+	const a = await llamar('taar_lms.api.estado_onboarding')
 	asistente.value = a
 	if (a?.respuestas) respuestas.value = { ...a.respuestas }
 
@@ -714,7 +710,7 @@ const crearPassword = async () => {
 		// Aquí solo van el correo y la contraseña. El nombre y el celular se
 		// piden en el paso siguiente, ya con la sesión abierta: seis campos justo
 		// después de pagar era demasiado para una sola pantalla.
-		const r = await call('taar_lms.api.completar_registro', {
+		const r = await llamar('taar_lms.api.completar_registro', {
 			session_id: props.sessionId,
 			password: password.value,
 			correo: correo.value || undefined,
@@ -729,6 +725,14 @@ const crearPassword = async () => {
 			creando.value = false
 			return
 		}
+
+		// El servidor acaba de abrir la sesión y manda el token con el que hay
+		// que hablarle desde ahora. Esta página se cargó como invitada y seguía
+		// mandando aquel token; en cuanto algo pintaba una página con la sesión
+		// nueva —el navegador de Instagram lo hace al pedir el icono de iOS—,
+		// cada POST de aquí respondía "Solicitud inválida". Lo explica
+		// utils/tokenCsrf.js.
+		fijarToken(r?.csrf_token)
 
 		// La sesión ya quedó abierta en el servidor, pero la escuela todavía se
 		// cree invitada: hay que releerla antes de seguir, o el paso siguiente
@@ -819,7 +823,7 @@ const guardarDatos = async () => {
 
 	guardandoDatos.value = true
 	try {
-		await call('taar_lms.api.guardar_datos', {
+		await llamar('taar_lms.api.guardar_datos', {
 			nombre: nombre.value,
 			apellido: apellido.value || undefined,
 			celular: celular.value,
@@ -854,7 +858,7 @@ const siguientePregunta = async () => {
 
 	guardando.value = true
 	try {
-		const r = await call('taar_lms.api.guardar_onboarding', {
+		const r = await llamar('taar_lms.api.guardar_onboarding', {
 			respuestas: respuestas.value,
 			celular: celular.value || undefined,
 			pais: pais.value || undefined,
@@ -899,13 +903,13 @@ const entrar = () => {
 
 const abrioComunidad = () => {
 	// Un registro, no un requisito: si falla, ella ya está en el grupo.
-	call('taar_lms.api.marcar_paso', { paso: 'comunidad' }).catch(() => {})
+	llamar('taar_lms.api.marcar_paso', { paso: 'comunidad' }).catch(() => {})
 }
 
 const enviarEnlace = async () => {
 	enviandoEnlace.value = true
 	try {
-		await call('taar_lms.api.enviar_enlace_acceso', { session_id: props.sessionId })
+		await llamar('taar_lms.api.enviar_enlace_acceso', { session_id: props.sessionId })
 		enlaceEnviado.value = true
 	} catch (err) {
 		avisar(err)
