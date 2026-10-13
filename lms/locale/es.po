@@ -11450,6 +11450,14 @@ msgstr "Leídas"
 msgid "Download"
 msgstr "Descargar"
 
+#: frontend/src/components/PdfBlock.vue
+msgid "Save file"
+msgstr "Guardar archivo"
+
+#: frontend/src/components/PdfBlock.vue
+msgid "The file could not be downloaded. Please try again."
+msgstr "No se pudo descargar el archivo. Inténtalo de nuevo."
+
 #: frontend/src/pages/Profile.vue
 msgid "Only image file is allowed."
 msgstr "Solo se permiten imágenes."

@@ -15,19 +15,26 @@
 				</div>
 				<div class="text-p-sm text-ink-gray-5">PDF</div>
 			</div>
-			<a :href="url" :download="nombre" target="_blank" rel="noopener">
-				<Button variant="solid" :label="__('Download')">
-					<template #prefix>
-						<span class="lucide-download size-4" />
-					</template>
-				</Button>
-			</a>
+			<Button
+				variant="solid"
+				:label="archivoListo ? __('Save file') : __('Download')"
+				:loading="descargando"
+				@click="descargar"
+			>
+				<template #prefix>
+					<span class="lucide-download size-4" />
+				</template>
+			</Button>
 		</div>
+
+		<p v-if="fallo" class="mt-2 text-p-sm text-ink-red-6">
+			{{ __('The file could not be downloaded. Please try again.') }}
+		</p>
 
 		<!-- El visor incrustado solo donde se puede usar de verdad. En un móvil
 		     el navegador mete su propio lector dentro del marco y queda un
 		     recuadro que no se deja ampliar ni desplazar; ahí vale más el botón
-		     de arriba, que lo abre en el lector del teléfono. -->
+		     de arriba, que entrega el archivo sin sacar a nadie de la lección. -->
 		<iframe
 			v-if="mostrarVisor"
 			:src="url"
@@ -39,7 +46,8 @@
 
 <script setup>
 import { Button } from 'frappe-ui'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+import { entregarArchivo, traerArchivo } from '@/utils/descargar'
 
 const props = defineProps({
 	file: {
@@ -54,6 +62,31 @@ const nombre = computed(() => {
 	const trozo = decodeURIComponent(props.file).split('/').pop() || 'archivo.pdf'
 	return trozo.split('?')[0]
 })
+
+const descargando = ref(false)
+const fallo = ref(false)
+// El archivo ya bajado se guarda: si el teléfono pide un segundo toque para
+// abrir la hoja de compartir, ese toque no vuelve a descargar nada.
+const archivo = shallowRef(null)
+const archivoListo = ref(false)
+
+const descargar = async () => {
+	if (descargando.value) return
+	fallo.value = false
+	try {
+		if (!archivo.value) {
+			descargando.value = true
+			archivo.value = await traerArchivo(url.value, nombre.value)
+		}
+		const resultado = await entregarArchivo(archivo.value)
+		archivoListo.value = resultado === 'pendiente'
+	} catch (error) {
+		console.error(error)
+		fallo.value = true
+	} finally {
+		descargando.value = false
+	}
+}
 
 // Se mira el ancho a mano y no con el composable de la aplicación porque este
 // bloque lo monta el editor con su propia instancia de Vue, fuera del árbol
