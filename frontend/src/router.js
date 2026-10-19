@@ -81,6 +81,11 @@ const routes = [
 		component: () => import('@/pages/Soporte.vue'),
 	},
 	{
+		path: '/seguimiento',
+		name: 'Seguimiento',
+		component: () => import('@/pages/Seguimiento.vue'),
+	},
+	{
 		path: '/statistics',
 		name: 'Statistics',
 		component: () => import('@/pages/Statistics.vue'),

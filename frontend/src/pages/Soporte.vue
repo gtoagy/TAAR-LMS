@@ -136,6 +136,18 @@
 						</p>
 
 						<div class="mt-4 flex flex-wrap gap-2">
+							<!-- Enlace y no botón: en el teléfono abre la app de
+							     WhatsApp directamente, con su chat. -->
+							<a
+								v-if="alumna.whatsapp"
+								:href="alumna.whatsapp"
+								target="_blank"
+								rel="noopener"
+								class="inline-flex h-7 items-center gap-1.5 rounded bg-[#25d366] px-2 text-base font-medium text-white"
+							>
+								<WhatsAppIcon class="size-3.5" />
+								{{ __('WhatsApp') }}
+							</a>
 							<Button size="sm" @click="abrirReenvio(alumna)">
 								<template #prefix>
 									<Send class="size-3.5" />
@@ -262,6 +274,7 @@ import {
 } from 'frappe-ui'
 import { computed, inject, ref, watch } from 'vue'
 import { AtSign, Send } from 'lucide-vue-next'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { sessionStore } from '@/stores/session'
 import { useTituloMovil } from '@/utils/navegacionMovil'
 

@@ -697,6 +697,20 @@ const getSidebarItems = (forMobile = false) => {
 							userResource?.data?.is_system_manager
 						),
 				},
+				// Junto a soporte: quién acaba de comprar y a quién conviene
+				// escribirle, con WhatsApp a un toque. Es el informe «Seguimiento
+				// de compradoras» del escritorio, hecho para el teléfono.
+				{
+					label: 'Follow-up',
+					icon: 'HeartHandshake',
+					to: 'Seguimiento',
+					activeFor: ['Seguimiento'],
+					condition: () =>
+						!!(
+							userResource?.data?.is_moderator ||
+							userResource?.data?.is_system_manager
+						),
+				},
 			],
 		},
 		// Los dos WhatsApp, al final de la navegación y no descolgados abajo:

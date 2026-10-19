@@ -118,6 +118,7 @@ const PANTALLAS_CON_BARRA = [
 	'Profile',
 	'Opinion',
 	'Soporte',
+	'Seguimiento',
 ]
 
 /** Títulos de pantallas que no salen en la navegación. */
