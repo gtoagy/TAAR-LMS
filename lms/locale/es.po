@@ -11541,3 +11541,91 @@ msgstr "Sin entregar"
 #: frontend/src/pages/Assignments.vue
 msgid "Image or PDF"
 msgstr "Imagen o PDF"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Follow-up"
+msgstr "Seguimiento"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Who just bought and who needs a message, with WhatsApp one tap away."
+msgstr "Quién acaba de comprar y a quién conviene escribirle, con WhatsApp a un toque."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Refresh"
+msgstr "Actualizar"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "We could not load the list."
+msgstr "No pudimos cargar la lista."
+
+#: frontend/src/pages/Soporte.vue
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "No phone number yet"
+msgstr "Todavía sin celular"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "I wrote to her"
+msgstr "Ya le escribí"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "You wrote to her on {0}"
+msgstr "Le escribiste el {0}"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Welcome unfinished"
+msgstr "Bienvenida a medias"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Bought the membership and did not finish the welcome"
+msgstr "Compró la membresía y no terminó la bienvenida"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "To write"
+msgstr "Por escribir"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Sales"
+msgstr "Ventas"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Course buyers"
+msgstr "Cursos"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Nobody is waiting for a message. All good."
+msgstr "Nadie espera un mensaje. Todo en orden."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "No sales in the last 30 days."
+msgstr "No hubo ventas en los últimos 30 días."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "No course buyers in the last 60 days."
+msgstr "Nadie compró un curso en los últimos 60 días."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Noted. She leaves the list for a week."
+msgstr "Apuntado. Sale de la lista una semana."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "We could not save that."
+msgstr "No pudimos guardarlo."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Bought on {0}"
+msgstr "Compró el {0}"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "{0} of {1} lessons"
+msgstr "{0} de {1} lecciones"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Already started"
+msgstr "Ya empezó"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Has the membership"
+msgstr "Tiene membresía"
