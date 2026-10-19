@@ -11629,3 +11629,43 @@ msgstr "Ya empezó"
 #: frontend/src/pages/Seguimiento.vue
 msgid "Has the membership"
 msgstr "Tiene membresía"
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "Purchase history"
+msgstr "Historial de compras"
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "History"
+msgstr "Historial"
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "We could not load her history."
+msgstr "No pudimos cargar su historial."
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "No purchases on record."
+msgstr "No hay compras registradas."
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "See her in Stripe"
+msgstr "Verla en Stripe"
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "Never had a membership."
+msgstr "Nunca ha tenido membresía."
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "ends on {0}"
+msgstr "termina el {0}"
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "came from Disco"
+msgstr "viene de Disco"
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "Stripe did not answer: card payments may be missing."
+msgstr "Stripe no respondió: pueden faltar los pagos con tarjeta."
+
+#: frontend/src/components/HistorialCompras.vue
+msgid "Stripe is not connected: card payments are missing."
+msgstr "Stripe no está conectado: faltan los pagos con tarjeta."
