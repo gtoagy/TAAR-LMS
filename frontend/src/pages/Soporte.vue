@@ -148,6 +148,12 @@
 								<WhatsAppIcon class="size-3.5" />
 								{{ __('WhatsApp') }}
 							</a>
+							<Button size="sm" @click="verHistorial(alumna)">
+								<template #prefix>
+									<History class="size-3.5" />
+								</template>
+								{{ __('History') }}
+							</Button>
 							<Button size="sm" @click="abrirReenvio(alumna)">
 								<template #prefix>
 									<Send class="size-3.5" />
@@ -165,6 +171,12 @@
 				</div>
 			</div>
 		</div>
+
+		<HistorialCompras
+			v-model:open="historialAbierto"
+			:alumna="elegida?.correo"
+			:nombre="elegida?.nombre"
+		/>
 
 		<!-- Reenviar el acceso -->
 		<Dialog
@@ -273,7 +285,8 @@ import {
 	usePageMeta,
 } from 'frappe-ui'
 import { computed, inject, ref, watch } from 'vue'
-import { AtSign, Send } from 'lucide-vue-next'
+import { AtSign, History, Send } from 'lucide-vue-next'
+import HistorialCompras from '@/components/HistorialCompras.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { sessionStore } from '@/stores/session'
 import { useTituloMovil } from '@/utils/navegacionMovil'
@@ -289,6 +302,7 @@ const MINIMO_LETRAS = 3
 const texto = ref('')
 const elegida = ref(null)
 const dialogoReenvio = ref(false)
+const historialAbierto = ref(false)
 const dialogoMudanza = ref(false)
 const correoNuevo = ref('')
 const enviando = ref(false)
@@ -352,6 +366,11 @@ const textoMembresia = (membresia) => {
 		resumen += ' · ' + __('until {0}').format(membresia.hasta)
 	}
 	return resumen
+}
+
+const verHistorial = (alumna) => {
+	elegida.value = alumna
+	historialAbierto.value = true
 }
 
 const abrirReenvio = (alumna) => {

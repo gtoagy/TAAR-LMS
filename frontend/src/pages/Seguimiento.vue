@@ -197,11 +197,24 @@
 							>
 								{{ __('You wrote to her on {0}').format(fecha(alumna.contactada_en)) }}
 							</span>
+
+							<Button size="md" @click="verHistorial(alumna)">
+								<template #prefix>
+									<History class="size-4" />
+								</template>
+								{{ __('History') }}
+							</Button>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<HistorialCompras
+			v-model:open="historialAbierto"
+			:alumna="elegida?.alumna"
+			:nombre="elegida?.nombre"
+		/>
 	</div>
 </template>
 
@@ -219,8 +232,9 @@ import {
 } from 'frappe-ui'
 import { computed, inject, nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { Check, RefreshCw } from 'lucide-vue-next'
+import { Check, History, RefreshCw } from 'lucide-vue-next'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import HistorialCompras from '@/components/HistorialCompras.vue'
 import { sessionStore } from '@/stores/session'
 import { useTituloMovil } from '@/utils/navegacionMovil'
 
@@ -243,6 +257,15 @@ const puedeAtender = computed(
 const destacada = ref((route.query.alumna || '').toString().toLowerCase())
 const pestana = ref(destacada.value ? 'ventas' : 'pendientes')
 const marcando = ref(null)
+const elegida = ref(null)
+const historialAbierto = ref(false)
+
+// Todo lo que ha comprado, no solo lo de la ficha: la ficha guarda la primera
+// compra y quien pasó de un curso a la membresía salía solo con el curso.
+const verHistorial = (alumna) => {
+	elegida.value = alumna
+	historialAbierto.value = true
+}
 
 const datos = createResource({
 	url: 'taar_lms.seguimiento.para_la_app',
