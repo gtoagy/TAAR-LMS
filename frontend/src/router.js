@@ -85,6 +85,17 @@ const routes = [
 		name: 'Seguimiento',
 		component: () => import('@/pages/Seguimiento.vue'),
 	},
+	// Materiales: la tienda y los pedidos de la alumna (taar_lms.kits).
+	{
+		path: '/tienda',
+		name: 'Tienda',
+		component: () => import('@/pages/Tienda.vue'),
+	},
+	{
+		path: '/pedidos',
+		name: 'MisPedidos',
+		component: () => import('@/pages/MisPedidos.vue'),
+	},
 	{
 		path: '/statistics',
 		name: 'Statistics',

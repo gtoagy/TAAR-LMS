@@ -136,6 +136,46 @@
 					{{ __('Get Certificate') }}
 				</Button>
 			</div>
+			<!-- El kit de materiales del curso. Se ve también para quien ya tiene
+			     el curso o la membresía: son justo quienes más lo van a pedir. -->
+			<div
+				v-if="kit && !readOnlyMode"
+				class="mb-6 rounded-md border p-3 flex gap-3 items-center"
+			>
+				<img
+					v-if="kit.foto"
+					:src="kit.foto"
+					:alt="kit.titulo"
+					class="size-14 rounded object-cover shrink-0"
+				/>
+				<span
+					v-else
+					class="lucide-package size-6 shrink-0 text-ink-gray-6"
+				/>
+				<div class="min-w-0 flex-1">
+					<div class="text-base font-semibold text-ink-gray-9">
+						{{ __('Materials kit') }}
+					</div>
+					<div class="text-sm text-ink-gray-6">
+						{{
+							kit.vendible
+								? __('Everything for this course, to your door · from {0}').format(
+										kit.desde_texto
+									)
+								: __('See the list of materials')
+						}}
+					</div>
+				</div>
+				<Button size="sm" @click="verKit = true">
+					{{ kit.vendible ? __('Order kit') : __('See list') }}
+				</Button>
+			</div>
+			<KitDialog
+				v-if="kit"
+				v-model:open="verKit"
+				:curso="course.data?.name"
+				:volver="`/lms/courses/${course.data?.name}`"
+			/>
 			<section v-if="hasCourseStats" class="space-y-3">
 				<div class="text-base text-ink-gray-9 mb-1">
 					{{ __('This course includes:') }}
@@ -190,11 +230,12 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { computed, inject, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import { Badge, Button, call, createResource, toast } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { formatEnrollments } from '@/utils'
 import CertificationLinks from '@/components/CertificationLinks.vue'
+import KitDialog from '@/components/KitDialog.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
 import { useTelemetry } from 'frappe-ui/frappe'
 import type {
@@ -265,12 +306,23 @@ const is_instructor = (): boolean => {
 	return user_is_instructor
 }
 
+interface KitDelCurso {
+	titulo: string
+	foto: string
+	desde_texto: string
+	piezas: number
+	vendible: boolean
+}
+
 interface CourseAccessInfo {
 	venta_individual: boolean
 	incluido_en_membresia: boolean
+	solo_plan_anual?: boolean
+	cubierto_por_mi_plan?: boolean
 	price_display: string | null
 	is_member: boolean
 	enrolled: boolean
+	kit?: KitDelCurso | null
 }
 
 const accessInfo = createResource({
@@ -305,6 +357,10 @@ const necesitaMejorarPlan = computed<boolean>(
 const protectedCourse = computed<boolean>(
 	() => ventaIndividual.value || incluidoEnMembresia.value
 )
+
+// El kit de materiales (taar_lms.kits), o null si el curso no tiene uno activo.
+const kit = computed<KitDelCurso | null>(() => accessInfo.data?.kit || null)
+const verKit = ref(false)
 
 function comprarCurso() {
 	// Los invitados también pueden comprar: pagan en Stripe y la cuenta

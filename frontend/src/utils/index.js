@@ -8,6 +8,7 @@ import { Markdown } from '@/utils/markdownParser'
 import { useSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/user'
 import { haySesiones } from '@/utils/envivo'
+import { pedirCatalogo, tiendaAbierta } from '@/utils/kits'
 import { enlacesDeAyuda } from '@/utils/ayuda'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { markRaw } from 'vue'
@@ -588,6 +589,18 @@ const getSidebarItems = (forMobile = false) => {
 					pestana: 3,
 					condition: () =>
 						haySesiones.value || !!userResource?.data?.is_moderator,
+				},
+				// Los materiales de los cursos. Solo con la tienda abierta en
+				// «TAAR Tienda Ajustes»: mientras tanto no existe para nadie.
+				{
+					label: 'Store',
+					icon: 'ShoppingBag',
+					to: 'Tienda',
+					activeFor: ['Tienda', 'MisPedidos'],
+					condition: () => {
+						pedirCatalogo()
+						return tiendaAbierta.value
+					},
 				},
 				// Detrás de Membresía y dentro de la navegación de siempre. En el
 				// móvil no es un destino sino un panel: va en la barra superior, a
