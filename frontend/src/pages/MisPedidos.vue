@@ -92,7 +92,12 @@ const { titulo } = useTituloMovil()
 const route = useRoute()
 const pedidoDeLaUrl = computed(() => route.query.pedido || null)
 
-const pedidos = createResource({ url: 'taar_lms.kits.mis_pedidos' })
+// Al volver de Stripe trae el id de su sesión: el servidor confirma el pago con
+// él si el aviso de Stripe todavía no llega.
+const pedidos = createResource({
+	url: 'taar_lms.kits.mis_pedidos',
+	makeParams: () => (route.query.session_id ? { session_id: route.query.session_id } : {}),
+})
 const lista = computed(() => pedidos.data || [])
 
 const encontrado = computed(() => lista.value.find((p) => p.referencia === pedidoDeLaUrl.value))
