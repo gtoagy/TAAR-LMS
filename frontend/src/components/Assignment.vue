@@ -124,11 +124,18 @@
 									</span>
 								</div>
 							</a>
-							<span
+							<!-- La X va en un botón: con bg-* sobre el ícono, la máscara la pintaba gris claro y casi no se veía -->
+							<button
 								v-if="canModifyAssignment"
+								type="button"
 								@click="removeSubmission()"
-								class="lucide-x bg-surface-gray-3 rounded-md cursor-pointer w-5 h-5 p-1 ms-4"
-							/>
+								:title="__('Remove')"
+								:aria-label="__('Remove')"
+								class="flex items-center gap-1 ms-4 shrink-0 rounded-md bg-surface-gray-3 hover:bg-surface-gray-4 px-2 py-1 text-sm text-ink-gray-8"
+							>
+								<span class="lucide-x size-4" />
+								<span>{{ __('Remove') }}</span>
+							</button>
 						</div>
 					</div>
 				</div>
