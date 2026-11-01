@@ -1,20 +1,35 @@
 <template>
 	<div
 		v-if="course.title"
-		class="flex flex-col h-full rounded-md overflow-auto text-ink-gray-9 bg-surface-elevation-1"
+		class="flex flex-col h-full rounded-md overflow-hidden text-ink-gray-9 bg-surface-elevation-1"
 		style="min-height: 350px"
 	>
+		<!-- La portada va en un <img> y no como fondo CSS: si la descarga se
+		     corta (datos del celular, cambiar de app), un fondo se queda en
+		     blanco o pintado a medias para siempre, sin avisar a nadie. El <img>
+		     dice que falló, y entonces se reintenta una vez; si vuelve a fallar
+		     queda el degradado del curso en lugar del hueco blanco. -->
 		<div
-			class="relative w-[100%] h-[168px] bg-cover bg-center bg-no-repeat border-t border-x rounded-t-md"
+			class="relative w-[100%] h-[168px] overflow-hidden border-t border-x rounded-t-md"
+			:class="{ 'bg-surface-gray-2': mostrarFoto && !fotoCargada }"
 			:style="
-				course.image
-					? { backgroundImage: `url('${encodeURI(course.image)}')` }
-					: {
-							backgroundImage: gradientColor,
-							backgroundBlendMode: 'screen',
-					  }
+				mostrarFoto
+					? {}
+					: { backgroundImage: gradientColor, backgroundBlendMode: 'screen' }
 			"
 		>
+			<img
+				v-if="mostrarFoto"
+				:key="srcFoto"
+				:src="srcFoto"
+				alt=""
+				loading="lazy"
+				decoding="async"
+				class="absolute inset-0 size-full object-cover transition-opacity duration-300"
+				:class="fotoCargada ? 'opacity-100' : 'opacity-0'"
+				@load="fotoCargada = true"
+				@error="fotoFallo"
+			/>
 			<!-- Un curso anunciado antes de tener contenido. Va encima de la
 			     portada porque es lo primero que hay que entender de la tarjeta, y
 			     con fondo propio para que se lea sobre cualquier foto.
@@ -151,7 +166,7 @@ import { usersStore } from '@/stores/user'
 import { Tooltip } from 'frappe-ui'
 import { formatEnrollments, formatRating } from '@/utils'
 import { theme } from '@/utils/theme'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import colors from '@/utils/frappe-ui-colors.json'
 
@@ -166,6 +181,36 @@ const props = defineProps({
 })
 
 const enrolledLabel = computed(() => formatEnrollments(props.course.enrollments))
+
+// Portada: 0 = primer intento, 1 = reintento, 2 = ya no hay foto que mostrar.
+const intentoFoto = ref(0)
+const fotoCargada = ref(false)
+
+const mostrarFoto = computed(
+	() => Boolean(props.course.image) && intentoFoto.value < 2
+)
+
+// El reintento pide otra URL para que el navegador no vuelva a servir la copia
+// rota que pudo quedarse guardada del primer intento.
+const srcFoto = computed(() => {
+	const url = encodeURI(props.course.image || '')
+	if (intentoFoto.value === 0) return url
+	return `${url}${url.includes('?') ? '&' : '?'}reintento=${Date.now()}`
+})
+
+function fotoFallo() {
+	fotoCargada.value = false
+	intentoFoto.value += 1
+}
+
+// La misma tarjeta se reusa al filtrar el catálogo: con otra portada, de cero.
+watch(
+	() => props.course.image,
+	() => {
+		intentoFoto.value = 0
+		fotoCargada.value = false
+	}
+)
 
 const ventaIndividual = computed(
 	() =>
