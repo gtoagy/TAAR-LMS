@@ -2,12 +2,20 @@
 # For license information, please see license.txt
 
 from datetime import timedelta
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import frappe
 import requests
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, format_date, format_time, get_datetime, nowdate
+from frappe.utils import (
+	cint,
+	format_date,
+	format_time,
+	get_datetime,
+	get_system_timezone,
+	nowdate,
+)
 
 from lms.lms.doctype.lms_batch.lms_batch import authenticate
 
@@ -25,6 +33,7 @@ class LMSLiveClass(Document):
 			and not self.has_value_changed("time")
 			and not self.has_value_changed("duration")
 			and not self.has_value_changed("title")
+			and not self.has_value_changed("timezone")
 		):
 			return
 
@@ -61,9 +70,27 @@ class LMSLiveClass(Document):
 			description += f"{self.description}"
 		return description
 
+	def _start_in_system_timezone(self):
+		# TanArtistic: el Event guarda la hora en la zona del sistema, pero la
+		# sesión se escribe en la suya (`timezone`). Pegar «fecha hora» tal cual
+		# ponía una sesión de las 17:00 de Bogotá a las 17:00 de Ciudad de México
+		# en el Google Calendar de la escuela: una hora después de la de verdad.
+		start = get_datetime(f"{self.date} {self.time}")
+		system = get_system_timezone()
+		if not self.timezone or self.timezone == system:
+			return start
+		try:
+			return (
+				start.replace(tzinfo=ZoneInfo(self.timezone))
+				.astimezone(ZoneInfo(system))
+				.replace(tzinfo=None)
+			)
+		except (ZoneInfoNotFoundError, ValueError):
+			return start
+
 	def _update_linked_event(self):
 		event = frappe.get_doc("Event", self.event)
-		start = f"{self.date} {self.time}"
+		start = self._start_in_system_timezone()
 
 		event.subject = f"Live Class on {self.title}"
 		event.starts_on = start
@@ -106,7 +133,7 @@ class LMSLiveClass(Document):
 				self.add_video_conferencing_to_event(event)
 
 	def create_event(self):
-		start = f"{self.date} {self.time}"
+		start = self._start_in_system_timezone()
 
 		event = frappe.new_doc("Event")
 		event.update(

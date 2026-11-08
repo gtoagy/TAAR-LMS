@@ -8,13 +8,14 @@
 	entera, así que van por `taar_lms.envivo.crear_sesion`, que es quien sabe
 	crearlas sin grupo.
 
-	La reunión de Zoom se crea de verdad al guardar — el enlace no se pega a
-	mano—, y quién puede programar lo decide el servidor, no este botón.
+	La reunión se crea de verdad al guardar — el enlace no se pega a mano—:
+	desde el 8-nov-2026 en Google Meet, y en Zoom solo si no hay cuenta de Meet
+	conectada. Cuál toca lo dice el servidor en `proveedor`, igual que quién
+	puede programar: no lo decide este botón.
 
 	Con `original` hace de formulario de editar: el mismo formulario, precargado,
 	para que cambiar una hora no obligue a cancelar y volver a programar. Llama a
-	`taar_lms.envivo.editar_sesion`, y la reunión de Zoom se mueve sola al
-	guardar.
+	`taar_lms.envivo.editar_sesion`, y la reunión se mueve sola al guardar.
 -->
 <template>
 	<Dialog
@@ -108,10 +109,12 @@
 							/>
 						</div>
 
-						<!-- Solo al crear: es un ajuste de la reunión de Zoom, y
-						     editarlo aquí no lo cambiaría allí. -->
+						<!-- Solo al crear y solo con Zoom: es un ajuste de la reunión
+						     de Zoom, y editarlo aquí no lo cambiaría allí. Google
+						     Calendar no deja pedir la grabación al crear la sala:
+						     en Meet se graba desde dentro de la llamada. -->
 						<FormControl
-							v-if="!editando"
+							v-if="!editando && proveedor === 'Zoom'"
 							v-model="sesion.grabar"
 							type="select"
 							:options="opcionesDeGrabacion()"
@@ -127,16 +130,16 @@
 				/>
 
 				<!-- Se dice aquí y no después: lo que se guarda no es una fecha en
-				     una lista, es una reunión que queda creada en Zoom. -->
+				     una lista, es una reunión que queda creada de verdad. -->
 				<p class="text-support text-ink-gray-6">
 					{{
 						editando
 							? __(
-									'If you change the date or time, the Zoom meeting moves with it.'
-								)
+									'If you change the date or time, the {0} meeting moves with it.'
+								).format(proveedorDeLaSesion)
 							: __(
-									'The Zoom meeting is created when you schedule this. Students see the link 15 minutes before it starts.'
-								)
+									'The {0} meeting is created when you schedule this. Students see the link 15 minutes before it starts.'
+								).format(proveedor || 'Google Meet')
 					}}
 				</p>
 			</div>
@@ -157,6 +160,7 @@ import { getTimezones } from '@/utils/'
 import {
 	desfaseDe,
 	refrescarSesiones,
+	sesionesEnVivo,
 	zonaDeLaEscuela,
 	zonaDelNavegador,
 } from '@/utils/envivo'
@@ -170,6 +174,13 @@ const props = defineProps({
 })
 
 const editando = computed(() => !!props.original)
+
+// Con qué se crearía una sesión nueva, y con qué se creó la que se edita: no
+// tienen por qué ser lo mismo mientras queden sesiones viejas de Zoom.
+const proveedor = computed(() => sesionesEnVivo.data?.proveedor)
+const proveedorDeLaSesion = computed(
+	() => props.original?.proveedor || proveedor.value || 'Google Meet'
+)
 
 const sesion = reactive({
 	titulo: '',
@@ -269,7 +280,7 @@ function guardar(close) {
 }
 
 function programar(close) {
-	// Se comprueba antes de llamar porque la llamada crea una reunión en Zoom:
+	// Se comprueba antes de llamar porque la llamada crea una reunión de verdad:
 	// que falle la validación a estas alturas ya deja rastro fuera de aquí.
 	if (!sesion.titulo || !sesion.fecha || !sesion.hora) {
 		toast.error(__('Title, date and time are required.'))
