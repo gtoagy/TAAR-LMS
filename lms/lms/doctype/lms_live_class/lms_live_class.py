@@ -15,6 +15,7 @@ from frappe.utils import (
 	get_datetime,
 	get_system_timezone,
 	nowdate,
+	validate_email_address,
 )
 
 from lms.lms.doctype.lms_batch.lms_batch import authenticate
@@ -151,12 +152,21 @@ class LMSLiveClass(Document):
 
 	def add_event_participants(self, event, calendar, add_video_conferencing=False):
 		for participant in self.get_participants():
+			# TanArtistic: el nombre de un usuario no siempre es su correo, y Google
+			# Calendar rechaza el evento entero (400) si un invitado no lo es. Pasaba
+			# al programar como «Administrator». Se invita con el correo del usuario
+			# y se salta a quien no tiene uno de verdad.
+			if participant in ("Administrator", "Guest"):
+				continue
+			email = frappe.db.get_value("User", participant, "email")
+			if not email or not validate_email_address(email):
+				continue
 			frappe.get_doc(
 				{
 					"doctype": "Event Participants",
 					"reference_doctype": "User",
 					"reference_docname": participant,
-					"email": participant,
+					"email": email,
 					"parent": event.name,
 					"parenttype": "Event",
 					"parentfield": "event_participants",
