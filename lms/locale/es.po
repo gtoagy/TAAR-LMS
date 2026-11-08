@@ -10999,8 +10999,8 @@ msgid "The session was not created."
 msgstr "No se pudo crear la sesión."
 
 #: frontend/src/components/ProgramarSesionModal.vue
-msgid "The Zoom meeting is created when you schedule this. Students see the link 15 minutes before it starts."
-msgstr "Al programarla se crea la reunión en Zoom. El botón para entrar les aparece quince minutos antes."
+msgid "The {0} meeting is created when you schedule this. Students see the link 15 minutes before it starts."
+msgstr "Al programarla se crea la reunión en {0}. El botón para entrar les aparece quince minutos antes."
 
 #: frontend/src/components/ProgramarSesionModal.vue
 msgid "Select date"
@@ -11023,8 +11023,8 @@ msgid "Save changes"
 msgstr "Guardar cambios"
 
 #: frontend/src/components/ProgramarSesionModal.vue
-msgid "If you change the date or time, the Zoom meeting moves with it."
-msgstr "Si cambias la fecha o la hora, la reunión de Zoom se mueve con ella."
+msgid "If you change the date or time, the {0} meeting moves with it."
+msgstr "Si cambias la fecha o la hora, la reunión de {0} se mueve con ella."
 
 #: frontend/src/components/ProgramarSesionModal.vue
 msgid "Session updated."
@@ -11045,6 +11045,10 @@ msgstr "Cancelar sesión"
 #: frontend/src/components/ProximaSesion.vue
 msgid "Cancel this session?"
 msgstr "¿Cancelar esta sesión?"
+
+#: frontend/src/components/ProximaSesion.vue
+msgid "The event is removed from the school Google Calendar too. This cannot be undone."
+msgstr "También se quita el evento del Google Calendar de la escuela. Esto no se puede deshacer."
 
 #: frontend/src/components/ProximaSesion.vue
 msgid "The Zoom meeting is deleted too, so a link someone already saved stops working. This cannot be undone."

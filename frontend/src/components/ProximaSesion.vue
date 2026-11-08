@@ -158,7 +158,7 @@
 		<ProgramarSesionModal v-if="editando" v-model="editando" :original="sesion" />
 
 		<!-- Se pregunta antes porque esto no se deshace, y porque lo que se borra
-		     no está solo aquí: la reunión de Zoom desaparece con ella. -->
+		     no está solo aquí: la reunión desaparece con ella. -->
 		<Dialog
 			v-model:open="confirmando"
 			:title="__('Cancel this session?')"
@@ -175,9 +175,13 @@
 			<template #default>
 				<p class="text-body text-ink-gray-7">
 					{{
-						__(
-							'The Zoom meeting is deleted too, so a link someone already saved stops working. This cannot be undone.'
-						)
+						sesion.proveedor === 'Google Meet'
+							? __(
+									'The event is removed from the school Google Calendar too. This cannot be undone.'
+								)
+							: __(
+									'The Zoom meeting is deleted too, so a link someone already saved stops working. This cannot be undone.'
+								)
 					}}
 				</p>
 			</template>
