@@ -11673,3 +11673,47 @@ msgstr "Stripe no respondió: pueden faltar los pagos con tarjeta."
 #: frontend/src/components/HistorialCompras.vue
 msgid "Stripe is not connected: card payments are missing."
 msgstr "Stripe no está conectado: faltan los pagos con tarjeta."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "2nd notice"
+msgstr "2.º aviso"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "No more follow-up"
+msgstr "Sin más seguimiento"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Stop following up"
+msgstr "No darle más seguimiento"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Never contacted"
+msgstr "Nunca les has escrito"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Nobody has written to them yet. Start here."
+msgstr "Nadie les ha escrito todavía. Empieza por aquí."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Second notice"
+msgstr "Segundo aviso"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "You already wrote to them and they are still stuck."
+msgstr "Ya les escribiste y siguen estancadas."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "You already wrote to her ({0}) and she has not finished it"
+msgstr "Ya le escribiste ({0}) y no la ha terminado"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Done. She counts again in the follow-up."
+msgstr "Listo. Vuelve a contar en el seguimiento."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Done. She will not show up as pending anymore."
+msgstr "Listo. Ya no saldrá como pendiente."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Noted. She leaves the list for a week; if she comes back, it is as a second notice."
+msgstr "Apuntado. Sale de la lista una semana; si vuelve, será como segundo aviso."
