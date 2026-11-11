@@ -108,8 +108,21 @@
 				</p>
 
 				<div v-else class="mt-4 space-y-3">
+					<!-- En «Por escribir» van dos grupos: primero quien nunca ha
+					     recibido mensaje, luego el segundo aviso. En las otras
+					     pestañas, un solo grupo sin título. -->
+					<template v-for="grupo in grupos" :key="grupo.clave">
+					<div v-if="grupo.titulo" class="pt-3 first:pt-0">
+						<h2 class="text-base font-semibold text-ink-gray-9">
+							{{ grupo.titulo }}
+							<span class="ml-1 tabular-nums font-normal text-ink-gray-5">
+								{{ grupo.items.length }}
+							</span>
+						</h2>
+						<p class="mt-0.5 text-support text-ink-gray-6">{{ grupo.ayuda }}</p>
+					</div>
 					<div
-						v-for="alumna in lista"
+						v-for="alumna in grupo.items"
 						:id="`alumna-${alumna.alumna}`"
 						:key="`${pestana}-${alumna.alumna}`"
 						class="rounded-lg border bg-surface-base p-4 transition"
@@ -128,15 +141,24 @@
 									{{ alumna.producto }}
 								</div>
 							</div>
-							<Badge
-								v-if="alumna.etapa"
-								size="md"
-								variant="subtle"
-								:theme="colorDeEtapa(alumna.etapa)"
-								class="shrink-0"
-							>
-								{{ alumna.etapa }}
-							</Badge>
+							<div class="flex shrink-0 flex-col items-end gap-1">
+								<Badge
+									v-if="alumna.etapa"
+									size="md"
+									variant="subtle"
+									:theme="colorDeEtapa(alumna.etapa)"
+								>
+									{{ alumna.etapa }}
+								</Badge>
+								<Badge
+									v-if="alumna.segundo_aviso"
+									size="sm"
+									variant="outline"
+									theme="orange"
+								>
+									{{ __('2nd notice') }}
+								</Badge>
+							</div>
 						</div>
 
 						<!-- Lo que conviene hacer, que es por lo que se abre esta
@@ -153,6 +175,14 @@
 							"
 						>
 							{{ alumna.que_hacer }}
+						</p>
+
+						<!-- Por qué vuelve a salir alguien a quien ya se le escribió. -->
+						<p
+							v-if="alumna.segundo_aviso && alumna.como_va_tras_mensaje"
+							class="mt-1 text-support text-ink-amber-8"
+						>
+							{{ alumna.como_va_tras_mensaje }}
 						</p>
 
 						<p class="mt-2 text-support text-ink-gray-6">
@@ -192,6 +222,12 @@
 								{{ __('I wrote to her') }}
 							</Button>
 							<span
+								v-else-if="alumna.sin_seguimiento"
+								class="text-support text-ink-gray-5"
+							>
+								{{ __('No more follow-up') }}
+							</span>
+							<span
 								v-else-if="alumna.contactada_en"
 								class="text-support text-ink-gray-5"
 							>
@@ -204,8 +240,36 @@
 								</template>
 								{{ __('History') }}
 							</Button>
+
+							<!-- Para quien ya no se quiere perseguir. Se puede
+							     deshacer desde «Compradoras de curso». -->
+							<Button
+								v-if="alumna.pendiente"
+								size="md"
+								variant="ghost"
+								:loading="cerrando === alumna.alumna"
+								@click="dejarDeSeguir(alumna, false)"
+							>
+								<template #prefix>
+									<BellOff class="size-4" />
+								</template>
+								{{ __('Stop following up') }}
+							</Button>
+							<Button
+								v-else-if="alumna.sin_seguimiento"
+								size="md"
+								variant="ghost"
+								:loading="cerrando === alumna.alumna"
+								@click="dejarDeSeguir(alumna, true)"
+							>
+								<template #prefix>
+									<Undo2 class="size-4" />
+								</template>
+								{{ __('Resume') }}
+							</Button>
 						</div>
 					</div>
+					</template>
 				</div>
 			</div>
 		</div>
@@ -232,7 +296,7 @@ import {
 } from 'frappe-ui'
 import { computed, inject, nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { Check, History, RefreshCw } from 'lucide-vue-next'
+import { BellOff, Check, History, RefreshCw, Undo2 } from 'lucide-vue-next'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import HistorialCompras from '@/components/HistorialCompras.vue'
 import { sessionStore } from '@/stores/session'
@@ -257,6 +321,7 @@ const puedeAtender = computed(
 const destacada = ref((route.query.alumna || '').toString().toLowerCase())
 const pestana = ref(destacada.value ? 'ventas' : 'pendientes')
 const marcando = ref(null)
+const cerrando = ref(null)
 const elegida = ref(null)
 const historialAbierto = ref(false)
 
@@ -285,13 +350,21 @@ const compradoras = computed(() =>
 )
 
 const ventas = computed(() =>
-	(datos.data?.ventas || []).map((v) => ({
-		...v,
-		etapa: v.bienvenida === 'Completa' ? null : __('Welcome unfinished'),
-		urgente: false,
-		pendiente: v.bienvenida !== 'Completa' && !contactadaHacePoco(v.contactada_en),
-		que_hacer: '',
-	}))
+	(datos.data?.ventas || []).map((v) => {
+		const pendiente =
+			v.bienvenida !== 'Completa' &&
+			!v.sin_seguimiento &&
+			!contactadaHacePoco(v.contactada_en)
+		return {
+			...v,
+			etapa: v.bienvenida === 'Completa' ? null : __('Welcome unfinished'),
+			urgente: false,
+			pendiente,
+			segundo_aviso: pendiente && v.veces_contactada > 0,
+			como_va_tras_mensaje: '',
+			que_hacer: '',
+		}
+	})
 )
 
 // «Por escribir» junta lo que el informe ya marca como pendiente (compradoras
@@ -305,14 +378,44 @@ const pendientes = computed(() => {
 		.map((v) => ({
 			...v,
 			que_hacer: __('Bought the membership and did not finish the welcome'),
+			como_va_tras_mensaje: v.segundo_aviso
+				? __('You already wrote to her ({0}) and she has not finished it').format(
+						v.veces_contactada
+				  )
+				: '',
 		}))
 	return [...deCursos, ...deMembresia]
 })
+
+// Quien nunca ha recibido mensaje va antes que el segundo aviso: es a quien
+// más urge escribirle.
+const primerMensaje = computed(() => pendientes.value.filter((p) => !p.segundo_aviso))
+const segundoAviso = computed(() => pendientes.value.filter((p) => p.segundo_aviso))
 
 const lista = computed(() => {
 	if (pestana.value === 'ventas') return ventas.value
 	if (pestana.value === 'todas') return compradoras.value
 	return pendientes.value
+})
+
+const grupos = computed(() => {
+	if (pestana.value !== 'pendientes') {
+		return [{ clave: pestana.value, titulo: '', items: lista.value }]
+	}
+	return [
+		{
+			clave: 'primer-mensaje',
+			titulo: __('Never contacted'),
+			ayuda: __('Nobody has written to them yet. Start here.'),
+			items: primerMensaje.value,
+		},
+		{
+			clave: 'segundo-aviso',
+			titulo: __('Second notice'),
+			ayuda: __('You already wrote to them and they are still stuck.'),
+			items: segundoAviso.value,
+		},
+	].filter((g) => g.items.length)
 })
 
 const pestanas = computed(() => [
@@ -355,12 +458,34 @@ const marcarContactada = async (alumna) => {
 	marcando.value = alumna.alumna
 	try {
 		await call('taar_lms.seguimiento.marcar_contactada', { alumna: alumna.alumna })
-		toast.success(__('Noted. She leaves the list for a week.'))
+		toast.success(
+			__('Noted. She leaves the list for a week; if she comes back, it is as a second notice.')
+		)
 		await datos.reload()
 	} catch (error) {
 		toast.error(mensajeDelServidor(error) || __('We could not save that.'))
 	} finally {
 		marcando.value = null
+	}
+}
+
+const dejarDeSeguir = async (alumna, reanudar) => {
+	cerrando.value = alumna.alumna
+	try {
+		await call('taar_lms.seguimiento.dejar_de_seguir', {
+			alumna: alumna.alumna,
+			reanudar: reanudar ? 1 : 0,
+		})
+		toast.success(
+			reanudar
+				? __('Done. She counts again in the follow-up.')
+				: __('Done. She will not show up as pending anymore.')
+		)
+		await datos.reload()
+	} catch (error) {
+		toast.error(mensajeDelServidor(error) || __('We could not save that.'))
+	} finally {
+		cerrando.value = null
 	}
 }
 
