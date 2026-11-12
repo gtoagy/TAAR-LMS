@@ -71,6 +71,24 @@
 					</p>
 				</div>
 
+				<!-- Las demás programadas. Antes solo salía la primera y las otras
+				     parecían no haberse creado. -->
+				<div v-if="siguientes.length" class="mt-10">
+					<h2 class="mb-3 text-heading font-semibold text-ink-gray-9">
+						{{ __('Coming up later') }}
+					</h2>
+					<div class="space-y-3">
+						<ProximaSesion
+							v-for="sesion in siguientes"
+							:key="sesion.nombre"
+							:sesion="sesion"
+							:puedeEntrar="datos.puede_entrar"
+							:puedeModerar="esModerador"
+							siguiente
+						/>
+					</div>
+				</div>
+
 				<div v-if="anteriores.length" class="mt-10">
 					<h2 class="mb-3 text-heading font-semibold text-ink-gray-9">
 						{{ __('Past sessions') }}
@@ -136,6 +154,7 @@ onMounted(() => pedirSesiones())
 
 const datos = computed(() => sesionesEnVivo.data || {})
 const proxima = computed(() => datos.value.proxima)
+const siguientes = computed(() => datos.value.siguientes || [])
 const anteriores = computed(() => datos.value.anteriores || [])
 
 const breadcrumbs = computed(() => [

@@ -10927,6 +10927,14 @@ msgid "Live now"
 msgstr "En vivo ahora"
 
 #: frontend/src/components/ProximaSesion.vue
+msgid "Live session"
+msgstr "Sesión en vivo"
+
+#: frontend/src/pages/EnVivo.vue
+msgid "Coming up later"
+msgstr "Más adelante"
+
+#: frontend/src/components/ProximaSesion.vue
 msgid "Next live session"
 msgstr "Próxima sesión en vivo"
 
