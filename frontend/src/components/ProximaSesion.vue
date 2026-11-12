@@ -19,7 +19,13 @@
 						class="text-label font-medium uppercase tracking-wide"
 						:class="abierta ? 'text-red-700' : 'text-ink-gray-6'"
 					>
-						{{ abierta ? __('Live now') : __('Next live session') }}
+						{{
+							abierta
+								? __('Live now')
+								: siguiente
+								? __('Live session')
+								: __('Next live session')
+						}}
 					</span>
 				</div>
 
@@ -213,6 +219,9 @@ const props = defineProps({
 	// `cancelar_sesion()` vuelven a comprobar el rol en el servidor. Aquí solo se
 	// evita enseñar algo que no lleva a ninguna parte.
 	puedeModerar: { type: Boolean, default: false },
+	// Las que vienen detrás de la próxima: misma tarjeta, pero no pueden decir
+	// «próxima» todas a la vez.
+	siguiente: { type: Boolean, default: false },
 })
 
 const abierta = computed(() => estaAbierta(props.sesion, ahora.value))
@@ -259,9 +268,13 @@ const desapuntarme = createResource({ url: 'taar_lms.envivo.desapuntarme' })
  */
 function anotarEstado(datos) {
 	const sesiones = sesionesEnVivo.data
-	if (sesiones?.proxima?.nombre !== props.sesion.nombre) return
-	sesiones.proxima.apuntada = datos.apuntada
-	sesiones.proxima.apuntadas = datos.cuantas
+	// Puede ser la próxima o cualquiera de las que vienen detrás.
+	const sesion = [sesiones?.proxima, ...(sesiones?.siguientes || [])].find(
+		(s) => s?.nombre === props.sesion.nombre
+	)
+	if (!sesion) return
+	sesion.apuntada = datos.apuntada
+	sesion.apuntadas = datos.cuantas
 }
 
 function apuntarse() {
