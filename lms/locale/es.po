@@ -11725,3 +11725,11 @@ msgstr "Listo. Ya no saldrá como pendiente."
 #: frontend/src/pages/Seguimiento.vue
 msgid "Noted. She leaves the list for a week; if she comes back, it is as a second notice."
 msgstr "Apuntado. Sale de la lista una semana; si vuelve, será como segundo aviso."
+
+#: frontend/src/pages/Membresia.vue
+msgid "Your month ends on {0}. Subscribe to keep your access: the first charge comes when your month ends, so you never pay twice."
+msgstr "Tu mes termina el {0}. Suscríbete para no perder tu acceso: el primer cobro llega cuando termine tu mes, así que no pagas dos veces."
+
+#: frontend/src/pages/Membresia.vue
+msgid "Subscribe to keep my access"
+msgstr "Suscribirme para seguir"

@@ -63,7 +63,14 @@
 						v-if="membership.data.period_end"
 						class="text-body text-ink-gray-7"
 					>
-						<template v-if="membership.data.cancel_at_period_end">
+						<template v-if="conMesUnico">
+							{{
+								__(
+									'Your month ends on {0}. Subscribe to keep your access: the first charge comes when your month ends, so you never pay twice.'
+								).format(membership.data.period_end)
+							}}
+						</template>
+						<template v-else-if="membership.data.cancel_at_period_end">
 							{{
 								__(
 									'Your membership ends on {0}. You keep full access until then.'
@@ -82,11 +89,17 @@
 								{{ __('Go to my courses') }}
 							</Button>
 						</router-link>
-						<Button @click="irAPortal()">
+						<!-- El Mes único se pagó una vez y no hay suscripción detrás: el
+						     portal de Stripe no tendría nada que enseñar (y falla sin
+						     cliente). Lo que sí sirve es suscribirse antes de que acabe. -->
+						<Button v-if="conMesUnico" @click="irACheckout('mensual')">
+							{{ __('Subscribe to keep my access') }}
+						</Button>
+						<Button v-else @click="irAPortal()">
 							{{ __('Manage my membership') }}
 						</Button>
 					</div>
-					<p class="mt-4 text-support text-ink-gray-6">
+					<p v-if="!conMesUnico" class="mt-4 text-support text-ink-gray-6">
 						{{
 							__(
 								'From "Manage my membership" you can change your card, download your invoices or cancel your subscription.'
@@ -399,6 +412,15 @@ const irACheckout = (plan) => {
 	// compra no puede empezar, y devuelve aquí a quien se arrepienta en Stripe.
 	window.location.href = `/comprar/${plan}?volver=/lms/membresia`
 }
+
+// El Mes único (pago único de un mes) sin suscripción que tome el relevo: en
+// cuanto se suscribe, la ficha deja de estar "sin renovar" y vuelve el portal.
+const conMesUnico = computed(
+	() =>
+		membership.data?.pase &&
+		membership.data?.pase_tipo === 'mes' &&
+		membership.data?.cancel_at_period_end
+)
 
 // Solo con el plan mensual identificado: a los miembros migrados que todavía no
 // tienen plan anotado no se les ofrece un cambio que quizá ya hicieron.
