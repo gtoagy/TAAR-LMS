@@ -54,9 +54,13 @@
 						class="mb-2 text-body text-orange-700"
 					>
 						{{
-							__(
-								'We could not process your last payment. Please update your card to keep your access.'
-							)
+							conPaypal
+								? __(
+										'We could not process your last payment in PayPal. Check your payment method there to keep your access.'
+								  )
+								: __(
+										'We could not process your last payment. Please update your card to keep your access.'
+								  )
 						}}
 					</p>
 					<p
@@ -95,11 +99,62 @@
 						<Button v-if="conMesUnico" @click="irACheckout('mensual')">
 							{{ __('Subscribe to keep my access') }}
 						</Button>
+						<!-- Quien paga con PayPal no tiene portal de Stripe: cancela
+						     aquí mismo (paypal_suscripcion.cancelar_mi_suscripcion) y
+						     cambia su cuenta o tarjeta desde su PayPal. -->
+						<template v-else-if="conPaypal">
+							<Button
+								v-if="!membership.data.cancel_at_period_end && !confirmando"
+								@click="confirmando = true"
+							>
+								{{ __('Cancel my subscription') }}
+							</Button>
+							<a
+								href="https://www.paypal.com/myaccount/autopay/"
+								target="_blank"
+								rel="noopener"
+							>
+								<Button variant="subtle">{{ __('Open my PayPal') }}</Button>
+							</a>
+						</template>
 						<Button v-else @click="irAPortal()">
 							{{ __('Manage my membership') }}
 						</Button>
 					</div>
-					<p v-if="!conMesUnico" class="mt-4 text-support text-ink-gray-6">
+					<div
+						v-if="conPaypal && confirmando"
+						class="mt-4 rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-4"
+					>
+						<p class="text-body text-ink-gray-8">
+							{{
+								__(
+									'If you cancel, PayPal will not charge you again and you keep your access until {0}.'
+								).format(membership.data.period_end)
+							}}
+						</p>
+						<div class="mt-3 flex flex-wrap gap-2">
+							<Button
+								variant="solid"
+								theme="red"
+								:loading="cancelar.loading"
+								@click="cancelar.submit()"
+							>
+								{{ __('Yes, cancel it') }}
+							</Button>
+							<Button @click="confirmando = false">{{ __('Keep it') }}</Button>
+						</div>
+						<p v-if="cancelar.error" class="mt-3 text-support text-red-600">
+							{{ __('We could not cancel it. Try again in a moment or write to us.') }}
+						</p>
+					</div>
+					<p v-if="conPaypal" class="mt-4 text-support text-ink-gray-6">
+						{{
+							__(
+								'Your subscription is paid with PayPal. To change the account or card it is charged to, go to your PayPal.'
+							)
+						}}
+					</p>
+					<p v-else-if="!conMesUnico" class="mt-4 text-support text-ink-gray-6">
 						{{
 							__(
 								'From "Manage my membership" you can change your card, download your invoices or cancel your subscription.'
@@ -371,7 +426,7 @@ import {
 	createResource,
 	LoadingIndicator,
 } from 'frappe-ui'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Check, Crown, X } from 'lucide-vue-next'
 import { sessionStore } from '@/stores/session'
 import { useTituloMovil } from '@/utils/navegacionMovil'
@@ -422,6 +477,19 @@ const conMesUnico = computed(
 		membership.data?.cancel_at_period_end
 )
 
+// Paga con una suscripción de PayPal: sin portal de Stripe ni cambio de plan
+// desde ahí (eso es de Stripe); la cancelación va por la escuela.
+const conPaypal = computed(() => membership.data?.proveedor === 'paypal')
+const confirmando = ref(false)
+const cancelar = createResource({
+	url: 'taar_lms.paypal_suscripcion.cancelar_mi_suscripcion',
+	method: 'POST',
+	onSuccess(data) {
+		confirmando.value = false
+		membership.setData(data)
+	},
+})
+
 // Solo con el plan mensual identificado: a los miembros migrados que todavía no
 // tienen plan anotado no se les ofrece un cambio que quizá ya hicieron.
 const puedeMejorar = computed(
@@ -429,6 +497,7 @@ const puedeMejorar = computed(
 		membership.data?.is_member &&
 		membership.data?.plan === 'Mensual' &&
 		!membership.data?.cancel_at_period_end &&
+		!conPaypal.value &&
 		comparativa.value.cursos_solo_anual.length > 0
 )
 

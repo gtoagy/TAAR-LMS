@@ -11733,3 +11733,27 @@ msgstr "Tu mes termina el {0}. Suscríbete para no perder tu acceso: el primer c
 #: frontend/src/pages/Membresia.vue
 msgid "Subscribe to keep my access"
 msgstr "Suscribirme para seguir"
+
+msgid "Cancel my subscription"
+msgstr "Cancelar mi suscripción"
+
+msgid "Open my PayPal"
+msgstr "Abrir mi PayPal"
+
+msgid "Yes, cancel it"
+msgstr "Sí, cancelarla"
+
+msgid "Keep it"
+msgstr "Mejor no"
+
+msgid "If you cancel, PayPal will not charge you again and you keep your access until {0}."
+msgstr "Si la cancelas, PayPal ya no te cobra y conservas tu acceso hasta el {0}."
+
+msgid "We could not cancel it. Try again in a moment or write to us."
+msgstr "No pudimos cancelarla. Vuelve a intentarlo en un momento o escríbenos."
+
+msgid "Your subscription is paid with PayPal. To change the account or card it is charged to, go to your PayPal."
+msgstr "Tu suscripción se paga con PayPal. Para cambiar la cuenta o la tarjeta con que se cobra, entra a tu PayPal."
+
+msgid "We could not process your last payment in PayPal. Check your payment method there to keep your access."
+msgstr "No pudimos cobrar tu último pago en PayPal. Revisa tu método de pago ahí para conservar tu acceso."
