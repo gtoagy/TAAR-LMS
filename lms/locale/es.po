@@ -11733,3 +11733,234 @@ msgstr "Tu mes termina el {0}. Suscríbete para no perder tu acceso: el primer c
 #: frontend/src/pages/Membresia.vue
 msgid "Subscribe to keep my access"
 msgstr "Suscribirme para seguir"
+#: frontend/src/components/KitDialog.vue
+msgid "Always included"
+msgstr "Siempre incluido"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Calculating shipping…"
+msgstr "Calculando el envío…"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Card, PayPal or Mercado Pago. We email you the tracking number when it ships."
+msgstr "Tarjeta, PayPal o Mercado Pago. Te mandamos la guía por correo cuando salga."
+
+#: frontend/src/components/KitDialog.vue
+msgid "Choose at least one material."
+msgstr "Elige al menos un material."
+
+#: frontend/src/components/KitDialog.vue
+msgid "Choose…"
+msgstr "Elige…"
+
+#: frontend/src/components/KitDialog.vue
+msgid "City or municipality"
+msgstr "Ciudad o municipio"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Continue to payment"
+msgstr "Continuar al pago"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Green gate, between 12 and 14…"
+msgstr "Portón verde, entre 12 y 14…"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Kits will be available to order very soon."
+msgstr "Muy pronto podrás pedir tu kit."
+
+#: frontend/src/components/KitDialog.vue
+msgid "Log in to order your kit."
+msgstr "Inicia sesión para pedir tu kit."
+
+#: frontend/src/components/KitDialog.vue
+msgid "Materials"
+msgstr "Materiales"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Neighborhood (colonia)"
+msgstr "Colonia"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Phone (10 digits)"
+msgstr "Teléfono (10 dígitos)"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Postal code"
+msgstr "Código postal"
+
+#: frontend/src/components/KitDialog.vue
+msgid "References (optional)"
+msgstr "Referencias (opcional)"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Shipping"
+msgstr "Envío"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Shipping (Mexico only)"
+msgstr "Envío (solo a México)"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Something went wrong. Please try again."
+msgstr "Algo salió mal. Vuelve a intentarlo."
+
+#: frontend/src/components/KitDialog.vue
+msgid "State"
+msgstr "Estado"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Street and number"
+msgstr "Calle y número"
+
+#: frontend/src/components/KitDialog.vue
+msgid "There is nothing to order yet."
+msgstr "Todavía no hay nada que pedir."
+
+#: frontend/src/components/KitDialog.vue
+msgid "Uncheck what you already have"
+msgstr "Quita lo que ya tienes"
+
+#: frontend/src/components/KitDialog.vue
+msgid "What it includes"
+msgstr "Qué incluye"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Who receives it"
+msgstr "Quién recibe"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Your order"
+msgstr "Tu pedido"
+
+#: frontend/src/components/KitDialog.vue
+msgid "Out of stock"
+msgstr "Agotado"
+
+#: frontend/src/components/CourseCardOverlay.vue
+msgid "Everything for this course, to your door · from {0}"
+msgstr "Todo para este curso, hasta tu puerta · desde {0}"
+
+#: frontend/src/components/CourseCardOverlay.vue
+msgid "Materials kit"
+msgstr "Kit de materiales"
+
+#: frontend/src/components/CourseCardOverlay.vue
+msgid "Order kit"
+msgstr "Pedir kit"
+
+#: frontend/src/components/CourseCardOverlay.vue
+msgid "See list"
+msgstr "Ver lista"
+
+#: frontend/src/components/CourseCardOverlay.vue
+msgid "See the list of materials"
+msgstr "Ver la lista de materiales"
+
+#: frontend/src/components/CourseCardOverlay.vue
+msgid "This course comes with the annual membership. The monthly plan does not include it."
+msgstr "Este curso viene con la membresía anual. El plan mensual no lo incluye."
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Delivered"
+msgstr "Entregado"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Go to the store"
+msgstr "Ir a la tienda"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "My orders"
+msgstr "Mis pedidos"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "On its way"
+msgstr "En camino"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Paid"
+msgstr "Pagado"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Preparing"
+msgstr "En preparación"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Refunded"
+msgstr "Reembolsado"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Ships to"
+msgstr "Se envía a"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Thank you! Your order is paid. We will email you when it ships."
+msgstr "¡Gracias! Tu pedido quedó pagado. Te escribimos cuando salga."
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Track my package"
+msgstr "Rastrear mi paquete"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "Tracking"
+msgstr "Guía"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "We are confirming your payment. This can take a minute."
+msgstr "Estamos confirmando tu pago. Puede tardar un minuto."
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "We will contact you"
+msgstr "Te contactaremos"
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "You have no material orders yet."
+msgstr "Todavía no tienes pedidos de materiales."
+
+#: frontend/src/pages/MisPedidos.vue
+msgid "shipping"
+msgstr "envío"
+
+#: frontend/src/pages/Tienda.vue
+msgid "Checkout"
+msgstr "Pagar"
+
+#: frontend/src/pages/Tienda.vue
+msgid "Course kits"
+msgstr "Kits por curso"
+
+#: frontend/src/pages/Tienda.vue
+msgid "Delivery: {0}."
+msgstr "Entrega: {0}."
+
+#: frontend/src/pages/Tienda.vue
+msgid "Empty cart"
+msgstr "Vaciar carrito"
+
+#: frontend/src/pages/Tienda.vue
+msgid "Materials for your courses, shipped to your door anywhere in Mexico."
+msgstr "Materiales para tus cursos, hasta tu puerta en todo México."
+
+#: frontend/src/pages/Tienda.vue
+msgid "Other materials"
+msgstr "Otros materiales"
+
+#: frontend/src/pages/Tienda.vue
+msgid "The store opens very soon."
+msgstr "La tienda abre muy pronto."
+
+#: frontend/src/pages/Tienda.vue
+msgid "from {0}"
+msgstr "desde {0}"
+
+#: frontend/src/pages/Tienda.vue
+msgid "materials"
+msgstr "materiales"
+
+#: frontend/src/pages/Tienda.vue
+msgid "{0} materials"
+msgstr "{0} materiales"
+
+#: frontend/src/utils/index.js
+msgid "Store"
+msgstr "Tienda"
