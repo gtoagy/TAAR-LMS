@@ -11757,3 +11757,18 @@ msgstr "Tu suscripción se paga con PayPal. Para cambiar la cuenta o la tarjeta 
 
 msgid "We could not process your last payment in PayPal. Check your payment method there to keep your access."
 msgstr "No pudimos cobrar tu último pago en PayPal. Revisa tu método de pago ahí para conservar tu acceso."
+
+msgid "Paid with"
+msgstr "Pagó con"
+
+msgid "Last payment: {0}, {1}"
+msgstr "Último pago: {0}, {1}"
+
+msgid "Click to copy the payment number"
+msgstr "Clic para copiar el número de pago"
+
+msgid "Payment number {0} copied"
+msgstr "Número de pago {0} copiado"
+
+msgid "Payment number: {0}"
+msgstr "Número de pago: {0}"
