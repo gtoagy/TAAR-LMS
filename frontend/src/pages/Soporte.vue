@@ -111,6 +111,37 @@
 							{{ textoMembresia(alumna.membresia) }}
 						</p>
 
+						<!-- Dónde ha pagado, para ir directo a buscarla: cada etiqueta
+						     abre su cliente o su pago en Stripe o PayPal. Mercado Pago
+						     no tiene un enlace fiable, así que copia el número de pago. -->
+						<div
+							v-if="alumna.pagos?.length"
+							class="mt-2 flex flex-wrap items-center gap-1.5"
+						>
+							<span class="text-support text-ink-gray-6">{{ __('Paid with') }}</span>
+							<component
+								:is="pago.enlace ? 'a' : 'button'"
+								v-for="pago in alumna.pagos"
+								:key="pago.proveedor"
+								:href="pago.enlace || undefined"
+								:target="pago.enlace ? '_blank' : undefined"
+								:rel="pago.enlace ? 'noopener' : undefined"
+								:type="pago.enlace ? undefined : 'button'"
+								:title="tituloPago(pago)"
+								class="inline-flex items-center gap-1.5 rounded-full border border-outline-gray-2 bg-surface-white px-2 py-0.5 text-label text-ink-gray-8 hover:bg-surface-gray-2"
+								@click="pago.enlace ? null : copiarReferencia(pago)"
+							>
+								<span
+									class="size-2 rounded-full"
+									:style="{ background: COLOR_PLATAFORMA[pago.proveedor] || '#999' }"
+								/>
+								{{ pago.etiqueta }}
+								<span class="text-ink-gray-5">· {{ pago.fecha }}</span>
+								<ExternalLink v-if="pago.enlace" class="size-3 text-ink-gray-5" />
+								<Copy v-else class="size-3 text-ink-gray-5" />
+							</component>
+						</div>
+
 						<div v-if="alumna.cursos.length" class="mt-3 flex flex-wrap gap-1.5">
 							<span
 								v-for="curso in alumna.cursos"
@@ -285,7 +316,7 @@ import {
 	usePageMeta,
 } from 'frappe-ui'
 import { computed, inject, ref, watch } from 'vue'
-import { AtSign, History, Send } from 'lucide-vue-next'
+import { AtSign, Copy, ExternalLink, History, Send } from 'lucide-vue-next'
 import HistorialCompras from '@/components/HistorialCompras.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { sessionStore } from '@/stores/session'
@@ -349,6 +380,27 @@ watch(texto, buscarConCalma)
 const mensajeDelServidor = (error) => {
 	if (!error) return ''
 	return typeof error === 'string' ? error : error?.messages?.[0] || ''
+}
+
+const COLOR_PLATAFORMA = {
+	Stripe: '#635bff',
+	PayPal: '#0070e0',
+	'Mercado Pago': '#00b1ea',
+}
+
+const tituloPago = (pago) => {
+	const ultimo = __('Last payment: {0}, {1}').format(pago.que || '', pago.fecha || '')
+	return pago.enlace ? ultimo : ultimo + ' · ' + __('Click to copy the payment number')
+}
+
+const copiarReferencia = async (pago) => {
+	if (!pago.referencia) return
+	try {
+		await navigator.clipboard.writeText(pago.referencia)
+		toast.success(__('Payment number {0} copied').format(pago.referencia))
+	} catch (e) {
+		toast.error(__('Payment number: {0}').format(pago.referencia))
+	}
 }
 
 const textoMembresia = (membresia) => {
