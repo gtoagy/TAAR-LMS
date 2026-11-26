@@ -170,6 +170,57 @@ body:has(.plyr--fullscreen-fallback) .taar-barra-movil {
 }
 
 /*
+ * Doble toque a los lados del vídeo para saltar 10 s (utils/dobleToque.js).
+ *
+ * Dos franjas transparentes encima del iframe de Vimeo, que si no se traga los
+ * toques. Quedan por debajo de la barra de controles de Plyr (z-index 3), solo
+ * en pantallas táctiles y solo cuando el vídeo ya arrancó una vez.
+ * `touch-action: manipulation` evita que el doble toque haga zoom.
+ */
+.taar-toque {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 35%;
+	z-index: 2;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+	align-items: center;
+	justify-content: center;
+}
+
+.taar-toque--atras {
+	left: 0;
+}
+
+.taar-toque--adelante {
+	right: 0;
+}
+
+@media (pointer: coarse) {
+	.taar-toque-listo .taar-toque {
+		display: flex;
+	}
+}
+
+.taar-toque__burbuja {
+	padding: 0.5rem 0.875rem;
+	border-radius: 9999px;
+	background: rgb(0 0 0 / 0.55);
+	color: #fff;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	opacity: 0;
+	transition: opacity 0.15s ease-out;
+	pointer-events: none;
+}
+
+.taar-toque--visible .taar-toque__burbuja {
+	opacity: 1;
+}
+
+/*
  * Los avisos de frappe-ui (vue-sonner) salen abajo. Con la píldora en pantalla se
  * levantan por encima de ella, con la misma medida que el área de scroll. El
  * `!important` es porque vue-sonner escribe su distancia en línea.

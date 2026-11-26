@@ -10,9 +10,12 @@ const plyrCtor = vi.hoisted(() =>
 )
 vi.mock('plyr', () => ({ default: plyrCtor }))
 vi.mock('plyr/dist/plyr.css', () => ({}))
+const ajustes = vi.hoisted(() => ({ data: {} as Record<string, unknown> }))
 vi.mock('@/stores/settings', () => ({
-	useSettings: () => ({ settings: { data: {} } }),
+	useSettings: () => ({ settings: ajustes }),
 }))
+// En la app, `__` lo pone frappe-ui como global; aquí devuelve el texto tal cual.
+vi.stubGlobal('__', (texto: string) => texto)
 
 import { enablePlyr } from '@/utils/plyr'
 
@@ -51,5 +54,34 @@ describe('enablePlyr double-init guard', () => {
 		await enablePlyr()
 
 		expect(plyrCtor).toHaveBeenCalledTimes(2)
+	})
+})
+
+describe('saltar 10 s', () => {
+	const crearReproductor = async () => {
+		plyrCtor.mockClear()
+		document.body.innerHTML = ''
+		const el = document.createElement('div')
+		el.className = 'video-player'
+		document.body.appendChild(el)
+		await enablePlyr()
+		return plyrCtor.mock.calls[0][1]
+	}
+
+	it('pone los botones de retroceder y adelantar junto al play, de 10 s', async () => {
+		ajustes.data = {}
+		const opciones = await crearReproductor()
+		expect(opciones.controls.slice(0, 3)).toEqual(['play', 'rewind', 'fast-forward'])
+		expect(opciones.seekTime).toBe(10)
+		expect(opciones.listeners.fastForward()).toBe(true)
+	})
+
+	it('si la escuela no deja adelantar, no hay botón de adelantar y se frena', async () => {
+		ajustes.data = { prevent_skipping_videos: 1 }
+		const opciones = await crearReproductor()
+		expect(opciones.controls).toContain('rewind')
+		expect(opciones.controls).not.toContain('fast-forward')
+		expect(opciones.listeners.fastForward()).toBe(false)
+		ajustes.data = {}
 	})
 })
