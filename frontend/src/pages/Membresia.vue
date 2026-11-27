@@ -67,7 +67,14 @@
 						v-if="membership.data.period_end"
 						class="text-body text-ink-gray-7"
 					>
-						<template v-if="conMesUnico">
+						<template v-if="conPaseAnual && membership.data.en_gracia">
+							{{
+								__(
+									'Your annual pass expired on {0}. You can still renew it at the same price.'
+								).format(membership.data.period_end)
+							}}
+						</template>
+						<template v-else-if="conMesUnico">
 							{{
 								__(
 									'Your month ends on {0}. Subscribe to keep your access: the first charge comes when your month ends, so you never pay twice.'
@@ -96,7 +103,12 @@
 						<!-- El Mes único se pagó una vez y no hay suscripción detrás: el
 						     portal de Stripe no tendría nada que enseñar (y falla sin
 						     cliente). Lo que sí sirve es suscribirse antes de que acabe. -->
-						<Button v-if="conMesUnico" @click="irACheckout('mensual')">
+						<!-- El Pase anual tampoco tiene suscripción: se renueva con la
+						     liga del precio congelado (pase.DESTINO_RENOVAR). -->
+						<Button v-if="conPaseAnual" @click="irARenovar()">
+							{{ __('Renew my pass') }}
+						</Button>
+						<Button v-else-if="conMesUnico" @click="irACheckout('mensual')">
 							{{ __('Subscribe to keep my access') }}
 						</Button>
 						<!-- Quien paga con PayPal no tiene portal de Stripe: cancela
@@ -154,7 +166,7 @@
 							)
 						}}
 					</p>
-					<p v-else-if="!conMesUnico" class="mt-4 text-support text-ink-gray-6">
+					<p v-else-if="!conMesUnico && !conPaseAnual" class="mt-4 text-support text-ink-gray-6">
 						{{
 							__(
 								'From "Manage my membership" you can change your card, download your invoices or cancel your subscription.'
@@ -476,6 +488,15 @@ const conMesUnico = computed(
 		membership.data?.pase_tipo === 'mes' &&
 		membership.data?.cancel_at_period_end
 )
+
+// El Pase anual (pago único de un año): el servidor manda la liga para
+// renovarlo al precio que pagó cuando el pase se vende abierto.
+const conPaseAnual = computed(
+	() => membership.data?.pase && membership.data?.pase_tipo === 'anual' && membership.data?.renovar
+)
+const irARenovar = () => {
+	window.location.href = `${membership.data.renovar}?volver=/lms/membresia`
+}
 
 // Paga con una suscripción de PayPal: sin portal de Stripe ni cambio de plan
 // desde ahí (eso es de Stripe); la cancelación va por la escuela.
