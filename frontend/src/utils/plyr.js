@@ -1,6 +1,7 @@
 import Plyr from 'plyr'
 import 'plyr/dist/plyr.css'
 import { useSettings } from '@/stores/settings'
+import { activarDobleToque, SALTO_SEGUNDOS } from '@/utils/dobleToque'
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -39,6 +40,8 @@ const setupPlyrForVideo = (video, players) => {
 	// No 'play-large' (the big centre overlay): it duplicates the control-bar
 	// play/pause — the overlay persists while paused and the bar shows on hover,
 	// which reads as two pause buttons. The video stays click-to-play.
+	// Sin botones de saltar 10 s: en el celular está el doble toque
+	// (utils/dobleToque.js) y en la computadora las flechas del teclado.
 	let controls = [
 		'play',
 		'progress',
@@ -52,6 +55,7 @@ const setupPlyrForVideo = (video, players) => {
 	const player = new Plyr(video, {
 		youtube: { noCookie: true },
 		controls: controls,
+		seekTime: SALTO_SEGUNDOS,
 		// En el iPhone no existe la pantalla completa del sistema para
 		// cualquier elemento, solo para un vídeo. Sin `iosNative`, Plyr cae en
 		// su modo de repuesto, que es puro CSS y deja a la vista las barras del
@@ -85,10 +89,7 @@ const setupPlyrForVideo = (video, players) => {
 			seek: function customSeekBehavior(e) {
 				const current_time = player.currentTime
 				const newTime = getTargetTime(player, e)
-				if (
-					useSettings().settings.data?.prevent_skipping_videos &&
-					parseFloat(newTime) > current_time
-				) {
+				if (noDejaAdelantar() && parseFloat(newTime) > current_time) {
 					e.preventDefault()
 					player.currentTime = current_time
 					return false
@@ -97,9 +98,17 @@ const setupPlyrForVideo = (video, players) => {
 		},
 	})
 
+	// Con Vimeo, Plyr arma su interfaz hasta que carga el reproductor.
+	player.on('ready', () =>
+		activarDobleToque(player, { puedeAdelantar: () => !noDejaAdelantar() })
+	)
+
 	video.plyrInstance = player
 	players.push(player)
 }
+
+const noDejaAdelantar = () =>
+	Boolean(useSettings().settings.data?.prevent_skipping_videos)
 
 const getTargetTime = (plyr, input) => {
 	if (
