@@ -10344,12 +10344,6 @@ msgstr "Salir de pantalla completa"
 msgid "Go back to previous menu"
 msgstr "Volver al menú anterior"
 
-msgid "Rewind {seektime}s"
-msgstr "Retroceder {seektime} s"
-
-msgid "Forward {seektime}s"
-msgstr "Adelantar {seektime} s"
-
 msgid "Speed"
 msgstr "Velocidad"
 

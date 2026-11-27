@@ -58,30 +58,16 @@ describe('enablePlyr double-init guard', () => {
 })
 
 describe('saltar 10 s', () => {
-	const crearReproductor = async () => {
+	it('no pone botones de saltar en la barra, solo el salto de 10 s', async () => {
 		plyrCtor.mockClear()
 		document.body.innerHTML = ''
 		const el = document.createElement('div')
 		el.className = 'video-player'
 		document.body.appendChild(el)
 		await enablePlyr()
-		return plyrCtor.mock.calls[0][1]
-	}
-
-	it('pone los botones de retroceder y adelantar junto al play, de 10 s', async () => {
-		ajustes.data = {}
-		const opciones = await crearReproductor()
-		expect(opciones.controls.slice(0, 3)).toEqual(['play', 'rewind', 'fast-forward'])
-		expect(opciones.seekTime).toBe(10)
-		expect(opciones.listeners.fastForward()).toBe(true)
-	})
-
-	it('si la escuela no deja adelantar, no hay botón de adelantar y se frena', async () => {
-		ajustes.data = { prevent_skipping_videos: 1 }
-		const opciones = await crearReproductor()
-		expect(opciones.controls).toContain('rewind')
+		const opciones = plyrCtor.mock.calls[0][1]
+		expect(opciones.controls).not.toContain('rewind')
 		expect(opciones.controls).not.toContain('fast-forward')
-		expect(opciones.listeners.fastForward()).toBe(false)
-		ajustes.data = {}
+		expect(opciones.seekTime).toBe(10)
 	})
 })

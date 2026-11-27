@@ -40,13 +40,10 @@ const setupPlyrForVideo = (video, players) => {
 	// No 'play-large' (the big centre overlay): it duplicates the control-bar
 	// play/pause — the overlay persists while paused and the bar shows on hover,
 	// which reads as two pause buttons. The video stays click-to-play.
-	// Saltar 10 s atrás y adelante, junto al play. Si la escuela no deja
-	// adelantar el vídeo, el botón de adelantar ni se pinta (y si el ajuste
-	// llega después, el listener de abajo lo frena).
+	// Sin botones de saltar 10 s: en el celular está el doble toque
+	// (utils/dobleToque.js) y en la computadora las flechas del teclado.
 	let controls = [
 		'play',
-		'rewind',
-		...(noDejaAdelantar() ? [] : ['fast-forward']),
 		'progress',
 		'current-time',
 		'mute',
@@ -69,8 +66,6 @@ const setupPlyrForVideo = (video, players) => {
 		i18n: {
 			play: __('Play'),
 			pause: __('Pause'),
-			rewind: __('Rewind {seektime}s'),
-			fastForward: __('Forward {seektime}s'),
 			seek: __('Seek'),
 			seekLabel: '{currentTime} / {duration}',
 			played: __('Played'),
@@ -91,8 +86,6 @@ const setupPlyrForVideo = (video, players) => {
 		settings: ['speed'],
 		speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
 		listeners: {
-			// Devolver false le dice a Plyr que no corra su acción.
-			fastForward: () => !noDejaAdelantar(),
 			seek: function customSeekBehavior(e) {
 				const current_time = player.currentTime
 				const newTime = getTargetTime(player, e)
