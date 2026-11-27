@@ -63,10 +63,10 @@
 					</Button>
 				</div>
 
-				<!-- Las tres listas. Botones y no pestañas de frappe-ui: en un
-				     teléfono tienen que caber los tres con su número sin scroll. -->
+				<!-- Las cuatro listas. Botones y no pestañas de frappe-ui: en un
+				     teléfono caben de dos en dos, con su número, sin scroll. -->
 				<div
-					class="mt-5 grid grid-cols-3 gap-1 rounded-lg bg-surface-gray-2 p-1"
+					class="mt-5 grid grid-cols-2 gap-1 rounded-lg bg-surface-gray-2 p-1 sm:grid-cols-4"
 					role="tablist"
 				>
 					<button
@@ -146,7 +146,7 @@
 									v-if="alumna.etapa"
 									size="md"
 									variant="subtle"
-									:theme="colorDeEtapa(alumna.etapa)"
+									:theme="alumna.color || colorDeEtapa(alumna.etapa)"
 								>
 									{{ alumna.etapa }}
 								</Badge>
@@ -392,7 +392,30 @@ const pendientes = computed(() => {
 const primerMensaje = computed(() => pendientes.value.filter((p) => !p.segundo_aviso))
 const segundoAviso = computed(() => pendientes.value.filter((p) => p.segundo_aviso))
 
+// Los Pases anuales por vencer o en sus días de gracia (pase.por_renovar). El
+// correo y el aviso al teléfono salen solos; el WhatsApp lo manda Tan desde aquí,
+// con el mensaje ya escrito y la liga para renovar al precio que pagaron.
+const renovaciones = computed(() =>
+	(datos.data?.renovaciones || []).map((r) => ({
+		...r,
+		renovacion: true,
+		producto: __('Annual pass · expires {0}').format(r.vence_texto),
+		etapa: r.en_gracia
+			? __('In grace period')
+			: r.dias <= 0
+			? __('Expires today')
+			: __('{0} days left').format(r.dias),
+		color: r.en_gracia ? 'red' : r.dias <= 3 ? 'orange' : 'blue',
+		que_hacer: r.en_gracia
+			? __('Her pass expired. She can still renew at the same price this week.')
+			: __('Remind her that she renews at the same price she paid.'),
+		pendiente: false,
+		urgente: r.en_gracia,
+	}))
+)
+
 const lista = computed(() => {
+	if (pestana.value === 'renovar') return renovaciones.value
 	if (pestana.value === 'ventas') return ventas.value
 	if (pestana.value === 'todas') return compradoras.value
 	return pendientes.value
@@ -435,11 +458,18 @@ const pestanas = computed(() => [
 		etiqueta: __('Course buyers'),
 		cuantas: datos.data ? compradoras.value.length : null,
 	},
+	{
+		clave: 'renovar',
+		etiqueta: __('Renewals'),
+		cuantas: datos.data ? renovaciones.value.length : null,
+		alerta: renovaciones.value.some((r) => r.en_gracia),
+	},
 ])
 
 const textoVacio = computed(() => {
 	if (pestana.value === 'pendientes') return __('Nobody is waiting for a message. All good.')
 	if (pestana.value === 'ventas') return __('No sales in the last 30 days.')
+	if (pestana.value === 'renovar') return __('No annual pass expires in the next 30 days.')
 	return __('No course buyers in the last 60 days.')
 })
 
@@ -503,6 +533,11 @@ const contactadaHacePoco = (texto) => {
 }
 
 const detalle = (alumna) => {
+	if (alumna.renovacion) {
+		return alumna.avisos?.length
+			? __('Automatic reminders sent: {0}').format(alumna.avisos.length)
+			: __('No automatic reminder yet')
+	}
 	const partes = [__('Bought on {0}').format(fecha(alumna.compro))]
 	if (alumna.total) {
 		partes.push(__('{0} of {1} lessons').format(alumna.vistas, alumna.total))

@@ -11772,3 +11772,51 @@ msgstr "Número de pago {0} copiado"
 
 msgid "Payment number: {0}"
 msgstr "Número de pago: {0}"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Annual pass · expires {0}"
+msgstr "Pase anual · vence el {0}"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "In grace period"
+msgstr "En gracia"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Expires today"
+msgstr "Vence hoy"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "{0} days left"
+msgstr "Faltan {0} días"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Her pass expired. She can still renew at the same price this week."
+msgstr "Su pase ya venció. Todavía puede renovar al mismo precio esta semana."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Remind her that she renews at the same price she paid."
+msgstr "Recuérdale que renueva al mismo precio que pagó."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Renewals"
+msgstr "Renovar"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "No annual pass expires in the next 30 days."
+msgstr "Ningún pase anual vence en los próximos 30 días."
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "Automatic reminders sent: {0}"
+msgstr "Avisos automáticos enviados: {0}"
+
+#: frontend/src/pages/Seguimiento.vue
+msgid "No automatic reminder yet"
+msgstr "Todavía sin aviso automático"
+
+#: frontend/src/pages/Membresia.vue
+msgid "Renew my pass"
+msgstr "Renovar mi pase"
+
+#: frontend/src/pages/Membresia.vue
+msgid "Your annual pass expired on {0}. You can still renew it at the same price."
+msgstr "Tu pase anual venció el {0}. Todavía puedes renovarlo al mismo precio."
